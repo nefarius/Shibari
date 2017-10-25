@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 
 namespace Shibari.Dom.Server.Core
 {
@@ -14,6 +15,8 @@ namespace Shibari.Dom.Server.Core
     {
         private static readonly string SourcesPath = Path.Combine(Path.GetDirectoryName
             (Assembly.GetExecutingAssembly().Location), "Sources");
+        private static readonly string SinksPath = Path.Combine(Path.GetDirectoryName
+            (Assembly.GetExecutingAssembly().Location), "Sinks");
 
         private readonly ObservableCollection<IDualShockDevice> _childDevices =
             new ObservableCollection<IDualShockDevice>();
@@ -21,20 +24,20 @@ namespace Shibari.Dom.Server.Core
         [ImportMany]
         private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
 
+        [ImportMany]
+        private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
+
         public void Start()
         {
             //Creating an instance of aggregate catalog. It aggregates other catalogs
             var aggregateCatalog = new AggregateCatalog();
-
-            //Load parts from the available DLLs in the specified path 
-            //using the directory catalog
-            var directoryCatalog = new DirectoryCatalog(SourcesPath, "*.dll");
-
+            
             //Load parts from the current assembly if available
             var asmCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
 
             //Add to the aggregate catalog
-            aggregateCatalog.Catalogs.Add(directoryCatalog);
+            aggregateCatalog.Catalogs.Add(new DirectoryCatalog(SourcesPath, "*.dll"));
+            aggregateCatalog.Catalogs.Add(new DirectoryCatalog(SinksPath, "*.dll"));
             aggregateCatalog.Catalogs.Add(asmCatalog);
 
             //Crete the composition container
@@ -43,6 +46,14 @@ namespace Shibari.Dom.Server.Core
             // Composable parts are created here i.e. 
             // the Import and Export components assembles here
             container.ComposeParts(this);
+
+            foreach (var sinkPlugin in SinkPlugins)
+            {
+                var name = sinkPlugin.Metadata["Name"];
+                var sink = sinkPlugin.Value;
+
+                Log.Information($"Loaded sink plugin {name}");
+            }
 
             foreach (var busEmulator in BusEmulators)
             {
