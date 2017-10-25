@@ -4,7 +4,7 @@ using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Source.AirBender.Core.Host
 {
-    internal partial class AirBenderHost
+    internal sealed partial class AirBenderHost
     {
         #region I/O control codes
 

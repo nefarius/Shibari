@@ -14,12 +14,12 @@ using Shibari.Sub.Source.AirBender.Exceptions;
 
 namespace Shibari.Sub.Source.AirBender.Core.Host
 {
-    public delegate void HostDeviceDisconnectedEventHandler(object sender, EventArgs e);
+    internal delegate void HostDeviceDisconnectedEventHandler(object sender, EventArgs e);
 
     /// <summary>
     ///     Represents a managed wrapper around an USB device loaded with the AirBender driver.
     /// </summary>
-    internal partial class AirBenderHost : IDisposable
+    internal sealed partial class AirBenderHost : IDisposable
     {
         private readonly IObservable<long> _deviceLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
         private readonly IDisposable _deviceLookupTask;
@@ -325,7 +325,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
 
         private bool disposedValue; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
