@@ -8,8 +8,6 @@ using Shibari.Sub.Source.AirBender.Core.Host;
 
 namespace Shibari.Sub.Source.AirBender.Core.Children
 {
-    public delegate void ChildDeviceDisconnectedEventHandler(object sender, EventArgs e);
-
     /// <summary>
     ///     Represents a managed wrapper for a Bluetooth host child device.
     /// </summary>
@@ -56,7 +54,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
 
         public PhysicalAddress HostAddress => HostDevice.HostAddress;
 
-        public event ChildDeviceDisconnectedEventHandler ChildDeviceDisconnected;
+        public event ChildDeviceAttachedEventHandler ChildDeviceRemoved;
 
         public event InputReportReceivedEventHandler InputReportReceived;
 
@@ -73,14 +71,14 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
         {
         }
 
-        protected virtual void OnChildDeviceDisconnected(EventArgs e)
+        protected virtual void OnChildDeviceDisconnected()
         {
             _outputReportTask?.Dispose();
 
             _inputCancellationTokenSourcePrimary.Cancel();
             _inputCancellationTokenSourceSecondary.Cancel();
 
-            ChildDeviceDisconnected?.Invoke(this, e);
+            ChildDeviceRemoved?.Invoke(this, new ChildDeviceAttachedEventArgs(this));
         }
 
         public virtual void Rumble(byte largeMotor, byte smallMotor)

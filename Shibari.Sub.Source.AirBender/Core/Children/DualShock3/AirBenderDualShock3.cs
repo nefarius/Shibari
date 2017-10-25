@@ -74,7 +74,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     // On ERROR_DEV_NOT_EXIST the child device was removed
                     //
                     if (!ret && Marshal.GetLastWin32Error() == AirBenderHost.ErrorDevNotExist)
-                        OnChildDeviceDisconnected(EventArgs.Empty);
+                        OnChildDeviceDisconnected();
 
                     // TODO: refactor, might lead to high CPU usage on failure
                     if (!ret) continue;

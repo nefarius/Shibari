@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reactive.Linq;
@@ -33,11 +34,6 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
             DevicePath = devicePath;
             Children = new ObservableCollection<AirBenderChildDevice>();
 
-            /*foreach (var plugin in _sinkPluginHost.SinkPlugins)
-            {
-                Log.Information($"Loaded plugin {plugin.Metadata["PluginName"]}");
-            }
-
             Children.CollectionChanged += (sender, args) =>
             {
                 switch (args.Action)
@@ -45,19 +41,19 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                     case NotifyCollectionChangedAction.Add:
 
                         foreach (IDualShockDevice item in args.NewItems)
-                            _sinkPluginHost.DeviceArrived(item);
+                            ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(item));
 
                         break;
                     case NotifyCollectionChangedAction.Remove:
 
                         foreach (IDualShockDevice item in args.OldItems)
-                            _sinkPluginHost.DeviceRemoved(item);
+                            ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(item));
 
                         break;
                     default:
                         break;
                 }
-            };*/
+            };
 
             //
             // Open device
@@ -146,6 +142,12 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
         /// </summary>
         public event HostDeviceDisconnectedEventHandler HostDeviceDisconnected;
 
+        public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
+
+        public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
+
+        public event InputReportReceivedEventHandler InputReportReceived;
+
         /// <summary>
         ///     Gets called periodically to determine new child devices.  
         /// </summary>
@@ -211,11 +213,11 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                         case DualShockDeviceType.DualShock3:
                             var device = new AirBenderDualShock3(this, address, (int) i);
 
-                            device.ChildDeviceDisconnected +=
-                                (sender, args) => Children.Remove((AirBenderChildDevice) sender);
-                            //device.InputReportReceived +=
-                            //    (sender, args) => _sinkPluginHost.InputReportReceived((AirBenderChildDevice) sender,
-                            //        args.Report);
+                            device.ChildDeviceRemoved +=
+                                (sender, args) => Children.Remove((AirBenderChildDevice) args.Device);
+                            device.InputReportReceived +=
+                                (sender, args) => InputReportReceived?.Invoke(this,
+                                    new InputReportReceivedEventArgs(args.Device, args.Report));
 
                             Children.Add(device);
 
