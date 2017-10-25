@@ -47,12 +47,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shared\Exceptions\InvalidAxisException.cs" />
+    <Compile Include="Shared\Types\Common\DualShockBatterStates.cs" />
+    <Compile Include="Shared\Types\Common\DualShockDeviceType.cs" />
+    <Compile Include="Shared\Types\Common\IDualShockDevice.cs" />
+    <Compile Include="Shared\Types\Common\IInputReport.cs" />
+    <Compile Include="Shared\Types\Common\InputReportEventArgs.cs" />
+    <Compile Include="Shared\Types\DualShock3\DualShock3Axes.cs" />
+    <Compile Include="Shared\Types\DualShock3\DualShock3Buttons.cs" />
+    <Compile Include="Shared\Types\DualShock3\DualShock3InputReport.cs" />
     <Compile Include="Util\PhysicalAddressExtensions.cs" />
     <Compile Include="Util\SafeObjectHandleExtensions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shared\Types\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
