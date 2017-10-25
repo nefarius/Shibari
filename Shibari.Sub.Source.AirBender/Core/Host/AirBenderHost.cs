@@ -199,11 +199,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 for (uint i = 0; i < count; i++)
                 {
                     // TODO: implement more checks, this could accidentally register the same devices again
-
-                    PhysicalAddress address;
-                    DualShockDeviceType type;
-
-                    if (!GetDeviceStateByIndex(i, out address, out type))
+                    if (!GetDeviceStateByIndex(i, out var address, out var type))
                     {
                         Log.Warning(
                             $"Failed to request details for client #{i}: {new Win32Exception(Marshal.GetLastWin32Error())}");

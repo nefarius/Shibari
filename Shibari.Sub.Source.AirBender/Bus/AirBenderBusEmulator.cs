@@ -18,6 +18,10 @@ namespace Shibari.Sub.Source.AirBender.Bus
         private readonly List<AirBenderHost> _hosts = new List<AirBenderHost>();
         private IDisposable _hostLookupTask;
 
+        public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
+        public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
+        public event InputReportReceivedEventHandler InputReportReceived;
+
         public void Start()
         {
             Log.Information("AirBender Sokka Server started");

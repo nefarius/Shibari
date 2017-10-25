@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
@@ -19,26 +20,42 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
         private IDisposable _deviceLookupTask;
 
+        public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
+        public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
+        public event InputReportReceivedEventHandler InputReportReceived;
+
         public void Start()
         {
             Log.Information("FireShock Chastity Server started");
 
-            /*_devices.CollectionChanged += (sender, args) =>
+            _devices.CollectionChanged += (sender, args) =>
             {
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
-                            _sinkPluginHost.DeviceArrived(item);
+                            ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(item));
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
-                            _sinkPluginHost.DeviceRemoved(item);
+                            ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(item));
                         break;
                 }
-            };*/
+            };
 
             _deviceLookupTask = _deviceLookupSchedule.Subscribe(OnLookup);
+        }
+
+        public void Stop()
+        {
+            _deviceLookupTask?.Dispose();
+
+            foreach (var device in _devices)
+                device.Dispose();
+
+            _devices.Clear();
+
+            Log.Information("FireShock Chastity Server stopped");
         }
 
         private void OnLookup(long l)
@@ -56,29 +73,18 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
                 device.DeviceDisconnected += (sender, args) =>
                 {
-                    var dev = (FireShockDevice)sender;
+                    var dev = (FireShockDevice) sender;
                     Log.Information($"Device {dev} disconnected");
                     _devices.Remove(dev);
                     dev.Dispose();
                 };
 
-                //device.InputReportReceived += (sender, args) =>
-                //    _sinkPluginHost.InputReportReceived((IDualShockDevice)sender, args.Report);
+                device.InputReportReceived += (sender, args) =>
+                    InputReportReceived?.Invoke(this,
+                        new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
 
                 _devices.Add(device);
             }
-        }
-
-        public void Stop()
-        {
-            _deviceLookupTask?.Dispose();
-
-            foreach (var device in _devices)
-                device.Dispose();
-
-            _devices.Clear();
-
-            Log.Information("FireShock Chastity Server stopped");
         }
     }
 }

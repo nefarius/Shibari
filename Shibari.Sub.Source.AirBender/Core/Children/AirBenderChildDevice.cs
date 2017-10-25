@@ -10,8 +10,6 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
 {
     public delegate void ChildDeviceDisconnectedEventHandler(object sender, EventArgs e);
 
-    public delegate void InputReportReceivedEventHandler(object sender, InputReportEventArgs e);
-
     /// <summary>
     ///     Represents a managed wrapper for a Bluetooth host child device.
     /// </summary>
@@ -68,7 +66,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
 
         protected void OnInputReport(IInputReport report)
         {
-            InputReportReceived?.Invoke(this, new InputReportEventArgs(report));
+            InputReportReceived?.Invoke(this, new InputReportReceivedEventArgs(this, report));
         }
 
         protected virtual void OnOutputReport(long l)
@@ -87,7 +85,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
 
         public virtual void Rumble(byte largeMotor, byte smallMotor)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Rumble requests not supported by this device.");
         }
 
         public virtual void PairTo(PhysicalAddress host)
