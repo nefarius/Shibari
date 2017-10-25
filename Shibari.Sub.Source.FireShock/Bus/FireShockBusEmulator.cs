@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.IO;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reflection;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -12,6 +10,8 @@ using Shibari.Sub.Source.FireShock.Core;
 
 namespace Shibari.Sub.Source.FireShock.Bus
 {
+    [ExportMetadata("Name", "FireShock Bus Emulator")]
+    [Export(typeof(IBusEmulator))]
     public class FireShockBusEmulator : IBusEmulator
     {
         private readonly IObservable<long> _deviceLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));

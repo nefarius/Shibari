@@ -17,7 +17,7 @@ namespace Shibari.Sub.Source.FireShock.Core
 
     public delegate void FireShockInputReportReceivedEventHandler(object sender, InputReportEventArgs e);
 
-    public abstract partial class FireShockDevice : IDisposable, IDualShockDevice
+    internal abstract partial class FireShockDevice : IDisposable, IDualShockDevice
     {
         private readonly CancellationTokenSource _inputCancellationTokenSourcePrimary = new CancellationTokenSource();
         private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();

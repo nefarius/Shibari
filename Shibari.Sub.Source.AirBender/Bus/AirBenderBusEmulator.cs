@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
 using Nefarius.Devcon;
@@ -9,6 +10,8 @@ using Shibari.Sub.Source.AirBender.Core.Host;
 
 namespace Shibari.Sub.Source.AirBender.Bus
 {
+    [ExportMetadata("Name", "AirBender Bus Emulator")]
+    [Export(typeof(IBusEmulator))]
     public class AirBenderBusEmulator : IBusEmulator
     {
         private readonly IObservable<long> _hostLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));

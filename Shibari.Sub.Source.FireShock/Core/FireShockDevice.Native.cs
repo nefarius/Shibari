@@ -3,7 +3,7 @@ using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Source.FireShock.Core
 {
-    public partial class FireShockDevice
+    internal partial class FireShockDevice
     {
         #region I/O control codes
 
