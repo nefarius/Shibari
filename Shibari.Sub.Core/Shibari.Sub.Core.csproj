@@ -60,6 +60,7 @@
     <Compile Include="Shared\Types\Common\IDualShockDevice.cs" />
     <Compile Include="Shared\Types\Common\IInputReport.cs" />
     <Compile Include="Shared\Types\Common\InputReportEventArgs.cs" />
+    <Compile Include="Shared\Types\Common\Sinks\ISinkPlugin.cs" />
     <Compile Include="Shared\Types\DualShock3\DualShock3Axes.cs" />
     <Compile Include="Shared\Types\DualShock3\DualShock3Buttons.cs" />
     <Compile Include="Shared\Types\DualShock3\DualShock3InputReport.cs" />
