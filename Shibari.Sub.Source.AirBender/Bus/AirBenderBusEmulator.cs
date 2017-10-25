@@ -27,21 +27,6 @@ namespace Shibari.Sub.Source.AirBender.Bus
         {
             Log.Information("AirBender Sokka Server started");
 
-            _hosts.CollectionChanged += (sender, args) =>
-            {
-                switch (args.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        foreach (IDualShockDevice item in args.NewItems)
-                            ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(item));
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        foreach (IDualShockDevice item in args.OldItems)
-                            ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(item));
-                        break;
-                }
-            };
-
             _hostLookupTask = _hostLookupSchedule.Subscribe(OnLookup);
         }
 
@@ -72,11 +57,14 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
                 host.HostDeviceDisconnected += (sender, args) =>
                 {
-                    var device = (AirBenderHost) sender;
+                    var device = (AirBenderHost)sender;
                     _hosts.Remove(device);
                     device.Dispose();
                 };
-
+                host.ChildDeviceAttached += (o, eventArgs) =>
+                    ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(eventArgs.Device));
+                host.ChildDeviceRemoved += (o, eventArgs) =>
+                    ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(eventArgs.Device));
                 host.InputReportReceived += (sender, args) =>
                     InputReportReceived?.Invoke(this, new InputReportReceivedEventArgs(args.Device, args.Report));
 

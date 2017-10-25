@@ -24,7 +24,7 @@ namespace Shibari.Sub.Source.FireShock.Core
         private readonly IObservable<long> _outputReportSchedule = Observable.Interval(TimeSpan.FromMilliseconds(10));
         private readonly IDisposable _outputReportTask;
 
-        internal FireShockDevice(string path, Kernel32.SafeObjectHandle handle)
+        private FireShockDevice(string path, Kernel32.SafeObjectHandle handle)
         {
             DevicePath = path;
             DeviceHandle = handle;
@@ -74,10 +74,6 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 Marshal.FreeHGlobal(pData);
             }
-
-            Log.Information($"Device is {DeviceType} " +
-                            $"with address {ClientAddress.AsFriendlyName()} " +
-                            $"currently paired to {HostAddress.AsFriendlyName()}");
 
             _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReport);
 
@@ -288,6 +284,10 @@ namespace Shibari.Sub.Source.FireShock.Core
             public FireShock3Device(string path, Kernel32.SafeObjectHandle handle) : base(path, handle)
             {
                 DeviceType = DualShockDeviceType.DualShock3;
+
+                Log.Information($"Device is {DeviceType} " +
+                                $"with address {ClientAddress.AsFriendlyName()} " +
+                                $"currently paired to {HostAddress.AsFriendlyName()}");
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
