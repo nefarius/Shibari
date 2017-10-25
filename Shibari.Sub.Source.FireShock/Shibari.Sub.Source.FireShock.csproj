@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\FireShockDevice.cs" />
     <Compile Include="Exceptions\FireShockGetDeviceBdAddrFailedException.cs" />
     <Compile Include="Exceptions\FireShockGetDeviceTypeFailedException.cs" />
     <Compile Include="Exceptions\FireShockGetHostBdAddrFailedException.cs" />
@@ -84,6 +85,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\FireShockDevice.Native.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
