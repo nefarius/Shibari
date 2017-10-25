@@ -190,7 +190,7 @@ namespace Shibari.Sub.Source.FireShock.Core
                     out bytesReturned);
 
                 if (!ret)
-                    throw new FireShockWriteOutputReportFailedException("Sending output report failed");
+                    OnDisconnected();
             }
             finally
             {

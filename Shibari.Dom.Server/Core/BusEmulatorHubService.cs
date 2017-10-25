@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -15,6 +17,7 @@ namespace Shibari.Dom.Server.Core
     {
         private static readonly string SourcesPath = Path.Combine(Path.GetDirectoryName
             (Assembly.GetExecutingAssembly().Location), "Sources");
+
         private static readonly string SinksPath = Path.Combine(Path.GetDirectoryName
             (Assembly.GetExecutingAssembly().Location), "Sinks");
 
@@ -29,9 +32,26 @@ namespace Shibari.Dom.Server.Core
 
         public void Start()
         {
+            _childDevices.CollectionChanged += (sender, args) =>
+            {
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (IDualShockDevice item in args.NewItems)
+                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            plugin.DeviceArrived(item);
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (IDualShockDevice item in args.OldItems)
+                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            plugin.DeviceRemoved(item);
+                        break;
+                }
+            };
+
             //Creating an instance of aggregate catalog. It aggregates other catalogs
             var aggregateCatalog = new AggregateCatalog();
-            
+
             //Load parts from the current assembly if available
             var asmCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
 
@@ -50,7 +70,6 @@ namespace Shibari.Dom.Server.Core
             foreach (var sinkPlugin in SinkPlugins)
             {
                 var name = sinkPlugin.Metadata["Name"];
-                var sink = sinkPlugin.Value;
 
                 Log.Information($"Loaded sink plugin {name}");
             }
@@ -61,9 +80,14 @@ namespace Shibari.Dom.Server.Core
                 var emulator = busEmulator.Value;
 
                 Log.Information($"Loaded bus emulator {name}");
-                
+
                 emulator.ChildDeviceAttached += (sender, args) => _childDevices.Add(args.Device);
                 emulator.ChildDeviceRemoved += (sender, args) => _childDevices.Remove(args.Device);
+                emulator.InputReportReceived += (sender, args) =>
+                {
+                    foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                        plugin.InputReportReceived(args.Device, args.Report);
+                };
 
                 Log.Information($"Starting bus emulator {name}");
                 emulator.Start();
