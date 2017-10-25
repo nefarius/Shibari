@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bus\AirBenderBusEmulator.cs" />
     <Compile Include="Core\Children\AirBenderChildDevice.cs" />
     <Compile Include="Core\Children\DualShock3\AirBenderDualShock3.cs" />
     <Compile Include="Core\Host\AirBenderHost.cs" />
