@@ -50,6 +50,7 @@
     <Compile Include="Shared\Exceptions\InvalidAxisException.cs" />
     <Compile Include="Shared\Types\Common\DualShockBatterStates.cs" />
     <Compile Include="Shared\Types\Common\DualShockDeviceType.cs" />
+    <Compile Include="Shared\Types\Common\IBusEmulator.cs" />
     <Compile Include="Shared\Types\Common\IDualShockDevice.cs" />
     <Compile Include="Shared\Types\Common\IInputReport.cs" />
     <Compile Include="Shared\Types\Common\InputReportEventArgs.cs" />
