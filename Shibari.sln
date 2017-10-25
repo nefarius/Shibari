@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shibari.Sub.Core", "Shibari.Sub.Core\Shibari.Sub.Core.csproj", "{E14D768A-50DE-4A4A-9E4E-8F080BFED14D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{C7C6C996-17FA-4F5F-BC54-1205F60912D2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sinks", "Sinks", "{9037C1DB-F396-4CFD-809C-4B9A17082ADD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
