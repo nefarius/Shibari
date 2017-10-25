@@ -70,6 +70,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\FireShockGetDeviceBdAddrFailedException.cs" />
+    <Compile Include="Exceptions\FireShockGetDeviceTypeFailedException.cs" />
+    <Compile Include="Exceptions\FireShockGetHostBdAddrFailedException.cs" />
+    <Compile Include="Exceptions\FireShockSetHostBdAddrFailedException.cs" />
+    <Compile Include="Exceptions\FireShockWriteOutputReportFailedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
