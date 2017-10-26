@@ -78,11 +78,11 @@ namespace Shibari.Dom.Server.Core
             container.ComposeParts(this);
 
             // Log loaded sink plugins
-            foreach (var plugin in SinkPlugins)
+            foreach (var plugin in SinkPlugins.Select(p => p.Value))
             {
                 Log.Information("Loaded sink plugin {Plugin}", plugin);
 
-                plugin.Value.RumbleRequestReceived += (sender, args) =>
+                plugin.RumbleRequestReceived += (sender, args) =>
                     _childDevices.First(c => c.Equals(sender)).Rumble(args.LargeMotor, args.SmallMotor);
             }
 
