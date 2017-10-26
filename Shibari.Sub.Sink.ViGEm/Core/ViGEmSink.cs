@@ -41,11 +41,16 @@ namespace Shibari.Sub.Sink.ViGEm.Core
             _client = new ViGEmClient();
         }
 
+        public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
+
         public void DeviceArrived(IDualShockDevice device)
         {
             var target = new DualShock4Controller(_client);
 
             _deviceMap.Add(device, target);
+
+            target.FeedbackReceived += (sender, args) =>
+                RumbleRequestReceived?.Invoke(this, new RumbleRequestEventArgs(args.LargeMotor, args.SmallMotor));
 
             target.Connect();
         }
@@ -64,7 +69,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
                     var target = _deviceMap[device];
 
-                    var ds3Report = (DualShock3InputReport)report;
+                    var ds3Report = (DualShock3InputReport) report;
                     var ds4Report = new DualShock4Report();
 
                     ds4Report.SetAxis(DualShock4Axes.LeftThumbX, ds3Report[DualShock3Axes.LeftThumbX]);
