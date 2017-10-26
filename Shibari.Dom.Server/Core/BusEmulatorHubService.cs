@@ -32,19 +32,31 @@ namespace Shibari.Dom.Server.Core
 
         public void Start()
         {
+            if (!Directory.Exists(SourcesPath))
+            {
+                Log.Fatal("{@SourcesPath} doesn't exist; service has nothing to do without sources", SourcesPath);
+                Stop();
+                return;
+            }
+
+            if (!Directory.Exists(SinksPath))
+            {
+                Log.Warning("{@SinksPath} doesn't exist; service has nothing to do without sinks", SinksPath);
+            }
+
             _childDevices.CollectionChanged += (sender, args) =>
             {
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
-                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                            plugin.DeviceArrived(item);
+                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                                plugin.DeviceArrived(item);
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
-                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                            plugin.DeviceRemoved(item);
+                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                                plugin.DeviceRemoved(item);
                         break;
                 }
             };
@@ -67,13 +79,13 @@ namespace Shibari.Dom.Server.Core
             // the Import and Export components assembles here
             container.ComposeParts(this);
 
-            foreach (var sinkPlugin in SinkPlugins)
+            // Log loaded sink plugins
+            foreach (var name in SinkPlugins.Select(p => p.Metadata["Name"]))
             {
-                var name = sinkPlugin.Metadata["Name"];
-
                 Log.Information($"Loaded sink plugin {name}");
             }
 
+            // Log and enable sources
             foreach (var busEmulator in BusEmulators)
             {
                 var name = busEmulator.Metadata["Name"];
@@ -89,9 +101,16 @@ namespace Shibari.Dom.Server.Core
                         plugin.InputReportReceived(args.Device, args.Report);
                 };
 
-                Log.Information($"Starting bus emulator {name}");
-                emulator.Start();
-                Log.Information($"Bus emulator {name} started successfully");
+                try
+                {
+                    Log.Information($"Starting bus emulator {name}");
+                    emulator.Start();
+                    Log.Information($"Bus emulator {name} started successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Failed to start {@emulator}: {ex}", emulator, ex);
+                }
             }
         }
 
