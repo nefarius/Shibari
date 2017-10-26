@@ -25,7 +25,7 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
         public void Start()
         {
-            Log.Information("AirBender Sokka Server started");
+            Log.Information("AirBender Bus Emulator started");
 
             _hostLookupTask = _hostLookupSchedule.Subscribe(OnLookup);
         }
@@ -39,7 +39,7 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
             _hosts.Clear();
 
-            Log.Information("AirBender Sokka Server stopped");
+            Log.Information("AirBender Bus Emulator stopped");
         }
 
         private void OnLookup(long l)
@@ -51,7 +51,7 @@ namespace Shibari.Sub.Source.AirBender.Bus
             {
                 if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
 
-                Log.Information($"Found AirBender device {path} ({instance})");
+                Log.Information("Found AirBender device {Path} ({Instance})", path, instance);
 
                 var host = new AirBenderHost(path);
 

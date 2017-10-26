@@ -25,7 +25,7 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
         public void Start()
         {
-            Log.Information("FireShock Chastity Server started");
+            Log.Information("FireShock Bus Emulator started");
 
             _devices.CollectionChanged += (sender, args) =>
             {
@@ -54,7 +54,7 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
             _devices.Clear();
 
-            Log.Information("FireShock Chastity Server stopped");
+            Log.Information("FireShock Bus Emulator stopped");
         }
 
         private void OnLookup(long l)
@@ -66,14 +66,14 @@ namespace Shibari.Sub.Source.FireShock.Bus
             {
                 if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 
-                Log.Information($"Found FireShock device {path} ({instance})");
+                Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
 
                 var device = FireShockDevice.CreateDevice(path);
 
                 device.DeviceDisconnected += (sender, args) =>
                 {
                     var dev = (FireShockDevice) sender;
-                    Log.Information($"Device {dev} disconnected");
+                    Log.Information("Device {Device} disconnected", dev);
                     _devices.Remove(dev);
                     dev.Dispose();
                 };

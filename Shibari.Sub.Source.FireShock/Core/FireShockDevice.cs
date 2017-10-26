@@ -251,10 +251,6 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                _inputCancellationTokenSourcePrimary.Cancel();
-                _inputCancellationTokenSourceSecondary.Cancel();
-                _outputReportTask.Dispose();
-
                 DeviceDisconnected?.Invoke(this, EventArgs.Empty);
             }
             finally
@@ -299,9 +295,10 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 DeviceType = DualShockDeviceType.DualShock3;
 
-                Log.Information($"Device is {DeviceType} " +
-                                $"with address {ClientAddress.AsFriendlyName()} " +
-                                $"currently paired to {HostAddress.AsFriendlyName()}");
+                Log.Information("Device is {DeviceType} " +
+                                "with address {ClientAddress} " +
+                                "currently paired to {HostAddress}",
+                                DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
@@ -382,7 +379,9 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 if (disposing)
                 {
-                    OnDisconnected();
+                    _inputCancellationTokenSourcePrimary.Cancel();
+                    _inputCancellationTokenSourceSecondary.Cancel();
+                    _outputReportTask.Dispose();
                 }
 
                 DeviceHandle.Dispose();

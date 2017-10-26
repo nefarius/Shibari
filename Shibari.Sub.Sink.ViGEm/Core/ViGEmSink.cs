@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
+using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 using Shibari.Sub.Core.Shared.Types.DualShock3;
@@ -45,18 +47,35 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public void DeviceArrived(IDualShockDevice device)
         {
+            Log.Information("Device {Device} got attached", device);
+
             var target = new DualShock4Controller(_client);
 
             _deviceMap.Add(device, target);
 
             target.FeedbackReceived += (sender, args) =>
-                RumbleRequestReceived?.Invoke(this, new RumbleRequestEventArgs(args.LargeMotor, args.SmallMotor));
+            {
+                var source = _deviceMap.First(m => m.Value.Equals(sender)).Key;
 
-            target.Connect();
+                RumbleRequestReceived?.Invoke(source, new RumbleRequestEventArgs(args.LargeMotor, args.SmallMotor));
+            };
+
+            try
+            {
+                Log.Information("Connecting ViGEm target {Target}", target);
+                target.Connect();
+                Log.Information("ViGEm target {Target} connected successfully", target);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to connect target {@Target}: {Exception}", target, ex);
+            }
         }
 
         public void DeviceRemoved(IDualShockDevice device)
         {
+            Log.Information("Device {Device} got removed", device);
+
             _deviceMap[device].Dispose();
             _deviceMap.Remove(device);
         }
@@ -69,7 +88,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
                     var target = _deviceMap[device];
 
-                    var ds3Report = (DualShock3InputReport) report;
+                    var ds3Report = (DualShock3InputReport)report;
                     var ds4Report = new DualShock4Report();
 
                     ds4Report.SetAxis(DualShock4Axes.LeftThumbX, ds3Report[DualShock3Axes.LeftThumbX]);

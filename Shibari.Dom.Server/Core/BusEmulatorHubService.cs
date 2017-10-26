@@ -40,9 +40,7 @@ namespace Shibari.Dom.Server.Core
             }
 
             if (!Directory.Exists(SinksPath))
-            {
                 Log.Warning("{@SinksPath} doesn't exist; service has nothing to do without sinks", SinksPath);
-            }
 
             _childDevices.CollectionChanged += (sender, args) =>
             {
@@ -50,13 +48,13 @@ namespace Shibari.Dom.Server.Core
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
-                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                                plugin.DeviceArrived(item);
+                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            plugin.DeviceArrived(item);
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
-                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                                plugin.DeviceRemoved(item);
+                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            plugin.DeviceRemoved(item);
                         break;
                 }
             };
@@ -80,32 +78,28 @@ namespace Shibari.Dom.Server.Core
             container.ComposeParts(this);
 
             // Log loaded sink plugins
-            foreach (var name in SinkPlugins.Select(p => p.Metadata["Name"]))
+            foreach (var plugin in SinkPlugins)
             {
-                Log.Information($"Loaded sink plugin {name}");
+                Log.Information("Loaded sink plugin {Plugin}", plugin);
+
+                plugin.Value.RumbleRequestReceived += (sender, args) =>
+                    _childDevices.First(c => c.Equals(sender)).Rumble(args.LargeMotor, args.SmallMotor);
             }
 
             // Log and enable sources
-            foreach (var busEmulator in BusEmulators)
+            foreach (var emulator in BusEmulators.Select(e => e.Value))
             {
-                var name = busEmulator.Metadata["Name"];
-                var emulator = busEmulator.Value;
-
-                Log.Information($"Loaded bus emulator {name}");
+                Log.Information("Loaded bus emulator {Emulator}", emulator);
 
                 emulator.ChildDeviceAttached += (sender, args) => _childDevices.Add(args.Device);
                 emulator.ChildDeviceRemoved += (sender, args) => _childDevices.Remove(args.Device);
-                emulator.InputReportReceived += (sender, args) =>
-                {
-                    foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                        plugin.InputReportReceived(args.Device, args.Report);
-                };
+                emulator.InputReportReceived += EmulatorOnInputReportReceived;
 
                 try
                 {
-                    Log.Information($"Starting bus emulator {name}");
+                    Log.Information("Starting bus emulator {Emulator}", emulator);
                     emulator.Start();
-                    Log.Information($"Bus emulator {name} started successfully");
+                    Log.Information("Bus emulator {Emulator} started successfully", emulator);
                 }
                 catch (Exception ex)
                 {
@@ -114,14 +108,21 @@ namespace Shibari.Dom.Server.Core
             }
         }
 
+        private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
+        {
+            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                plugin.InputReportReceived(args.Device, args.Report);
+        }
+
         public void Stop()
         {
             foreach (var busEmulator in BusEmulators)
             {
                 var name = busEmulator.Metadata["Name"];
                 var emulator = busEmulator.Value;
-
+                
                 Log.Information($"Stopping bus emulator {name}");
+                emulator.InputReportReceived -= EmulatorOnInputReportReceived;
                 emulator.Stop();
                 Log.Information($"Bus emulator {name} stopped successfully");
             }
