@@ -17,7 +17,6 @@ namespace Shibari.Sub.Source.FireShock.Bus
     {
         private readonly IObservable<long> _deviceLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
         private readonly ObservableCollection<FireShockDevice> _devices = new ObservableCollection<FireShockDevice>();
-
         private IDisposable _deviceLookupTask;
 
         public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
