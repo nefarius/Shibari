@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Util;
 using Shibari.Sub.Source.AirBender.Core.Host;
 
 namespace Shibari.Sub.Source.AirBender.Core.Children
@@ -89,6 +90,11 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
         public virtual void PairTo(PhysicalAddress host)
         {
             throw new NotSupportedException("You can not change the host address while connected via Bluetooth.");
+        }
+
+        public override string ToString()
+        {
+            return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
         }
 
         #region IDisposable Support

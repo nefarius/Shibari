@@ -119,7 +119,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     out bytesReturned);
 
                 if (!ret && Marshal.GetLastWin32Error() == AirBenderHost.ErrorDevNotExist)
-                    throw new AirBenderDeviceNotFoundException();
+                    OnChildDeviceDisconnected();
             }
             finally
             {

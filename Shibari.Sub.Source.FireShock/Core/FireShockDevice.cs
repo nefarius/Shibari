@@ -270,7 +270,7 @@ namespace Shibari.Sub.Source.FireShock.Core
 
         public override string ToString()
         {
-            return $"{DeviceType} ({ClientAddress})";
+            return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
         }
 
         /// <summary>

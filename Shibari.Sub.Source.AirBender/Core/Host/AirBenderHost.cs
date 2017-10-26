@@ -200,30 +200,37 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
 
                 for (uint i = 0; i < count; i++)
                 {
-                    // TODO: implement more checks, this could accidentally register the same devices again
-                    if (!GetDeviceStateByIndex(i, out var address, out var type))
+                    try
                     {
-                        Log.Warning("Failed to request details for client {i}: {Win32Exception}", 
-                            i, new Win32Exception(Marshal.GetLastWin32Error()));
-                        continue;
+                        // TODO: implement more checks, this could accidentally register the same devices again
+                        if (!GetDeviceStateByIndex(i, out var address, out var type))
+                        {
+                            Log.Warning("Failed to request details for client {i}: {Win32Exception}",
+                                i, new Win32Exception(Marshal.GetLastWin32Error()));
+                            continue;
+                        }
+
+                        switch (type)
+                        {
+                            case DualShockDeviceType.DualShock3:
+                                var device = new AirBenderDualShock3(this, address, (int) i);
+
+                                device.ChildDeviceRemoved +=
+                                    (sender, args) => Children.Remove((AirBenderChildDevice) args.Device);
+                                device.InputReportReceived +=
+                                    (sender, args) => InputReportReceived?.Invoke(this,
+                                        new InputReportReceivedEventArgs(args.Device, args.Report));
+
+                                Children.Add(device);
+
+                                break;
+                            case DualShockDeviceType.DualShock4:
+                                throw new NotImplementedException();
+                        }
                     }
-
-                    switch (type)
+                    catch (AirBenderDeviceNotFoundException dnex)
                     {
-                        case DualShockDeviceType.DualShock3:
-                            var device = new AirBenderDualShock3(this, address, (int) i);
-
-                            device.ChildDeviceRemoved +=
-                                (sender, args) => Children.Remove((AirBenderChildDevice) args.Device);
-                            device.InputReportReceived +=
-                                (sender, args) => InputReportReceived?.Invoke(this,
-                                    new InputReportReceivedEventArgs(args.Device, args.Report));
-
-                            Children.Add(device);
-
-                            break;
-                        case DualShockDeviceType.DualShock4:
-                            throw new NotImplementedException();
+                        Log.Warning("Error on device lookup: {Exception}", dnex);
                     }
                 }
             }
