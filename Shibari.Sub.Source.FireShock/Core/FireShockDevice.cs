@@ -89,6 +89,9 @@ namespace Shibari.Sub.Source.FireShock.Core
             Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourceSecondary.Token);
         }
 
+        /// <summary>
+        ///     GUID identifying device with FireShock driver.
+        /// </summary>
         public static Guid ClassGuid => Guid.Parse("51ab481a-8d75-4bb6-9944-200a2f994e65");
 
         public string DevicePath { get; }
@@ -110,12 +113,16 @@ namespace Shibari.Sub.Source.FireShock.Core
         /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
         public virtual void Rumble(byte largeMotor, byte smallMotor)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Rumble requests not supported by this device.");
         }
 
+        /// <summary>
+        ///     Pairs the current device to the specified host via its address.
+        /// </summary>
+        /// <param name="host">The address to pair to.</param>
         public virtual void PairTo(PhysicalAddress host)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Pairing requests not supported by this device.");
         }
 
         /// <summary>
@@ -240,13 +247,14 @@ namespace Shibari.Sub.Source.FireShock.Core
 
         private void OnDisconnected()
         {
-            _inputCancellationTokenSourcePrimary.Cancel();
-            _inputCancellationTokenSourceSecondary.Cancel();
-
             if (!Monitor.TryEnter(this)) return;
 
             try
             {
+                _inputCancellationTokenSourcePrimary.Cancel();
+                _inputCancellationTokenSourceSecondary.Cancel();
+                _outputReportTask.Dispose();
+
                 DeviceDisconnected?.Invoke(this, EventArgs.Empty);
             }
             finally
@@ -269,8 +277,14 @@ namespace Shibari.Sub.Source.FireShock.Core
             return $"{DeviceType} ({ClientAddress})";
         }
 
+        /// <summary>
+        ///     DualShock 3-specific implementation.
+        /// </summary>
         private class FireShock3Device : FireShockDevice
         {
+            /// <summary>
+            ///     Output report byte array for sending state changes to DualShock 3 device.
+            /// </summary>
             private readonly Lazy<byte[]> _hidOutputReportLazy = new Lazy<byte[]>(() => new byte[]
             {
                 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00,
@@ -293,11 +307,6 @@ namespace Shibari.Sub.Source.FireShock.Core
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
 
             /// <inheritdoc />
-            /// <summary>
-            ///     Send Rumble request to the controller.
-            /// </summary>
-            /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
-            /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
             public override void Rumble(byte largeMotor, byte smallMotor)
             {
                 HidOutputReport[2] = (byte)(smallMotor > 0 ? 0x01 : 0x00);
@@ -306,6 +315,7 @@ namespace Shibari.Sub.Source.FireShock.Core
                 OnOutputReport(0);
             }
 
+            /// <inheritdoc />
             public override void PairTo(PhysicalAddress host)
             {
                 var length = Marshal.SizeOf(typeof(FireshockSetHostBdAddr));
@@ -372,10 +382,7 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 if (disposing)
                 {
-                    _outputReportTask.Dispose();
-
-                    _inputCancellationTokenSourcePrimary.Cancel();
-                    _inputCancellationTokenSourceSecondary.Cancel();
+                    OnDisconnected();
                 }
 
                 DeviceHandle.Dispose();
