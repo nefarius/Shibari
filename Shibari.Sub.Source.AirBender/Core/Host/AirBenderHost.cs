@@ -96,7 +96,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 Marshal.FreeHGlobal(pData);
             }
 
-            Log.Information($"Bluetooth Host Address: {HostAddress.AsFriendlyName()}");
+            Log.Information("Bluetooth Host Address: {HostAddress}", HostAddress.AsFriendlyName());
 
             //
             // Request host controller to reset and clean up resources
@@ -173,7 +173,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 // 
                 if (!ret && Marshal.GetLastWin32Error() == ErrorBadCommand)
                 {
-                    Log.Warning($"Connection to device {DevicePath} lost, possibly it got removed");
+                    Log.Warning("Connection to device {DevicePath} lost, possibly it got removed", DevicePath);
 
                     HostDeviceDisconnected?.Invoke(this, EventArgs.Empty);
 
@@ -185,7 +185,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 // 
                 if (!ret)
                 {
-                    Log.Error($"Unexpected error: {new Win32Exception(Marshal.GetLastWin32Error())}");
+                    Log.Error("Unexpected error: {Win32Exception}", new Win32Exception(Marshal.GetLastWin32Error()));
                     return;
                 }
 
@@ -196,15 +196,15 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 // 
                 if (count == 0 || count == Children.Count) return;
 
-                Log.Information($"Currently connected devices: {count}");
+                Log.Information("Currently connected devices: {Count}", count);
 
                 for (uint i = 0; i < count; i++)
                 {
                     // TODO: implement more checks, this could accidentally register the same devices again
                     if (!GetDeviceStateByIndex(i, out var address, out var type))
                     {
-                        Log.Warning(
-                            $"Failed to request details for client #{i}: {new Win32Exception(Marshal.GetLastWin32Error())}");
+                        Log.Warning("Failed to request details for client {i}: {Win32Exception}", 
+                            i, new Win32Exception(Marshal.GetLastWin32Error()));
                         continue;
                     }
 
