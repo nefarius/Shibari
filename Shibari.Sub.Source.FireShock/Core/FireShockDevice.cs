@@ -174,8 +174,6 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 Marshal.FreeHGlobal(pData);
             }
-
-            return null;
         }
 
         /// <summary>
