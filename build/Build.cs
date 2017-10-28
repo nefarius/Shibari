@@ -44,6 +44,10 @@ class Build : NukeBuild
             .DependsOn(Restore)
             .Executes(() =>
             {
-                MSBuild(s => DefaultMSBuildCompile);
+                // TODO: testing, fix!
+                MSBuild(s => DefaultMSBuildCompile
+                .SetAssemblyVersion("1.2.3.4")
+                .SetFileVersion("1.2.3.4")
+                .SetInformationalVersion("1.2.3.4"));
             });
 }
