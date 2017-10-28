@@ -43,6 +43,7 @@ namespace Shibari.Sub.Source.FireShock.Bus
             };
 
             _deviceLookupTask = _deviceLookupSchedule.Subscribe(OnLookup);
+            OnLookup(0);
         }
 
         public void Stop()

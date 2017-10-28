@@ -28,6 +28,7 @@ namespace Shibari.Sub.Source.AirBender.Bus
             Log.Information("AirBender Bus Emulator started");
 
             _hostLookupTask = _hostLookupSchedule.Subscribe(OnLookup);
+            OnLookup(0);
         }
 
         public void Stop()
