@@ -15,6 +15,13 @@
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Description>Shibari source component for FireShock devices</Description>
+    <Product>Shibari.Sub.Source.FireShock</Product>
+    <Authors>Benjamin Höglinger-Stelzer</Authors>
+    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
+    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

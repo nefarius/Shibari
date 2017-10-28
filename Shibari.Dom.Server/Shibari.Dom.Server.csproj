@@ -40,6 +40,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <Authors>Benjamin Höglinger-Stelzer</Authors>
+    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
+    <Description>Management layer for AirBender &amp; FireShock device drivers</Description>
+    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
