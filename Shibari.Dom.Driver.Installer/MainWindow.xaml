@@ -5,9 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Shibari.Dom.Driver.Installer"
         mc:Ignorable="d"
-        Title="Shibari Driver Installer" Height="350" Width="525"
+        Title="Shibari Driver Installer" Height="350" Width="640"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
+        xmlns:util="clr-namespace:Shibari.Dom.Driver.Installer.Util"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -16,6 +18,9 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}" Icon="favicon.ico" WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
+    <Window.Resources>
+        <util:ViGEmDevice x:Key="ViGEmDevice"/>
+    </Window.Resources>
     <Grid Background="#FF1B1B1B">
         <!-- <materialDesign:Card Padding="32" Margin="16">
             <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}">My First Material Design App</TextBlock>
@@ -54,14 +59,26 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="Virtual Gamepad Emulation Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" />
+                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
-                <WrapPanel>
-                    <Label Margin="20,5,5,5" Foreground="white" Content="Nuevo Pedido" />
-                    <Label Margin="20,5,5,5" Foreground="white" Content="Consultar Pedidos" />
-                    <Label Margin="20,5,5,5" Foreground="white" Content="Pedidos Pendientes" />
-                </WrapPanel>
+                <dragablz:TabablzControl FixedHeaderCount="2">
+                    <TabItem Header="Devices">
+                        <ListBox ItemsSource="{Binding Source={StaticResource ViGEmDevice}, Path=Devices}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}" Text="{Binding Name}"/>
+                                        <Label Content="{Binding DevicePath}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </TabItem>
+                    <TabItem Header="Driver">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Material Design</TextBlock>
+                    </TabItem>
+                </dragablz:TabablzControl>
             </Expander>
 
             <!-- FireShock -->
@@ -73,7 +90,7 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="FireShock USB Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" />
+                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
                 <WrapPanel>
@@ -92,7 +109,7 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="AirBender Bluetooth Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" />
+                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
                 <WrapPanel>
