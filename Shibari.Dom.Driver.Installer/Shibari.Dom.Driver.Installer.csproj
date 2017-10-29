@@ -120,6 +120,15 @@
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\ViGEm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\FireShock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\AirBender.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

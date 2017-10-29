@@ -7,16 +7,97 @@
         mc:Ignorable="d"
         Title="Shibari Driver Installer" Height="350" Width="525"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"        
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}" Icon="favicon.ico" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
-    <Grid>
-        <materialDesign:Card Padding="32" Margin="16">
+        FontFamily="{DynamicResource MaterialDesignFont}" Icon="favicon.ico" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Background="#FF1B1B1B">
+        <!-- <materialDesign:Card Padding="32" Margin="16">
             <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}">My First Material Design App</TextBlock>
-        </materialDesign:Card>
+        </materialDesign:Card> -->
+
+        <ListBox ScrollViewer.VerticalScrollBarVisibility="Auto" Padding="32" Margin="16">
+            <ListBox.Resources>
+                <Style TargetType="{x:Type Expander}">
+                    <Setter Property="IsExpanded"
+                            Value="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" />
+                </Style>
+            </ListBox.Resources>
+            <ListBox.Template>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <ItemsPresenter />
+                </ControlTemplate>
+            </ListBox.Template>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter Content="{TemplateBinding Content}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <Expander Background="#FF444444">
+                <Expander.Header>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Image Source="Icons/ViGEm.png" Width="64" Height="64" HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" />
+                        </BulletDecorator.Bullet>
+                        <TextBlock Margin="10,0,0,0" Text="Virtual Gamepad Emulation Driver" VerticalAlignment="Center"
+                                   HorizontalAlignment="Stretch" Foreground="White" />
+                    </BulletDecorator>
+                </Expander.Header>
+                <WrapPanel>
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Nuevo Pedido" />
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Consultar Pedidos" />
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Pedidos Pendientes" />
+                </WrapPanel>
+            </Expander>
+
+            <Expander Background="OrangeRed">
+                <Expander.Header>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Image Source="Icons/FireShock.png" Width="64" Height="64" HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" />
+                        </BulletDecorator.Bullet>
+                        <TextBlock Margin="10,0,0,0" Text="FireShock USB Driver" VerticalAlignment="Center"
+                                   HorizontalAlignment="Stretch" Foreground="White" />
+                    </BulletDecorator>
+                </Expander.Header>
+                <WrapPanel>
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Nuevo Remito" />
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Consultar Remitos" />
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Remitos Pendientes de Facturar" />
+                </WrapPanel>
+            </Expander>
+
+            <Expander Background="#FF003FC7">
+                <Expander.Header>
+                    <BulletDecorator>
+                        <BulletDecorator.Bullet>
+                            <Image Source="Icons/AirBender.png" Width="64" Height="64" HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" />
+                        </BulletDecorator.Bullet>
+                        <TextBlock Margin="10,0,0,0" Text="AirBender Bluetooth Driver" VerticalAlignment="Center"
+                                   HorizontalAlignment="Stretch" Foreground="White" />
+                    </BulletDecorator>
+                </Expander.Header>
+                <WrapPanel>
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Nueva Factura" />
+                    <Label Margin="20,5,5,5" Foreground="white" Content="Consultar Facturas Normales y Anuladas" />
+                </WrapPanel>
+            </Expander>
+
+        </ListBox>
     </Grid>
 </Window>
