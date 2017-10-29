@@ -45,6 +45,7 @@
                 </Style>
             </ListBox.ItemContainerStyle>
 
+            <!-- ViGEm -->
             <Expander Background="#FF444444">
                 <Expander.Header>
                     <BulletDecorator>
@@ -63,6 +64,7 @@
                 </WrapPanel>
             </Expander>
 
+            <!-- FireShock -->
             <Expander Background="OrangeRed">
                 <Expander.Header>
                     <BulletDecorator>
@@ -81,6 +83,7 @@
                 </WrapPanel>
             </Expander>
 
+            <!-- AirBender -->
             <Expander Background="#FF003FC7">
                 <Expander.Header>
                     <BulletDecorator>
