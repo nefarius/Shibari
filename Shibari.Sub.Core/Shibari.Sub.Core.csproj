@@ -58,8 +58,8 @@
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="1.6.2" />
     <PackageReference Include="Fody" Version="2.2.0" />
-    <PackageReference Include="PInvoke.Kernel32" Version="0.5.97" />
-    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.97" />  
+    <PackageReference Include="PInvoke.Kernel32" Version="0.5.111" />
+    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.111" />  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
