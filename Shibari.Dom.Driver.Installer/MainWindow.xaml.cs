@@ -43,5 +43,15 @@ namespace Shibari.Dom.Driver.Installer
                 ViGEmListBox.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
             });
         }
+
+        private void UninstallDeviceButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void UpdateDeviceDriverButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }

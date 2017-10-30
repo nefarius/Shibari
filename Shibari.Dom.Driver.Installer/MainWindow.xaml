@@ -70,18 +70,16 @@
                 </Expander.Header>
 
                 <materialDesign:Card Padding="8" Margin="8">
-                    <GroupBox>
-                        <GroupBox.Header>
-                            <materialDesign:Chip Content="Detected devices"
-                                                 ToolTip="Right-click on an entry for more options">
-                                <materialDesign:Chip.Icon>
-                                    <materialDesign:PackIcon Kind="Help" />
-                                </materialDesign:Chip.Icon>
-                            </materialDesign:Chip>
-                        </GroupBox.Header>
-                        <ListBox x:Name="ViGEmListBox" ItemsSource="{Binding Source={StaticResource ViGEmDevice}, Path=Devices}">
-                            <ListBox.Style>
-                                <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                    <GroupBox
+                        Margin="8"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                        BorderThickness="0"
+                        Header="Detected devices"
+                        Style="{DynamicResource MaterialDesignGroupBox}">
+                        <ListView x:Name="ViGEmListBox" ItemsSource="{Binding Source={StaticResource ViGEmDevice}, Path=Devices}">
+                            <!-- List is empty -->
+                            <ListView.Style>
+                                <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
                                     <Style.Triggers>
                                         <!-- Use ListBox.HasItems instead of Binding -->
                                         <Trigger Property="HasItems" Value="False">
@@ -98,36 +96,43 @@
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-                            </ListBox.Style>
-                            <ListBox.ItemTemplate>
+                            </ListView.Style>
+
+                            <!-- List has items -->
+                            <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
-                                        <StackPanel.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Install latest driver"
-                                                          Click="InstallDriverMenuItem_OnClick" />
-                                            </ContextMenu>
-                                        </StackPanel.ContextMenu>
-
-                                        <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}"
+                                    <DockPanel>
+                                        <StackPanel>
+                                            <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}"
                                                    Text="{Binding DeviceName}" />
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
 
-                                            <Label Grid.Row="0" Grid.Column="0">Device path:</Label>
-                                            <Label Grid.Row="0" Grid.Column="1" Content="{Binding DevicePath}" />
-                                        </Grid>
-                                    </StackPanel>
+                                                <Label Grid.Row="0" Grid.Column="0">Device path:</Label>
+                                                <Label Grid.Row="0" Grid.Column="1" Content="{Binding DevicePath}" />
+                                            </Grid>
+                                        </StackPanel>
+                                        <materialDesign:PopupBox
+                                            PlacementMode="RightAndAlignMiddles"
+                                            StaysOpen="False">
+                                            <StackPanel >
+                                                <Button Content="Uninstall this device" 
+                                                        Click="UninstallDeviceButtonBase_OnClick" />
+                                                <Button Content="Update device driver"
+                                                        Click="UpdateDeviceDriverButtonBase_OnClick"/>
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                    </DockPanel>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </GroupBox>
                 </materialDesign:Card>
             </Expander>
