@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Management;
 using Nefarius.Devcon;
 
 namespace Shibari.Dom.Driver.Installer.Util
@@ -17,7 +19,22 @@ namespace Shibari.Dom.Driver.Installer.Util
 
                 while (Devcon.Find(ClassGuid, out var path, out var instanceId, instance++))
                 {
-                    list.Add(new ViGEmDevice() { DevicePath = path });
+                    using (var objSearcher =
+                        new ManagementObjectSearcher($"Select * from Win32_PnPSignedDriver Where DeviceID = '{instanceId.Replace("\\", "\\\\")}'")
+                    )
+                    {
+                        using (var objCollection = objSearcher.Get())
+                        {
+                            var device = objCollection.Cast<ManagementObject>().First();
+
+                            list.Add(new ViGEmDevice()
+                            {
+                                DevicePath = path,
+                                InstanceId = instanceId,
+                                DeviceName = device["DeviceName"].ToString()
+                            });
+                        }
+                    }
                 }
 
                 return list;
@@ -26,6 +43,8 @@ namespace Shibari.Dom.Driver.Installer.Util
 
         public string DevicePath { get; private set; }
 
-        public string Name => "Virtual Gamepad Emulation Bus";
+        public string InstanceId { get; private set; }
+
+        public string DeviceName { get; private set; }
     }
 }

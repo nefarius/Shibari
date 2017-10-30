@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Shibari.Dom.Driver.Installer"
         mc:Ignorable="d"
-        Title="Shibari Driver Installer" Height="350" Width="640"
+        Title="Shibari Driver Installer" Height="350" Width="684"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
         xmlns:util="clr-namespace:Shibari.Dom.Driver.Installer.Util"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -19,7 +20,11 @@
         FontFamily="{DynamicResource MaterialDesignFont}" Icon="favicon.ico" WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Window.Resources>
-        <util:ViGEmDevice x:Key="ViGEmDevice"/>
+        <util:ViGEmDevice x:Key="ViGEmDevice" />
+
+        <Style x:Key="NewButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <EventSetter Event="Click" Handler="CreateNewEventSetter_OnHandler"/>
+        </Style>
     </Window.Resources>
     <Grid Background="#FF1B1B1B">
         <!-- <materialDesign:Card Padding="32" Margin="16">
@@ -59,26 +64,72 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="Virtual Gamepad Emulation Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
+                                   HorizontalAlignment="Stretch" Foreground="White"
+                                   Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
-                <dragablz:TabablzControl FixedHeaderCount="2">
-                    <TabItem Header="Devices">
-                        <ListBox ItemsSource="{Binding Source={StaticResource ViGEmDevice}, Path=Devices}">
+
+                <materialDesign:Card Padding="8" Margin="8">
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <materialDesign:Chip Content="Detected devices"
+                                                 ToolTip="Right-click on an entry for more options">
+                                <materialDesign:Chip.Icon>
+                                    <materialDesign:PackIcon Kind="Help" />
+                                </materialDesign:Chip.Icon>
+                            </materialDesign:Chip>
+                        </GroupBox.Header>
+                        <ListBox x:Name="ViGEmListBox" ItemsSource="{Binding Source={StaticResource ViGEmDevice}, Path=Devices}">
+                            <ListBox.Style>
+                                <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                                    <Style.Triggers>
+                                        <!-- Use ListBox.HasItems instead of Binding -->
+                                        <Trigger Property="HasItems" Value="False">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate>
+                                                        <DockPanel LastChildFill="False">
+                                                            <TextBlock Padding="16" Text="No matching devices found" />
+                                                            <Button Style="{StaticResource NewButtonStyle}" Content="Install new device"/>
+                                                        </DockPanel>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.Style>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}" Text="{Binding Name}"/>
-                                        <Label Content="{Binding DevicePath}"/>
+                                        <StackPanel.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Install latest driver"
+                                                          Click="InstallDriverMenuItem_OnClick" />
+                                            </ContextMenu>
+                                        </StackPanel.ContextMenu>
+
+                                        <TextBlock Style="{DynamicResource MaterialDesignTitleTextBlock}"
+                                                   Text="{Binding DeviceName}" />
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Label Grid.Row="0" Grid.Column="0">Device path:</Label>
+                                            <Label Grid.Row="0" Grid.Column="1" Content="{Binding DevicePath}" />
+                                        </Grid>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                    </TabItem>
-                    <TabItem Header="Driver">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Material Design</TextBlock>
-                    </TabItem>
-                </dragablz:TabablzControl>
+                    </GroupBox>
+                </materialDesign:Card>
             </Expander>
 
             <!-- FireShock -->
@@ -90,7 +141,8 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="FireShock USB Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
+                                   HorizontalAlignment="Stretch" Foreground="White"
+                                   Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
                 <WrapPanel>
@@ -109,7 +161,8 @@
                                    VerticalAlignment="Top" />
                         </BulletDecorator.Bullet>
                         <TextBlock Margin="10,0,0,0" Text="AirBender Bluetooth Driver" VerticalAlignment="Center"
-                                   HorizontalAlignment="Stretch" Foreground="White" Style="{DynamicResource MaterialDesignTitleTextBlock}" />
+                                   HorizontalAlignment="Stretch" Foreground="White"
+                                   Style="{DynamicResource MaterialDesignTitleTextBlock}" />
                     </BulletDecorator>
                 </Expander.Header>
                 <WrapPanel>

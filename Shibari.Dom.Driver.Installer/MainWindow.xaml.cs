@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Nefarius.Devcon;
+using Shibari.Dom.Driver.Installer.Util;
 
 namespace Shibari.Dom.Driver.Installer
 {
@@ -23,6 +18,30 @@ namespace Shibari.Dom.Driver.Installer
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void InstallDriverMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Install");
+        }
+
+        private async void CreateNewEventSetter_OnHandler(object sender, RoutedEventArgs e)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                var ret = Devcon.Create("System", ViGEmDevice.ClassGuid, "Root\\ViGEmBus\0\0");
+
+                if (ret)
+                {
+                    var t = Devcon.Install(
+                        @"D:\Development\C\ViGEm\Signed\ViGEmBus_signed_Win7-10_x86_x64_v1.13.2.0\x64\ViGEmBus.inf",
+                        out var rr);
+                }
+
+                var r = new Win32Exception(Marshal.GetLastWin32Error());
+
+                ViGEmListBox.GetBindingExpression(ItemsControl.ItemsSourceProperty).UpdateTarget();
+            });
         }
     }
 }
