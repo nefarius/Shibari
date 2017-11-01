@@ -7,26 +7,23 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2F12E5A0-CF8A-416E-8E29-520FAE9D7A21}</ProjectGuid>
+    <ProjectGuid>{FDC283D5-DCEC-4B4E-9400-55F3015643FA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Shibari.Dom.Server</RootNamespace>
-    <AssemblyName>Shibari.Dom.Server</AssemblyName>
+    <RootNamespace>Shibari.Dom.Util.Pairing</RootNamespace>
+    <AssemblyName>Shibari.Dom.Util.Pairing</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,20 +33,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <Authors>Benjamin Höglinger-Stelzer</Authors>
-    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
-    <Description>Management layer for AirBender &amp; FireShock device drivers</Description>
-    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -63,23 +49,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shibari.Sub.Core\Shibari.Sub.Core.csproj">
-      <Project>{e14d768a-50de-4a4a-9e4e-8f080bfed14d}</Project>
-      <Name>Shibari.Sub.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="favicon.ico" />
-    <None Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="1.6.2" />
-    <PackageReference Include="Fody" Version="2.2.0" />
     <PackageReference Include="Halibut" Version="2.5.0" />
-    <PackageReference Include="Serilog" Version="2.5.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="Topshelf.Serilog" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
