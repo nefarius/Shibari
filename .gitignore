@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Shibari.Dom.Server/Shibari.Dom.Server.cer
+/Shibari.Dom.Server/Shibari.Dom.Server.pvk

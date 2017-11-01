@@ -48,6 +48,10 @@
     <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Shibari.Dom.Server.cer" />
+    <None Remove="Shibari.Dom.Server.pvk" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
