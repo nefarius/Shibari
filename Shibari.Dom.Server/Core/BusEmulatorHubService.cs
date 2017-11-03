@@ -6,8 +6,14 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using Halibut;
+using Halibut.ServiceModel;
 using Serilog;
+using Shibari.Dom.Server.Core.Services;
+using Shibari.Sub.Core.Shared.IPC.Services;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 
@@ -29,6 +35,8 @@ namespace Shibari.Dom.Server.Core
 
         [ImportMany]
         private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
+
+        private HalibutRuntime _ipcServer;
 
         public void Start()
         {
@@ -106,6 +114,16 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {ex}", emulator, ex);
                 }
             }
+
+            var certificate = new X509Certificate2("Shibari.Dom.Server.pfx");
+            var endPoint = new IPEndPoint(IPAddress.IPv6Loopback, 26762);
+
+            var services = new DelegateServiceFactory();
+            services.Register<IPairingService>(() => new PairingService());
+
+            _ipcServer = new HalibutRuntime(certificate);
+            _ipcServer.Listen(endPoint);
+            _ipcServer.Trust("‎EED75052CD30C9FCF400757FEB93911C4399E510");
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)

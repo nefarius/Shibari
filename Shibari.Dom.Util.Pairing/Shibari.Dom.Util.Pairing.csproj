@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Shibari.Dom.Util.Pairing.cer" />
+    <None Remove="Shibari.Dom.Util.Pairing.pvk" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,9 +53,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="1.6.2" />
     <PackageReference Include="Halibut" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shibari.Sub.Core\Shibari.Sub.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Shibari.Dom.Util.Pairing.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
