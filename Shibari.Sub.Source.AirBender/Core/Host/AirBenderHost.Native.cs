@@ -15,6 +15,8 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
         internal const uint IoctlAirbenderGetDs3InputReport = 0x8000E014;
         internal const uint IoctlAirbenderSetDs3OutputReport = 0x8000A018;
         private const uint IoctlAirbenderHostShutdown = 0x8000201C;
+        private const uint IoctlAirbenderGetClientArrival = 0x80006020;
+        private const uint IoctlAirbenderGetClientRemoval = 0x80006024;
 
         #endregion
 
@@ -75,6 +77,19 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
             public BdAddr ClientAddress;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = Ds3HidOutputReportSize)]
             public byte[] ReportBuffer;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct AirbenderGetClientArrival
+        {
+            public BdAddr ClientAddress;
+            public DualShockDeviceType DeviceType;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct AirbenderGetClientRemoval
+        {
+            public BdAddr ClientAddress;
         }
 
         #endregion
