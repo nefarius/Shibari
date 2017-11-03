@@ -3,21 +3,21 @@ using System.Runtime.Serialization;
 
 namespace Shibari.Sub.Source.AirBender.Exceptions
 {
-    public class AirbenderGetClientCountFailedException : Exception
+    public class AirBenderGetClientCountFailedException : Exception
     {
-        public AirbenderGetClientCountFailedException()
+        public AirBenderGetClientCountFailedException()
         {
         }
 
-        public AirbenderGetClientCountFailedException(string message) : base(message)
+        public AirBenderGetClientCountFailedException(string message) : base(message)
         {
         }
 
-        public AirbenderGetClientCountFailedException(string message, Exception innerException) : base(message, innerException)
+        public AirBenderGetClientCountFailedException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        protected AirbenderGetClientCountFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected AirBenderGetClientCountFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
