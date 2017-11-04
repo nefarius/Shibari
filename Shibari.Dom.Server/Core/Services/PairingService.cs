@@ -12,7 +12,7 @@ namespace Shibari.Dom.Server.Core.Services
 
         public event DeviceListRequestedEventHandler DeviceListRequested;
 
-        public void Pair(PhysicalAddress device, PhysicalAddress host)
+        public void Pair(IDualShockDevice device, PhysicalAddress host)
         {
             throw new System.NotImplementedException();
         }

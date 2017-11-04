@@ -123,7 +123,12 @@ namespace Shibari.Dom.Server.Core
             {
                 var service = new PairingService();
                 service.DeviceListRequested += (sender, args) =>
-                    this._childDevices.Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB)).ToList();
+                {
+                    var usbDevs = this._childDevices.Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB)).ToList();
+
+                    return usbDevs;
+                };
+                    
                 return service;
             });
 

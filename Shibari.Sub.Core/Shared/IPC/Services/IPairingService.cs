@@ -11,7 +11,7 @@ namespace Shibari.Sub.Core.Shared.IPC.Services
     {
         IList<IDualShockDevice> DualShockDevices { get; }
 
-        void Pair(PhysicalAddress device, PhysicalAddress host);
+        void Pair(IDualShockDevice device, PhysicalAddress host);
 
         event DeviceListRequestedEventHandler DeviceListRequested;
     }
