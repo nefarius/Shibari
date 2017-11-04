@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Shibari.Dom.Util.Pairing.cer" />
+    <None Remove="Shibari.Dom.Util.Pairing.pfx" />
     <None Remove="Shibari.Dom.Util.Pairing.pvk" />
   </ItemGroup>
   <ItemGroup>
@@ -61,10 +62,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shibari.Sub.Core\Shibari.Sub.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Shibari.Dom.Util.Pairing.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

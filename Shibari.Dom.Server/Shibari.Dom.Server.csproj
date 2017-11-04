@@ -50,6 +50,7 @@
   <ItemGroup>
     <None Remove="Shibari.Dom.Server-20171103.log" />
     <None Remove="Shibari.Dom.Server.cer" />
+    <None Remove="Shibari.Dom.Server.pfx" />
     <None Remove="Shibari.Dom.Server.pvk" />
   </ItemGroup>
   <ItemGroup>
@@ -88,10 +89,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Shibari.Dom.Server.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

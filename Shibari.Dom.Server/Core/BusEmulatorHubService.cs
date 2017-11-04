@@ -13,6 +13,7 @@ using Halibut;
 using Halibut.ServiceModel;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
+using Shibari.Sub.Core.Shared.IPC.Certificates;
 using Shibari.Sub.Core.Shared.IPC.Services;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
@@ -115,15 +116,14 @@ namespace Shibari.Dom.Server.Core
                 }
             }
 
-            var certificate = new X509Certificate2("Shibari.Dom.Server.pfx");
             var endPoint = new IPEndPoint(IPAddress.IPv6Loopback, 26762);
 
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() => new PairingService());
 
-            _ipcServer = new HalibutRuntime(certificate);
+            _ipcServer = new HalibutRuntime(Certificates.ServerCertificate);
             _ipcServer.Listen(endPoint);
-            _ipcServer.Trust("‎EED75052CD30C9FCF400757FEB93911C4399E510");
+            _ipcServer.Trust(Certificates.ClientCertificate.Thumbprint);
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
@@ -134,15 +134,12 @@ namespace Shibari.Dom.Server.Core
 
         public void Stop()
         {
-            foreach (var busEmulator in BusEmulators)
+            foreach (var emulator in BusEmulators.Select(e => e.Value))
             {
-                var name = busEmulator.Metadata["Name"];
-                var emulator = busEmulator.Value;
-                
-                Log.Information($"Stopping bus emulator {name}");
+                Log.Information("Stopping bus emulator {Emulator}", emulator);
                 emulator.InputReportReceived -= EmulatorOnInputReportReceived;
                 emulator.Stop();
-                Log.Information($"Bus emulator {name} stopped successfully");
+                Log.Information("Bus emulator {Emulator} stopped successfully", emulator);
             }
         }
     }

@@ -40,6 +40,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Shared\IPC\Certificates\Shibari.IPC.Client.pfx" />
+    <None Remove="Shared\IPC\Certificates\Shibari.IPC.Server.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Shared\IPC\Certificates\Shibari.IPC.Client.pfx" />
+    <EmbeddedResource Include="Shared\IPC\Certificates\Shibari.IPC.Server.pfx" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
