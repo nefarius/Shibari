@@ -49,6 +49,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Shibari.Dom.Server-20171103.log" />
+    <None Remove="Shibari.Dom.Server-20171104.log" />
+    <None Remove="Shibari.Dom.Server-20171104_001.log" />
     <None Remove="Shibari.Dom.Server.cer" />
     <None Remove="Shibari.Dom.Server.pfx" />
     <None Remove="Shibari.Dom.Server.pvk" />

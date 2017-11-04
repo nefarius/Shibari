@@ -27,6 +27,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
         /// <param name="index">The index this child is registered on the host device under.</param>
         protected AirBenderChildDevice(AirBenderHost host, PhysicalAddress client, int index)
         {
+            ConnectionType = DualShockConnectionType.Bluetooth;
             HostDevice = host;
             ClientAddress = client;
             DeviceIndex = index;
@@ -54,6 +55,8 @@ namespace Shibari.Sub.Source.AirBender.Core.Children
         public DualShockDeviceType DeviceType { get; protected set; }
 
         public PhysicalAddress HostAddress => HostDevice.HostAddress;
+
+        public DualShockConnectionType ConnectionType { get; }
 
         public event ChildDeviceAttachedEventHandler ChildDeviceRemoved;
 

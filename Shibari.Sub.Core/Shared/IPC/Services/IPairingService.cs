@@ -1,13 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Core.Shared.IPC.Services
 {
+    public delegate IList<IDualShockDevice> DeviceListRequestedEventHandler(object sender, EventArgs e);
+
     public interface IPairingService
     {
-        IEnumerable<IDualShockDevice> GetFireShockDevices();
+        IList<IDualShockDevice> DualShockDevices { get; }
 
-        void Pair(IDualShockDevice device, PhysicalAddress host);
+        void Pair(PhysicalAddress device, PhysicalAddress host);
+
+        event DeviceListRequestedEventHandler DeviceListRequested;
     }
 }

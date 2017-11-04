@@ -26,6 +26,7 @@ namespace Shibari.Sub.Source.FireShock.Core
 
         private FireShockDevice(string path, Kernel32.SafeObjectHandle handle)
         {
+            ConnectionType = DualShockConnectionType.USB;
             DevicePath = path;
             DeviceHandle = handle;
 
@@ -105,6 +106,8 @@ namespace Shibari.Sub.Source.FireShock.Core
         public DualShockDeviceType DeviceType { get; private set; }
 
         public PhysicalAddress ClientAddress { get; }
+
+        public DualShockConnectionType ConnectionType { get; }
 
         /// <summary>
         ///     Send Rumble request to the controller.

@@ -6,6 +6,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
     {
         DualShockDeviceType DeviceType { get; }
 
+        DualShockConnectionType ConnectionType { get; }
+
         PhysicalAddress ClientAddress { get; }
 
         PhysicalAddress HostAddress { get; }

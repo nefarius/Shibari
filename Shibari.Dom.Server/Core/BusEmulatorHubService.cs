@@ -119,9 +119,15 @@ namespace Shibari.Dom.Server.Core
             var endPoint = new IPEndPoint(IPAddress.IPv6Loopback, 26762);
 
             var services = new DelegateServiceFactory();
-            services.Register<IPairingService>(() => new PairingService());
+            services.Register<IPairingService>(() =>
+            {
+                var service = new PairingService();
+                service.DeviceListRequested += (sender, args) =>
+                    this._childDevices.Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB)).ToList();
+                return service;
+            });
 
-            _ipcServer = new HalibutRuntime(Certificates.ServerCertificate);
+            _ipcServer = new HalibutRuntime(services, Certificates.ServerCertificate);
             _ipcServer.Listen(endPoint);
             _ipcServer.Trust(Certificates.ClientCertificate.Thumbprint);
         }
