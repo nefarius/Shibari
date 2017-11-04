@@ -8,11 +8,11 @@ namespace Shibari.Dom.Server.Core.Services
 {
     public class PairingService : IPairingService
     {
-        public IList<IDualShockDevice> DualShockDevices => DeviceListRequested?.Invoke(this, EventArgs.Empty);
+        public IList<DualShockDeviceDescriptor> DualShockDevices => DeviceListRequested?.Invoke(this, EventArgs.Empty);
 
         public event DeviceListRequestedEventHandler DeviceListRequested;
 
-        public void Pair(IDualShockDevice device, PhysicalAddress host)
+        public void Pair(DualShockDeviceDescriptor device, PhysicalAddress host)
         {
             throw new System.NotImplementedException();
         }

@@ -6,9 +6,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using Halibut;
 using Halibut.ServiceModel;
 using Serilog;
@@ -31,13 +29,13 @@ namespace Shibari.Dom.Server.Core
         private readonly ObservableCollection<IDualShockDevice> _childDevices =
             new ObservableCollection<IDualShockDevice>();
 
+        private HalibutRuntime _ipcServer;
+
         [ImportMany]
         private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
 
         [ImportMany]
         private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
-
-        private HalibutRuntime _ipcServer;
 
         public void Start()
         {
@@ -115,18 +113,21 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {ex}", emulator, ex);
                 }
             }
-            
+
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() =>
             {
                 var service = new PairingService();
-                service.DeviceListRequested += (sender, args) =>
-                {
-                    var usbDevs = this._childDevices.Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB)).ToList();
+                service.DeviceListRequested += (sender, args) => _childDevices
+                    .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
+                    .Select(d => new DualShockDeviceDescriptor
+                    {
+                        ClientAddress = d.ClientAddress,
+                        ConnectionType = d.ConnectionType,
+                        DeviceType = d.DeviceType,
+                        HostAddress = d.HostAddress
+                    }).ToList();
 
-                    return usbDevs;
-                };
-                    
                 return service;
             });
 

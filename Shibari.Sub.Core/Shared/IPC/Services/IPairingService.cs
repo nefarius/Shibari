@@ -5,13 +5,13 @@ using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Core.Shared.IPC.Services
 {
-    public delegate IList<IDualShockDevice> DeviceListRequestedEventHandler(object sender, EventArgs e);
+    public delegate IList<DualShockDeviceDescriptor> DeviceListRequestedEventHandler(object sender, EventArgs e);
 
     public interface IPairingService
     {
-        IList<IDualShockDevice> DualShockDevices { get; }
+        IList<DualShockDeviceDescriptor> DualShockDevices { get; }
 
-        void Pair(IDualShockDevice device, PhysicalAddress host);
+        void Pair(DualShockDeviceDescriptor device, PhysicalAddress host);
 
         event DeviceListRequestedEventHandler DeviceListRequested;
     }

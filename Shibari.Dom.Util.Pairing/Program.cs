@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Net.NetworkInformation;
 using Halibut;
 using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
@@ -17,6 +19,11 @@ namespace Shibari.Dom.Util.Pairing
                 var t = pairing.DualShockDevices;
 
                 Console.WriteLine(t.Count);
+
+                var d = t.FirstOrDefault();
+
+                pairing.Pair(d, null);
+
                 Console.ReadKey();
             }
         }
