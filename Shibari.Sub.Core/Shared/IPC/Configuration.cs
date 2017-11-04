@@ -1,13 +1,18 @@
 ﻿using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Shibari.Sub.Core.Shared.IPC.Certificates
+namespace Shibari.Sub.Core.Shared.IPC
 {
-    public static class Certificates
+    public static class Configuration
     {
         private const string Server = "Shibari.Sub.Core.Shared.IPC.Certificates.Shibari.IPC.Server.pfx";
         private const string Client = "Shibari.Sub.Core.Shared.IPC.Certificates.Shibari.IPC.Client.pfx";
+
+        public static IPEndPoint ServerEndpoint => new IPEndPoint(IPAddress.IPv6Loopback, 26762);
+
+        public static string ClientEndpoint => "https://localhost:26762/";
 
         public static X509Certificate2 ServerCertificate => GetEmbeddedFile(Server);
 

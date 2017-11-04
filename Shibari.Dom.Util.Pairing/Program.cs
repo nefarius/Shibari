@@ -1,6 +1,6 @@
 ﻿using System;
 using Halibut;
-using Shibari.Sub.Core.Shared.IPC.Certificates;
+using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
 
 namespace Shibari.Dom.Util.Pairing
@@ -9,10 +9,10 @@ namespace Shibari.Dom.Util.Pairing
     {
         static void Main(string[] args)
         {
-            using (var runtime = new HalibutRuntime(Certificates.ClientCertificate))
+            using (var runtime = new HalibutRuntime(Configuration.ClientCertificate))
             {
-                var pairing = runtime.CreateClient<IPairingService>("https://localhost:26762/",
-                    Certificates.ServerCertificate.Thumbprint);
+                var pairing = runtime.CreateClient<IPairingService>(Configuration.ClientEndpoint,
+                    Configuration.ServerCertificate.Thumbprint);
 
                 var t = pairing.DualShockDevices;
 

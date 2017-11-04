@@ -13,7 +13,7 @@ using Halibut;
 using Halibut.ServiceModel;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
-using Shibari.Sub.Core.Shared.IPC.Certificates;
+using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
@@ -115,9 +115,7 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {ex}", emulator, ex);
                 }
             }
-
-            var endPoint = new IPEndPoint(IPAddress.IPv6Loopback, 26762);
-
+            
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() =>
             {
@@ -132,9 +130,9 @@ namespace Shibari.Dom.Server.Core
                 return service;
             });
 
-            _ipcServer = new HalibutRuntime(services, Certificates.ServerCertificate);
-            _ipcServer.Listen(endPoint);
-            _ipcServer.Trust(Certificates.ClientCertificate.Thumbprint);
+            _ipcServer = new HalibutRuntime(services, Configuration.ServerCertificate);
+            _ipcServer.Listen(Configuration.ServerEndpoint);
+            _ipcServer.Trust(Configuration.ClientCertificate.Thumbprint);
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
