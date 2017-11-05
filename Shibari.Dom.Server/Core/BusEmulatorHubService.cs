@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using Halibut;
 using Halibut.ServiceModel;
@@ -13,8 +14,8 @@ using Newtonsoft.Json;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
 using Shibari.Sub.Core.Shared.IPC;
-using Shibari.Sub.Core.Shared.IPC.Converter;
 using Shibari.Sub.Core.Shared.IPC.Services;
+using Shibari.Sub.Core.Shared.IPC.Types;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 
@@ -57,13 +58,13 @@ namespace Shibari.Dom.Server.Core
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
-                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                            plugin.DeviceArrived(item);
+                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                                plugin.DeviceArrived(item);
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
-                        foreach (var plugin in SinkPlugins.Select(p => p.Value))
-                            plugin.DeviceRemoved(item);
+                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                                plugin.DeviceRemoved(item);
                         break;
                 }
             };
@@ -116,11 +117,6 @@ namespace Shibari.Dom.Server.Core
                 }
             }
 
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter> { new PhysicalAddressConverter() }
-            };
-
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() =>
             {
@@ -130,14 +126,16 @@ namespace Shibari.Dom.Server.Core
                     .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
                     .Select(d => new DualShockDeviceDescriptor
                     {
-                        ClientAddress = d.ClientAddress,
+                        ClientAddress = new  UniqueAddress(d.ClientAddress),
                         ConnectionType = d.ConnectionType,
                         DeviceType = d.DeviceType,
-                        HostAddress = d.HostAddress
+                        HostAddress = new UniqueAddress(d.HostAddress)
                     }).ToList();
 
                 service.DevicePairingRequested += (device, args) =>
-                    _childDevices.First(d => d.ClientAddress.Equals(device.ClientAddress)).PairTo(args.HostAddress);
+                    _childDevices
+                        .First(d => new UniqueAddress(d.ClientAddress).Equals(device.ClientAddress))
+                        .PairTo(new PhysicalAddress(args.HostAddress.AddressBytes));
 
                 return service;
             });

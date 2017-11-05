@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Shared.IPC.Types;
 
 namespace Shibari.Sub.Core.Shared.IPC.Services
 {
@@ -12,19 +11,19 @@ namespace Shibari.Sub.Core.Shared.IPC.Services
 
     public class DevicePairingRequestedEventArgs : EventArgs
     {
-        public DevicePairingRequestedEventArgs(PhysicalAddress host)
+        public DevicePairingRequestedEventArgs(UniqueAddress host)
         {
             HostAddress = host;
         }
 
-        public PhysicalAddress HostAddress { get; }
+        public UniqueAddress HostAddress { get; }
     }
 
     public interface IPairingService
     {
         IList<DualShockDeviceDescriptor> DualShockDevices { get; }
 
-        void Pair(DualShockDeviceDescriptor device, PhysicalAddress host);
+        void Pair(DualShockDeviceDescriptor device, UniqueAddress host);
 
         event DeviceListRequestedEventHandler DeviceListRequested;
 
