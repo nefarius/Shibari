@@ -16,5 +16,10 @@ namespace Shibari.Sub.Core.Shared.Types.Common.Collections
         {
             get { return this.First(d => new UniqueAddress(d.ClientAddress).Equals(address)); }
         }
+
+        public IDualShockDevice this[IDualShockDevice device]
+        {
+            get { return this.First(d => d.ClientAddress.Equals(device.ClientAddress)); }
+        }
     }
 }

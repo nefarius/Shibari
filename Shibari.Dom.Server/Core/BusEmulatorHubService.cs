@@ -16,6 +16,7 @@ using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
 using Shibari.Sub.Core.Shared.IPC.Types;
 using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Shared.Types.Common.Collections;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 
 namespace Shibari.Dom.Server.Core
@@ -28,8 +29,7 @@ namespace Shibari.Dom.Server.Core
         private static readonly string SinksPath = Path.Combine(Path.GetDirectoryName
             (Assembly.GetExecutingAssembly().Location), "Sinks");
 
-        private readonly ObservableCollection<IDualShockDevice> _childDevices =
-            new ObservableCollection<IDualShockDevice>();
+        private readonly DualShockDeviceCollection _childDevices = new DualShockDeviceCollection();
 
         private HalibutRuntime _ipcServer;
 
@@ -92,7 +92,7 @@ namespace Shibari.Dom.Server.Core
                 Log.Information("Loaded sink plugin {Plugin}", plugin);
 
                 plugin.RumbleRequestReceived += (sender, args) =>
-                    _childDevices.First(c => c.Equals(sender)).Rumble(args.LargeMotor, args.SmallMotor);
+                    _childDevices[(IDualShockDevice)sender].Rumble(args.LargeMotor, args.SmallMotor);
             }
 
             // Log and enable sources
@@ -132,9 +132,7 @@ namespace Shibari.Dom.Server.Core
                     }).ToList();
 
                 service.DevicePairingRequested += (device, args) =>
-                    _childDevices
-                        .First(d => new UniqueAddress(d.ClientAddress).Equals(device.ClientAddress))
-                        .PairTo(new PhysicalAddress(args.HostAddress.AddressBytes));
+                    _childDevices[device.ClientAddress].PairTo(new PhysicalAddress(args.HostAddress.AddressBytes));
 
                 return service;
             });
