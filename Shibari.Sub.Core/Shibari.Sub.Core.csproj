@@ -72,6 +72,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Shared\IPC\Converter\" />
   </ItemGroup>
 </Project>
