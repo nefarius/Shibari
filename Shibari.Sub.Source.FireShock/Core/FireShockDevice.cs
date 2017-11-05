@@ -223,21 +223,12 @@ namespace Shibari.Sub.Source.FireShock.Core
                         buffer.Length,
                         out bytesReturned);
 
-                    if (ret)
-                    {
-                        Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
+                    if (!ret)
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
 
-                        OnInputReport(new DualShock3InputReport(buffer));
-                        continue;
-                    }
+                    Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
 
-                    if (Marshal.GetLastWin32Error() == ErrorOperationAborted)
-                    {
-                        OnDisconnected();
-                        return;
-                    }
-
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                    OnInputReport(new DualShock3InputReport(buffer));
                 }
             }
             finally

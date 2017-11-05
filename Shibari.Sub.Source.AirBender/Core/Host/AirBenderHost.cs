@@ -230,12 +230,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                     if (!ret)
                         throw new AirBenderGetClientRemovalFailedException("Failed to receive device removal event.");
 
-
                     var resp = Marshal.PtrToStructure<AirbenderGetClientRemoval>(requestBuffer);
 
-                    // TODO: fails if client disconnects by itself, fix
                     var child = Children.First(c =>
-                        c.ClientAddress.Equals(new PhysicalAddress(resp.ClientAddress.Address)));
+                        c.ClientAddress.Equals(new PhysicalAddress(resp.ClientAddress.Address.Reverse().ToArray())));
 
                     child.Dispose();
                     Children.Remove(child);

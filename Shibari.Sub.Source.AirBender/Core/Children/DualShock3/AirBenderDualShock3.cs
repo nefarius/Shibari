@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -70,14 +71,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                         requestBuffer, requestSize, requestBuffer, requestSize,
                         out bytesReturned);
 
-                    //
-                    // On ERROR_DEV_NOT_EXIST the child device was removed
-                    //
-                    if (!ret && Marshal.GetLastWin32Error() == AirBenderHost.ErrorDevNotExist)
-                        OnChildDeviceDisconnected();
-
-                    // TODO: refactor, might lead to high CPU usage on failure
-                    if (!ret) continue;
+                    if (!ret)
+                        throw new AirBenderGetDs3InputReportFailedException("Input Report Request failed.",
+                            new Win32Exception(Marshal.GetLastWin32Error()));
 
                     var resp = Marshal.PtrToStructure<AirBenderHost.AirbenderGetDs3InputReport>(requestBuffer);
 
@@ -118,8 +114,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     requestBuffer, requestSize, IntPtr.Zero, 0,
                     out bytesReturned);
 
-                if (!ret && Marshal.GetLastWin32Error() == AirBenderHost.ErrorDevNotExist)
-                    OnChildDeviceDisconnected();
+                if (!ret)
+                    throw new AirBenderSetDs3OutputReportFailedException("Sending Output Report failed.",
+                        new PInvoke.Win32Exception(Marshal.GetLastWin32Error()));
             }
             finally
             {
