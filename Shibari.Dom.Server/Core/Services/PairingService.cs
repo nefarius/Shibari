@@ -11,10 +11,11 @@ namespace Shibari.Dom.Server.Core.Services
         public IList<DualShockDeviceDescriptor> DualShockDevices => DeviceListRequested?.Invoke(this, EventArgs.Empty);
 
         public event DeviceListRequestedEventHandler DeviceListRequested;
+        public event DevicePairingRequestedEventHandler DevicePairingRequested;
 
         public void Pair(DualShockDeviceDescriptor device, PhysicalAddress host)
         {
-            throw new System.NotImplementedException();
+            DevicePairingRequested?.Invoke(device, new DevicePairingRequestedEventArgs(host));
         }
     }
 }

@@ -10,10 +10,10 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         public DualShockConnectionType ConnectionType { get; set; }
 
-        [JsonConverter(typeof(PhysicalAddressConverter))]
+        //[JsonConverter(typeof(PhysicalAddressConverter))]
         public PhysicalAddress ClientAddress { get; set; }
 
-        [JsonConverter(typeof(PhysicalAddressConverter))]
+        //[JsonConverter(typeof(PhysicalAddressConverter))]
         public PhysicalAddress HostAddress { get; set; }
     }
 }

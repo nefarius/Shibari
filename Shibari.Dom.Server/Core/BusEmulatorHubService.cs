@@ -9,9 +9,11 @@ using System.Linq;
 using System.Reflection;
 using Halibut;
 using Halibut.ServiceModel;
+using Newtonsoft.Json;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
 using Shibari.Sub.Core.Shared.IPC;
+using Shibari.Sub.Core.Shared.IPC.Converter;
 using Shibari.Sub.Core.Shared.IPC.Services;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
@@ -114,10 +116,16 @@ namespace Shibari.Dom.Server.Core
                 }
             }
 
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new PhysicalAddressConverter() }
+            };
+
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() =>
             {
                 var service = new PairingService();
+
                 service.DeviceListRequested += (sender, args) => _childDevices
                     .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
                     .Select(d => new DualShockDeviceDescriptor
@@ -127,6 +135,9 @@ namespace Shibari.Dom.Server.Core
                         DeviceType = d.DeviceType,
                         HostAddress = d.HostAddress
                     }).ToList();
+
+                service.DevicePairingRequested += (device, args) =>
+                    _childDevices.First(d => d.ClientAddress.Equals(device.ClientAddress)).PairTo(args.HostAddress);
 
                 return service;
             });

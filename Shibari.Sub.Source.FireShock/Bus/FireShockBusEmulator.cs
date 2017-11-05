@@ -79,11 +79,11 @@ namespace Shibari.Sub.Source.FireShock.Bus
                     dev.Dispose();
                 };
 
+                _devices.Add(device);
+
                 device.InputReportReceived += (sender, args) =>
                     InputReportReceived?.Invoke(this,
                         new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
-
-                _devices.Add(device);
             }
         }
     }

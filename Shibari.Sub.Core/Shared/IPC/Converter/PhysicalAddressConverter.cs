@@ -13,7 +13,6 @@ namespace Shibari.Sub.Core.Shared.IPC.Converter
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            serializer.TypeNameHandling = TypeNameHandling.None;
             return new PhysicalAddress(serializer.Deserialize<byte[]>(reader));
         }
 
