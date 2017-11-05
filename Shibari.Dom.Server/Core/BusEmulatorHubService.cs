@@ -10,7 +10,6 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using Halibut;
 using Halibut.ServiceModel;
-using Newtonsoft.Json;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
 using Shibari.Sub.Core.Shared.IPC;

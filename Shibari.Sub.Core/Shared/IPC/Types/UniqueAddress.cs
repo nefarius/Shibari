@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Shibari.Sub.Core.Util;
 
@@ -20,6 +22,17 @@ namespace Shibari.Sub.Core.Shared.IPC.Types
             AddressBytes = address.GetAddressBytes();
         }
 
+        public UniqueAddress(string address)
+        {
+            var validate = new Regex(@"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+            var replace = new Regex(@"[:\- ]");
+
+            if (!validate.IsMatch(address))
+                throw new ArgumentException($"{address} isn't a valid MAC address.");
+
+            AddressBytes = PhysicalAddress.Parse(replace.Replace(address, "")).GetAddressBytes();
+        }
+
         public override string ToString()
         {
             return new PhysicalAddress(AddressBytes).AsFriendlyName();
@@ -30,7 +43,7 @@ namespace Shibari.Sub.Core.Shared.IPC.Types
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((UniqueAddress) obj);
+            return Equals((UniqueAddress)obj);
         }
 
         protected bool Equals(UniqueAddress other)

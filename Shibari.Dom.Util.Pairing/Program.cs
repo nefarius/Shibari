@@ -19,7 +19,7 @@ namespace Shibari.Dom.Util.Pairing
 
                 var t = pairing.DualShockDevices;
 
-                var addr = new UniqueAddress(PhysicalAddress.Parse("F6-27-D2-D6-D9-22"));
+                var addr = new UniqueAddress("00:1B:DC:06:8C:3D");
                 pairing.Pair(pairing.DualShockDevices.First(), addr);
 
                 t = pairing.DualShockDevices;
