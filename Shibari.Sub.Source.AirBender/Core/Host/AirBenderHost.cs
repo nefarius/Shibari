@@ -18,6 +18,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
 {
     internal delegate void HostDeviceDisconnectedEventHandler(object sender, EventArgs e);
 
+    /// <inheritdoc />
     /// <summary>
     ///     Represents a managed wrapper around an USB device loaded with the AirBender driver.
     /// </summary>
@@ -93,7 +94,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                     out bytesReturned);
 
                 if (!ret)
-                    throw new AirBenderGetHostBdAddrFailedException();
+                    throw new AirBenderGetHostBdAddrFailedException(
+                        "Failed to request host MAC address.", 
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 HostAddress =
                     new PhysicalAddress(Marshal.PtrToStructure<AirbenderGetHostBdAddr>(pData).Host.Address.Reverse()
@@ -115,7 +118,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 out bytesReturned);
 
             if (!ret)
-                throw new AirBenderHostResetFailedException();
+                throw new AirBenderHostResetFailedException(
+                    "Failed to reset host.",
+                    new Win32Exception(Marshal.GetLastWin32Error()));
 
             Task.Factory.StartNew(ChildDeviceArrivalWorker, _arrivalCancellationTokenSourcePrimary.Token);
             Task.Factory.StartNew(ChildDeviceArrivalWorker, _arrivalCancellationTokenSourceSecondary.Token);
@@ -169,10 +174,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                         IntPtr.Zero, 0, requestBuffer, requestSize,
                         out bytesReturned);
 
-                    var error = new Win32Exception(Marshal.GetLastWin32Error());
-
                     if (!ret)
-                        throw new AirbenderGetClientArrivalFailedException("Failed to receive device arrival event.");
+                        throw new AirbenderGetClientArrivalFailedException(
+                            "Failed to receive device arrival event.",
+                            new Win32Exception(Marshal.GetLastWin32Error()));
 
                     var resp = Marshal.PtrToStructure<AirbenderGetClientArrival>(requestBuffer);
 
@@ -228,7 +233,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
 
 
                     if (!ret)
-                        throw new AirBenderGetClientRemovalFailedException("Failed to receive device removal event.");
+                        throw new AirBenderGetClientRemovalFailedException(
+                            "Failed to receive device removal event.",
+                            new Win32Exception(Marshal.GetLastWin32Error()));
 
                     var resp = Marshal.PtrToStructure<AirbenderGetClientRemoval>(requestBuffer);
 
