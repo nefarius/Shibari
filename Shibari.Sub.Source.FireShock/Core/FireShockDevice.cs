@@ -42,7 +42,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                     out bytesReturned);
 
                 if (!ret)
-                    throw new FireShockGetDeviceBdAddrFailedException($"Failed to request address of device {path}");
+                    throw new FireShockGetDeviceBdAddrFailedException(
+                        $"Failed to request address of device {path}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetDeviceBdAddr>(pData);
 
@@ -65,7 +67,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                     out bytesReturned);
 
                 if (!ret)
-                    throw new FireShockGetHostBdAddrFailedException($"Failed to request host address for device {ClientAddress}");
+                    throw new FireShockGetHostBdAddrFailedException(
+                        $"Failed to request host address for device {ClientAddress}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetHostBdAddr>(pData);
 
@@ -161,7 +165,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                     out bytesReturned);
 
                 if (!ret)
-                    throw new FireShockGetDeviceTypeFailedException($"Failed to request type of device {path}");
+                    throw new FireShockGetDeviceTypeFailedException(
+                        $"Failed to request type of device {path}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetDeviceType>(pData);
 
@@ -224,7 +230,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                         out bytesReturned);
 
                     if (!ret)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                        throw new FireShockReadInputReportFailedException(
+                            "Failed to read input report.", 
+                            new Win32Exception(Marshal.GetLastWin32Error()));
 
                     Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
 
@@ -320,7 +328,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                         out bytesReturned);
 
                     if (!ret)
-                        throw new FireShockSetHostBdAddrFailedException($"Failed to pair {ClientAddress} to {host}");
+                        throw new FireShockSetHostBdAddrFailedException(
+                            $"Failed to pair {ClientAddress} to {host}",
+                            new Win32Exception(Marshal.GetLastWin32Error()));
                 }
                 finally
                 {
