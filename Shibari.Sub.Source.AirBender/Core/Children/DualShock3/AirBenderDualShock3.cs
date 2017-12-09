@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.DualShock3;
 using Shibari.Sub.Core.Util;
@@ -61,15 +62,13 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
             {
                 while (!token.IsCancellationRequested)
                 {
-                    int bytesReturned;
-
                     //
                     // This call blocks until the driver supplies new data.
                     //  
                     var ret = HostDevice.DeviceHandle.OverlappedDeviceIoControl(
                         AirBenderHost.IoctlAirbenderGetDs3InputReport,
                         requestBuffer, requestSize, requestBuffer, requestSize,
-                        out bytesReturned);
+                        out _);
 
                     if (!ret)
                         throw new AirBenderGetDs3InputReportFailedException("Input Report Request failed.",
@@ -79,6 +78,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
 
                     OnInputReport(new DualShock3InputReport(resp.ReportBuffer));
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("{Exception}", ex);
             }
             finally
             {
@@ -108,15 +111,18 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     },
                     requestBuffer, false);
 
-                int bytesReturned;
                 var ret = HostDevice.DeviceHandle.OverlappedDeviceIoControl(
                     AirBenderHost.IoctlAirbenderSetDs3OutputReport,
                     requestBuffer, requestSize, IntPtr.Zero, 0,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     throw new AirBenderSetDs3OutputReportFailedException("Sending Output Report failed.",
                         new PInvoke.Win32Exception(Marshal.GetLastWin32Error()));
+            }
+            catch (Exception ex)
+            {
+                Log.Error("{Exception}", ex);
             }
             finally
             {

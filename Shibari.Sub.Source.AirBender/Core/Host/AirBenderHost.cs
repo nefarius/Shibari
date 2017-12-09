@@ -240,6 +240,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                     Children.Remove(child);
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Error("{Exception}", ex);
+            }
             finally
             {
                 Marshal.FreeHGlobal(requestBuffer);

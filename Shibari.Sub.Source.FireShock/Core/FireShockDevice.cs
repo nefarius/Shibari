@@ -258,6 +258,10 @@ namespace Shibari.Sub.Source.FireShock.Core
                     OnInputReport(new DualShock3InputReport(buffer));
                 }
             }
+            catch (Exception ex)
+            {
+                Log.Error("{Exception}", ex);
+            }
             finally
             {
                 Marshal.FreeHGlobal(unmanagedBuffer);
