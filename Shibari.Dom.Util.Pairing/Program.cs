@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.NetworkInformation;
 using Halibut;
 using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
@@ -19,7 +18,7 @@ namespace Shibari.Dom.Util.Pairing
 
                 var t = pairing.DualShockDevices;
 
-                var addr = new UniqueAddress("00:1B:DC:06:8C:3D");
+                var addr = new UniqueAddress("00:1A:7D:DA:71:13");
                 pairing.Pair(pairing.DualShockDevices.First(), addr);
 
                 t = pairing.DualShockDevices;
