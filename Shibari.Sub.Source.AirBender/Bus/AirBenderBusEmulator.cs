@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
@@ -71,6 +70,11 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
                 _hosts.Add(host);
             }
+        }
+
+        public override string ToString()
+        {
+            return this.GetType().Name;
         }
     }
 }
