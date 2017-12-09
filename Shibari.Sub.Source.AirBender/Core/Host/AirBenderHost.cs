@@ -80,7 +80,6 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
 
             var length = Marshal.SizeOf(typeof(AirbenderGetHostBdAddr));
             var pData = Marshal.AllocHGlobal(length);
-            var bytesReturned = 0;
             bool ret;
 
             try
@@ -91,7 +90,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                 ret = DeviceHandle.OverlappedDeviceIoControl(
                     IoctlAirbenderGetHostBdAddr,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     throw new AirBenderGetHostBdAddrFailedException(
@@ -115,7 +114,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
             ret = DeviceHandle.OverlappedDeviceIoControl(
                 IoctlAirbenderHostReset,
                 IntPtr.Zero, 0, IntPtr.Zero, 0,
-                out bytesReturned);
+                out _);
 
             if (!ret)
                 throw new AirBenderHostResetFailedException(
@@ -164,15 +163,13 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
             {
                 while (!token.IsCancellationRequested)
                 {
-                    int bytesReturned;
-
                     //
                     // This call blocks until the driver supplies new data.
                     //  
                     var ret = DeviceHandle.OverlappedDeviceIoControl(
                         IoctlAirbenderGetClientArrival,
                         IntPtr.Zero, 0, requestBuffer, requestSize,
-                        out bytesReturned);
+                        out _);
 
                     if (!ret)
                         throw new AirbenderGetClientArrivalFailedException(
@@ -221,16 +218,13 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
             {
                 while (!token.IsCancellationRequested)
                 {
-                    int bytesReturned;
-
                     //
                     // This call blocks until the driver supplies new data.
                     //  
                     var ret = DeviceHandle.OverlappedDeviceIoControl(
                         IoctlAirbenderGetClientRemoval,
                         IntPtr.Zero, 0, requestBuffer, requestSize,
-                        out bytesReturned);
-
+                        out _);
 
                     if (!ret)
                         throw new AirBenderGetClientRemovalFailedException(

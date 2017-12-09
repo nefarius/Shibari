@@ -35,11 +35,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = DeviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetDeviceBdAddr,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     throw new FireShockGetDeviceBdAddrFailedException(
@@ -60,11 +59,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = DeviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetHostBdAddr,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     throw new FireShockGetHostBdAddrFailedException(
@@ -99,18 +97,39 @@ namespace Shibari.Sub.Source.FireShock.Core
         /// </summary>
         public static Guid ClassGuid => Guid.Parse("51ab481a-8d75-4bb6-9944-200a2f994e65");
 
+        /// <summary>
+        ///     Device path identifying the device on the local system.
+        /// </summary>
         public string DevicePath { get; }
 
+        /// <summary>
+        ///     Native handle to device.
+        /// </summary>
         public Kernel32.SafeObjectHandle DeviceHandle { get; }
 
+        /// <summary>
+        ///     Output report byte array for sending state changes to this device.
+        /// </summary>
         protected virtual byte[] HidOutputReport { get; }
 
+        /// <summary>
+        ///     Host MAC address this device is paired to.
+        /// </summary>
         public PhysicalAddress HostAddress { get; }
 
+        /// <summary>
+        ///     The <see cref="DualShockDeviceType"/> of the current device.
+        /// </summary>
         public DualShockDeviceType DeviceType { get; private set; }
 
+        /// <summary>
+        ///     The Bluetooth MAC address of this device.
+        /// </summary>
         public PhysicalAddress ClientAddress { get; }
 
+        /// <summary>
+        ///     The <see cref="DualShockConnectionType"/> of this device.
+        /// </summary>
         public DualShockConnectionType ConnectionType { get; }
 
         /// <summary>
@@ -158,11 +177,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = deviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetDeviceType,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     throw new FireShockGetDeviceTypeFailedException(
@@ -197,11 +215,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                int bytesReturned;
                 var ret = DeviceHandle.OverlappedWriteFile(
                     buffer,
                     Ds3HidOutputReportSize,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     OnDisconnected();
@@ -212,6 +229,10 @@ namespace Shibari.Sub.Source.FireShock.Core
             }
         }
 
+        /// <summary>
+        ///     Worker thread requesting HID input reports.
+        /// </summary>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
         private void RequestInputReportWorker(object cancellationToken)
         {
             var token = (CancellationToken)cancellationToken;
@@ -222,12 +243,10 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 while (!token.IsCancellationRequested)
                 {
-                    int bytesReturned;
-
                     var ret = DeviceHandle.OverlappedReadFile(
                         unmanagedBuffer,
                         buffer.Length,
-                        out bytesReturned);
+                        out var bytesReturned);
 
                     if (!ret)
                         throw new FireShockReadInputReportFailedException(
@@ -321,11 +340,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
                 try
                 {
-                    var bytesReturned = 0;
                     var ret = DeviceHandle.OverlappedDeviceIoControl(
                         IoctlFireshockSetHostBdAddr,
                         pData, length, IntPtr.Zero, 0,
-                        out bytesReturned);
+                        out _);
 
                     if (!ret)
                         throw new FireShockSetHostBdAddrFailedException(
