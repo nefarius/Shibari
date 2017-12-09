@@ -11,7 +11,7 @@ namespace Shibari.Dom.Server
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Console()
-                .WriteTo.RollingFile("Shibari.Dom.Server-{Date}.log")
+                .WriteTo.RollingFile("Logs\\Shibari.Dom.Server-{Date}.log")
                 .CreateLogger();
 
             HostFactory.Run(x =>
