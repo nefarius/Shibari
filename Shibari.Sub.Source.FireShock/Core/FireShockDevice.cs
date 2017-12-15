@@ -34,14 +34,15 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = DeviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetDeviceBdAddr,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
-                    throw new FireShockGetDeviceBdAddrFailedException($"Failed to request address of device {path}");
+                    throw new FireShockGetDeviceBdAddrFailedException(
+                        $"Failed to request address of device {path}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetDeviceBdAddr>(pData);
 
@@ -57,14 +58,15 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = DeviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetHostBdAddr,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
-                    throw new FireShockGetHostBdAddrFailedException($"Failed to request host address for device {ClientAddress}");
+                    throw new FireShockGetHostBdAddrFailedException(
+                        $"Failed to request host address for device {ClientAddress}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetHostBdAddr>(pData);
 
@@ -94,18 +96,39 @@ namespace Shibari.Sub.Source.FireShock.Core
         /// </summary>
         public static Guid ClassGuid => Guid.Parse("51ab481a-8d75-4bb6-9944-200a2f994e65");
 
+        /// <summary>
+        ///     Device path identifying the device on the local system.
+        /// </summary>
         public string DevicePath { get; }
 
+        /// <summary>
+        ///     Native handle to device.
+        /// </summary>
         public Kernel32.SafeObjectHandle DeviceHandle { get; }
 
+        /// <summary>
+        ///     Output report byte array for sending state changes to this device.
+        /// </summary>
         protected virtual byte[] HidOutputReport { get; }
 
+        /// <summary>
+        ///     Host MAC address this device is paired to.
+        /// </summary>
         public PhysicalAddress HostAddress { get; }
 
+        /// <summary>
+        ///     The <see cref="DualShockDeviceType"/> of the current device.
+        /// </summary>
         public DualShockDeviceType DeviceType { get; private set; }
 
+        /// <summary>
+        ///     The Bluetooth MAC address of this device.
+        /// </summary>
         public PhysicalAddress ClientAddress { get; }
 
+        /// <summary>
+        ///     The <see cref="DualShockConnectionType"/> of this device.
+        /// </summary>
         public DualShockConnectionType ConnectionType { get; }
 
         /// <summary>
@@ -153,14 +176,15 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                var bytesReturned = 0;
                 var ret = deviceHandle.OverlappedDeviceIoControl(
                     IoctlFireshockGetDeviceType,
                     IntPtr.Zero, 0, pData, length,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
-                    throw new FireShockGetDeviceTypeFailedException($"Failed to request type of device {path}");
+                    throw new FireShockGetDeviceTypeFailedException(
+                        $"Failed to request type of device {path}",
+                        new Win32Exception(Marshal.GetLastWin32Error()));
 
                 var resp = Marshal.PtrToStructure<FireshockGetDeviceType>(pData);
 
@@ -190,11 +214,10 @@ namespace Shibari.Sub.Source.FireShock.Core
 
             try
             {
-                int bytesReturned;
                 var ret = DeviceHandle.OverlappedWriteFile(
                     buffer,
                     Ds3HidOutputReportSize,
-                    out bytesReturned);
+                    out _);
 
                 if (!ret)
                     OnDisconnected();
@@ -205,6 +228,10 @@ namespace Shibari.Sub.Source.FireShock.Core
             }
         }
 
+        /// <summary>
+        ///     Worker thread requesting HID input reports.
+        /// </summary>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
         private void RequestInputReportWorker(object cancellationToken)
         {
             var token = (CancellationToken)cancellationToken;
@@ -215,20 +242,24 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 while (!token.IsCancellationRequested)
                 {
-                    int bytesReturned;
-
                     var ret = DeviceHandle.OverlappedReadFile(
                         unmanagedBuffer,
                         buffer.Length,
-                        out bytesReturned);
+                        out var bytesReturned);
 
                     if (!ret)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                        throw new FireShockReadInputReportFailedException(
+                            "Failed to read input report.", 
+                            new Win32Exception(Marshal.GetLastWin32Error()));
 
                     Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
 
                     OnInputReport(new DualShock3InputReport(buffer));
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("{Exception}", ex);
             }
             finally
             {
@@ -264,6 +295,74 @@ namespace Shibari.Sub.Source.FireShock.Core
             return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
         }
 
+<<<<<<< HEAD
+=======
+        /// <summary>
+        ///     DualShock 3-specific implementation.
+        /// </summary>
+        private class FireShock3Device : FireShockDevice
+        {
+            /// <summary>
+            ///     Output report byte array for sending state changes to DualShock 3 device.
+            /// </summary>
+            private readonly Lazy<byte[]> _hidOutputReportLazy = new Lazy<byte[]>(() => new byte[]
+            {
+                0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0xFF, 0x27, 0x10, 0x00, 0x32, 0xFF,
+                0x27, 0x10, 0x00, 0x32, 0xFF, 0x27, 0x10, 0x00,
+                0x32, 0xFF, 0x27, 0x10, 0x00, 0x32, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+            });
+
+            public FireShock3Device(string path, Kernel32.SafeObjectHandle handle) : base(path, handle)
+            {
+                DeviceType = DualShockDeviceType.DualShock3;
+
+                Log.Information("Device is {DeviceType} " +
+                                "with address {ClientAddress} " +
+                                "currently paired to {HostAddress}",
+                                DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
+            }
+
+            protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
+
+            /// <inheritdoc />
+            public override void Rumble(byte largeMotor, byte smallMotor)
+            {
+                HidOutputReport[2] = (byte)(smallMotor > 0 ? 0x01 : 0x00);
+                HidOutputReport[4] = largeMotor;
+
+                OnOutputReport(0);
+            }
+
+            /// <inheritdoc />
+            public override void PairTo(PhysicalAddress host)
+            {
+                var length = Marshal.SizeOf(typeof(FireshockSetHostBdAddr));
+                var pData = Marshal.AllocHGlobal(length);
+                Marshal.Copy(host.GetAddressBytes(), 0, pData, length);
+
+                try
+                {
+                    var ret = DeviceHandle.OverlappedDeviceIoControl(
+                        IoctlFireshockSetHostBdAddr,
+                        pData, length, IntPtr.Zero, 0,
+                        out _);
+
+                    if (!ret)
+                        throw new FireShockSetHostBdAddrFailedException(
+                            $"Failed to pair {ClientAddress} to {host}",
+                            new Win32Exception(Marshal.GetLastWin32Error()));
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(pData);
+                }
+            }
+        }
+
+>>>>>>> 2e07ec30b9e6144779fc6e5b78cf960c271aecb2
         #region Equals Support
 
         public override bool Equals(object obj)

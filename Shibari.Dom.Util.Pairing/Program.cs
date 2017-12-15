@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.NetworkInformation;
 using Halibut;
 using Shibari.Sub.Core.Shared.IPC;
 using Shibari.Sub.Core.Shared.IPC.Services;
@@ -12,19 +11,30 @@ namespace Shibari.Dom.Util.Pairing
     {
         static void Main(string[] args)
         {
+            var options = new Options();
+            var isValid = CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
+
+            if (!isValid) return;
+
             using (var runtime = new HalibutRuntime(Configuration.ClientCertificate))
             {
                 var pairing = runtime.CreateClient<IPairingService>(Configuration.ClientEndpoint,
                     Configuration.ServerCertificate.Thumbprint);
 
-                var t = pairing.DualShockDevices;
+                if (options.List)
+                {
+                    foreach (var device in pairing.DualShockDevices)
+                    {
+                        Console.WriteLine($"{device.DeviceType} - {device.ClientAddress}");
+                    }
 
-                var addr = new UniqueAddress("00:1B:DC:06:8C:3D");
-                pairing.Pair(pairing.DualShockDevices.First(), addr);
+                    return;
+                }
 
-                t = pairing.DualShockDevices;
+                var client = new UniqueAddress(options.Pair);
+                var host = new UniqueAddress(options.To);
 
-                Console.ReadKey();
+                pairing.Pair(pairing.DualShockDevices.First(d => d.ClientAddress.Equals(client)), host);
             }
         }
     }

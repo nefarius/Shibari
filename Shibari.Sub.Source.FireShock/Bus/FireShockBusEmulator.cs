@@ -86,5 +86,10 @@ namespace Shibari.Sub.Source.FireShock.Bus
                         new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
             }
         }
+
+        public override string ToString()
+        {
+            return this.GetType().Name;
+        }
     }
 }
