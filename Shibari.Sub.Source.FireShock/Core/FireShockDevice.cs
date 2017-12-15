@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PInvoke;
-using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.DualShock3;
 using Shibari.Sub.Core.Util;
@@ -263,70 +262,6 @@ namespace Shibari.Sub.Source.FireShock.Core
         public override string ToString()
         {
             return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
-        }
-
-        /// <summary>
-        ///     DualShock 3-specific implementation.
-        /// </summary>
-        private class FireShock3Device : FireShockDevice
-        {
-            /// <summary>
-            ///     Output report byte array for sending state changes to DualShock 3 device.
-            /// </summary>
-            private readonly Lazy<byte[]> _hidOutputReportLazy = new Lazy<byte[]>(() => new byte[]
-            {
-                0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0xFF, 0x27, 0x10, 0x00, 0x32, 0xFF,
-                0x27, 0x10, 0x00, 0x32, 0xFF, 0x27, 0x10, 0x00,
-                0x32, 0xFF, 0x27, 0x10, 0x00, 0x32, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-            });
-
-            public FireShock3Device(string path, Kernel32.SafeObjectHandle handle) : base(path, handle)
-            {
-                DeviceType = DualShockDeviceType.DualShock3;
-
-                Log.Information("Device is {DeviceType} " +
-                                "with address {ClientAddress} " +
-                                "currently paired to {HostAddress}",
-                                DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
-            }
-
-            protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
-
-            /// <inheritdoc />
-            public override void Rumble(byte largeMotor, byte smallMotor)
-            {
-                HidOutputReport[2] = (byte)(smallMotor > 0 ? 0x01 : 0x00);
-                HidOutputReport[4] = largeMotor;
-
-                OnOutputReport(0);
-            }
-
-            /// <inheritdoc />
-            public override void PairTo(PhysicalAddress host)
-            {
-                var length = Marshal.SizeOf(typeof(FireshockSetHostBdAddr));
-                var pData = Marshal.AllocHGlobal(length);
-                Marshal.Copy(host.GetAddressBytes(), 0, pData, length);
-
-                try
-                {
-                    var bytesReturned = 0;
-                    var ret = DeviceHandle.OverlappedDeviceIoControl(
-                        IoctlFireshockSetHostBdAddr,
-                        pData, length, IntPtr.Zero, 0,
-                        out bytesReturned);
-
-                    if (!ret)
-                        throw new FireShockSetHostBdAddrFailedException($"Failed to pair {ClientAddress} to {host}");
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(pData);
-                }
-            }
         }
 
         #region Equals Support
