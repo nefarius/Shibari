@@ -45,9 +45,8 @@ namespace Shibari.Sub.Source.AirBender.Bus
         private void OnLookup(long l)
         {
             var instanceId = 0;
-            string path = string.Empty, instance = string.Empty;
 
-            while (Devcon.Find(AirBenderHost.ClassGuid, ref path, ref instance, instanceId++))
+            while (Devcon.Find(AirBenderHost.ClassGuid, out var path, out var instance, instanceId++))
             {
                 if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
 

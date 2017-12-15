@@ -61,9 +61,8 @@ namespace Shibari.Sub.Source.FireShock.Bus
         private void OnLookup(long l)
         {
             var instanceId = 0;
-            string path = string.Empty, instance = string.Empty;
-
-            while (Devcon.Find(FireShockDevice.ClassGuid, ref path, ref instance, instanceId++))
+            
+            while (Devcon.Find(FireShockDevice.ClassGuid, out var path, out var instance, instanceId++))
             {
                 if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 
