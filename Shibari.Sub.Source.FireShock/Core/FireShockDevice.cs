@@ -23,6 +23,7 @@ namespace Shibari.Sub.Source.FireShock.Core
         private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();
         private readonly IObservable<long> _outputReportSchedule = Observable.Interval(TimeSpan.FromMilliseconds(10));
         private readonly IDisposable _outputReportTask;
+        private readonly IntPtr _outputReportBuffer;
 
         private FireShockDevice(string path, Kernel32.SafeObjectHandle handle)
         {
@@ -77,6 +78,8 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 Marshal.FreeHGlobal(pData);
             }
+
+            _outputReportBuffer = Marshal.AllocHGlobal(HidOutputReport.Length);
 
             _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReport);
 
@@ -209,24 +212,15 @@ namespace Shibari.Sub.Source.FireShock.Core
         /// <param name="l">The interval.</param>
         private void OnOutputReport(long l)
         {
-            // TODO: optimize periodical memory allocation
-            var buffer = Marshal.AllocHGlobal(HidOutputReport.Length);
-            Marshal.Copy(HidOutputReport, 0, buffer, HidOutputReport.Length);
+            Marshal.Copy(HidOutputReport, 0, _outputReportBuffer, HidOutputReport.Length);
 
-            try
-            {
-                var ret = DeviceHandle.OverlappedWriteFile(
-                    buffer,
-                    Ds3HidOutputReportSize,
-                    out _);
+            var ret = DeviceHandle.OverlappedWriteFile(
+                _outputReportBuffer,
+                HidOutputReport.Length,
+                out _);
 
-                if (!ret)
-                    OnDisconnected();
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(buffer);
-            }
+            if (!ret)
+                OnDisconnected();
         }
 
         /// <summary>
@@ -250,7 +244,7 @@ namespace Shibari.Sub.Source.FireShock.Core
 
                     if (!ret)
                         throw new FireShockReadInputReportFailedException(
-                            "Failed to read input report.", 
+                            "Failed to read input report.",
                             new Win32Exception(Marshal.GetLastWin32Error()));
 
                     Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
@@ -342,6 +336,8 @@ namespace Shibari.Sub.Source.FireShock.Core
                     _inputCancellationTokenSourceSecondary.Cancel();
                     _outputReportTask.Dispose();
                 }
+
+                Marshal.FreeHGlobal(_outputReportBuffer);
 
                 DeviceHandle.Dispose();
 
