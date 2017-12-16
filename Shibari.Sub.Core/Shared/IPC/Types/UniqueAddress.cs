@@ -38,6 +38,8 @@ namespace Shibari.Sub.Core.Shared.IPC.Types
             return new PhysicalAddress(AddressBytes).AsFriendlyName();
         }
 
+        #region Equality
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -65,5 +67,7 @@ namespace Shibari.Sub.Core.Shared.IPC.Types
         {
             return !Equals(left, right);
         }
+
+        #endregion
     }
 }
