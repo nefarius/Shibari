@@ -13,17 +13,17 @@ namespace Shibari.Sub.Sink.PCSX2
 
         public void DeviceArrived(IDualShockDevice device)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void DeviceRemoved(IDualShockDevice device)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void InputReportReceived(IDualShockDevice device, IInputReport report)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }
