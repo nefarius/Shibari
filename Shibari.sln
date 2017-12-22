@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Server", "Shiba
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.ViGEm", "Shibari.Sub.Sink.ViGEm\Shibari.Sub.Sink.ViGEm.csproj", "{3DB114C3-280C-44A6-84ED-A0B331C80D05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shibari.Dom.Driver.Installer", "Shibari.Dom.Driver.Installer\Shibari.Dom.Driver.Installer.csproj", "{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.PCSX2", "Shibari.Sub.Sink.PCSX2\Shibari.Sub.Sink.PCSX2.csproj", "{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Management.PowerShell", "PowerShell\Shibari.Dom.Management.PowerShell\Shibari.Dom.Management.PowerShell.csproj", "{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}"
@@ -55,10 +53,6 @@ Global
 		{3DB114C3-280C-44A6-84ED-A0B331C80D05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DB114C3-280C-44A6-84ED-A0B331C80D05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DB114C3-280C-44A6-84ED-A0B331C80D05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
