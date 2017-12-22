@@ -21,11 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.ViGEm", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shibari.Dom.Driver.Installer", "Shibari.Dom.Driver.Installer\Shibari.Dom.Driver.Installer.csproj", "{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Util.Pairing", "Shibari.Dom.Util.Pairing\Shibari.Dom.Util.Pairing.csproj", "{FDC283D5-DCEC-4B4E-9400-55F3015643FA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.PCSX2", "Shibari.Sub.Sink.PCSX2\Shibari.Sub.Sink.PCSX2.csproj", "{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shibari.Dom.Management.PowerShell", "PowerShell\Shibari.Dom.Management.PowerShell\Shibari.Dom.Management.PowerShell.csproj", "{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Management.PowerShell", "PowerShell\Shibari.Dom.Management.PowerShell\Shibari.Dom.Management.PowerShell.csproj", "{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerShell", "PowerShell", "{DE5FF786-F510-46E6-AD4C-86004967CE99}"
 EndProject
@@ -61,10 +59,6 @@ Global
 		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7FB6EC7-2AD8-4AA3-B924-085D51B83169}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDC283D5-DCEC-4B4E-9400-55F3015643FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDC283D5-DCEC-4B4E-9400-55F3015643FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDC283D5-DCEC-4B4E-9400-55F3015643FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDC283D5-DCEC-4B4E-9400-55F3015643FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17EE639F-D116-4A7B-BB09-D2CD9800B4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
