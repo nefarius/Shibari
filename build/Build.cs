@@ -21,11 +21,10 @@ class Build : NukeBuild
     //  - [GitRepository] parses the origin from git config
     //  - [Parameter] retrieves its value from command-line arguments or environment variables
     //
-    //[GitVersion] readonly GitVersion GitVersion;
-    //[GitRepository] readonly GitRepository GitRepository;
+    [GitVersion] readonly GitVersion GitVersion;
+    [GitRepository] readonly GitRepository GitRepository;
     //[Parameter] readonly string MyGetApiKey;
-    const string CommonVersion = "1.0.0.0";
-
+    
     Target Clean => _ => _
             .OnlyWhen(() => false) // Disabled for safety.
             .Executes(() =>
@@ -45,9 +44,6 @@ class Build : NukeBuild
             .DependsOn(Restore)
             .Executes(() =>
             {
-                MSBuild(s => DefaultMSBuildCompile
-                .SetAssemblyVersion(CommonVersion)
-                .SetFileVersion(CommonVersion)
-                .SetInformationalVersion(CommonVersion));
+                MSBuild(s => DefaultMSBuildCompile);
             });
 }
