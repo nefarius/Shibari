@@ -1,8 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using System.Security;
 using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Source.FireShock.Core
 {
+    [SuppressUnmanagedCodeSecurity]
     internal partial class FireShockDevice
     {
         #region I/O control codes

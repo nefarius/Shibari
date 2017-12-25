@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security;
 using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Source.AirBender.Core.Host
 {
+    [SuppressUnmanagedCodeSecurity]
     internal sealed partial class AirBenderHost
     {
         #region I/O control codes
