@@ -44,8 +44,11 @@ class Build : NukeBuild
     Target Compile => _ => _
             .DependsOn(Restore)
             .Executes(() =>
-            {
-                if (AppVeyor.Instance != null)
+        {
+            Logger.Info("APPVEYOR = {0}", Variable("APPVEYOR"));
+            Logger.Info("CI = {0}", Variable("CI"));
+
+            if (AppVeyor.Instance != null)
                 {
                     Logger.Info("Running on AppVeyor");
 
