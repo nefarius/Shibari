@@ -29,6 +29,8 @@ namespace Shibari.Sub.Source.FireShock.Core
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
             });
 
+            private readonly byte[] _ledOffsets = { 0x02, 0x04, 0x08, 0x10 };
+
             public FireShock3Device(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle,
                 index)
             {
@@ -38,6 +40,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                                 "with address {ClientAddress} " +
                                 "currently paired to {HostAddress}",
                     DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
+
+                if (index >= 0 && index < 4)
+                    HidOutputReport[9] = _ledOffsets[index];
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
