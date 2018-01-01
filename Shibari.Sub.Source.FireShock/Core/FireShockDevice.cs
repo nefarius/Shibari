@@ -135,6 +135,8 @@ namespace Shibari.Sub.Source.FireShock.Core
         /// </summary>
         public DualShockConnectionType ConnectionType { get; }
 
+        public int DeviceIndex { get; }
+
         /// <summary>
         ///     Send Rumble request to the controller.
         /// </summary>
