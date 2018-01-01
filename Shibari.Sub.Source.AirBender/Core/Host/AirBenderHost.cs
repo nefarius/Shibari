@@ -189,11 +189,9 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
                                 new PhysicalAddress(resp.ClientAddress.Address.Reverse().ToArray()),
                                 Children.Count);
 
-                            device.ChildDeviceRemoved +=
-                                (sender, args) => Children.Remove((AirBenderChildDevice)args.Device);
                             device.InputReportReceived +=
                                 (sender, args) => InputReportReceived?.Invoke(this,
-                                    new InputReportReceivedEventArgs(args.Device, args.Report));
+                                    new InputReportReceivedEventArgs((IDualShockDevice)sender, args.Report));
 
                             Children.Add(device);
 

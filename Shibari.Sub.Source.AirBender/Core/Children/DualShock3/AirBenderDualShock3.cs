@@ -18,10 +18,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
     /// </summary>
     internal class AirBenderDualShock3 : AirBenderChildDevice
     {
-        //
-        // Output report containing LED & rumble states
-        // 
-        private readonly byte[] _hidOutputReport =
+        /// <summary>
+        ///     Output report byte array for sending state changes to DualShock 3 device.
+        /// </summary>
+        private readonly Lazy<byte[]> _hidOutputReportLazy = new Lazy<byte[]>(() => new byte[]
         {
             0x52, 0x01, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0xFF, 0x27, 0x10, 0x00,
@@ -30,7 +30,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00
-        };
+        });
 
         //
         // Values indicating which of the four LEDs to toggle
@@ -42,8 +42,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
             DeviceType = DualShockDeviceType.DualShock3;
 
             if (index >= 0 && index < 4)
-                _hidOutputReport[11] = _ledOffsets[index];
+                HidOutputReport[11] = _ledOffsets[index];
         }
+
+        protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
 
         protected override void RequestInputReportWorker(object cancellationToken)
         {
@@ -107,7 +109,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     new AirBenderHost.AirbenderSetDs3OutputReport
                     {
                         ClientAddress = ClientAddress.ToNativeBdAddr(),
-                        ReportBuffer = _hidOutputReport
+                        ReportBuffer = HidOutputReport
                     },
                     requestBuffer, false);
 
@@ -130,15 +132,11 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
             }
         }
 
-        /// <summary>
-        ///     Send Rumble request to the controller.
-        /// </summary>
-        /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
-        /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
+        /// <inheritdoc />
         public override void Rumble(byte largeMotor, byte smallMotor)
         {
-            _hidOutputReport[4] = (byte)(smallMotor > 0 ? 0x01 : 0x00);
-            _hidOutputReport[6] = largeMotor;
+            HidOutputReport[4] = (byte) (smallMotor > 0 ? 0x01 : 0x00);
+            HidOutputReport[6] = largeMotor;
 
             OnOutputReport(0);
         }
