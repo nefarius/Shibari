@@ -6,6 +6,7 @@ using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Core.BuildServers;
 using Nuke.Core;
+using Nuke.Core.Tooling;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.IO.PathConstruction;
@@ -38,27 +39,16 @@ class Build : NukeBuild
             .DependsOn(Clean)
             .Executes(() =>
             {
-                MSBuild(s => DefaultMSBuildRestore);
+                MSBuild(s => DefaultMSBuildRestore.SetArgumentConfigurator(x => x.Add("/p:RestoreSources=https://nuget.vigem.org/")));
             });
 
     Target Compile => _ => _
             .DependsOn(Restore)
             .Executes(() =>
-        {
-            Logger.Info("NUKE HOST = {0}", Instance?.Host);
-
-                if (AppVeyor.Instance != null)
-                {
-                    Logger.Info("Running on AppVeyor");
-
-                    MSBuild(s => DefaultMSBuildCompile
-                        .SetAssemblyVersion(AppVeyor.Instance.BuildVersion)
-                        .SetFileVersion(AppVeyor.Instance.BuildVersion));
-                    return;
-                }
-
-                Logger.Warn("Not running on AppVeyor");
-
-                MSBuild(s => DefaultMSBuildCompile);
+            {
+                // TODO: confirmed bug, won't work
+                MSBuild(s => DefaultMSBuildCompile
+                    .SetAssemblyVersion(AppVeyor.Instance?.BuildVersion)
+                    .SetFileVersion(AppVeyor.Instance?.BuildVersion));
             });
 }
