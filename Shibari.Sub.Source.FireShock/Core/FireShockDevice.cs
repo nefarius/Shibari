@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using PInvoke;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -15,21 +13,12 @@ namespace Shibari.Sub.Source.FireShock.Core
 {
     public delegate void FireShockDeviceDisconnectedEventHandler(object sender, EventArgs e);
 
-    public delegate void FireShockInputReportReceivedEventHandler(object sender, InputReportEventArgs e);
-
-    internal abstract partial class FireShockDevice : IDisposable, IDualShockDevice
+    internal abstract partial class FireShockDevice : DualShockDevice
     {
-        private readonly CancellationTokenSource _inputCancellationTokenSourcePrimary = new CancellationTokenSource();
-        private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();
-        private readonly IObservable<long> _outputReportSchedule = Observable.Interval(TimeSpan.FromMilliseconds(10));
-        private readonly IDisposable _outputReportTask;
-        private readonly IntPtr _outputReportBuffer;
-
-        private FireShockDevice(string path, Kernel32.SafeObjectHandle handle)
+        private FireShockDevice(string path, Kernel32.SafeObjectHandle handle, int index) : base(
+            DualShockConnectionType.USB, handle, index)
         {
-            ConnectionType = DualShockConnectionType.USB;
             DevicePath = path;
-            DeviceHandle = handle;
 
             var length = Marshal.SizeOf(typeof(FireshockGetDeviceBdAddr));
             var pData = Marshal.AllocHGlobal(length);
@@ -78,21 +67,6 @@ namespace Shibari.Sub.Source.FireShock.Core
             {
                 Marshal.FreeHGlobal(pData);
             }
-
-            _outputReportBuffer = Marshal.AllocHGlobal(HidOutputReport.Length);
-
-            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReport);
-
-            //
-            // Start two tasks requesting input reports in parallel.
-            // 
-            // While on threads request gets completed, another request can be
-            // queued by the other thread. This way no input can get lost because
-            // there's always at least one pending request in the driver to get
-            // completed. Each thread uses inverted calls for maximum performance.
-            // 
-            Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourcePrimary.Token);
-            Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourceSecondary.Token);
         }
 
         /// <summary>
@@ -106,62 +80,11 @@ namespace Shibari.Sub.Source.FireShock.Core
         public string DevicePath { get; }
 
         /// <summary>
-        ///     Native handle to device.
-        /// </summary>
-        public Kernel32.SafeObjectHandle DeviceHandle { get; }
-
-        /// <summary>
-        ///     Output report byte array for sending state changes to this device.
-        /// </summary>
-        protected virtual byte[] HidOutputReport { get; }
-
-        /// <summary>
-        ///     Host MAC address this device is paired to.
-        /// </summary>
-        public PhysicalAddress HostAddress { get; }
-
-        /// <summary>
-        ///     The <see cref="DualShockDeviceType"/> of the current device.
-        /// </summary>
-        public DualShockDeviceType DeviceType { get; private set; }
-
-        /// <summary>
-        ///     The Bluetooth MAC address of this device.
-        /// </summary>
-        public PhysicalAddress ClientAddress { get; }
-
-        /// <summary>
-        ///     The <see cref="DualShockConnectionType"/> of this device.
-        /// </summary>
-        public DualShockConnectionType ConnectionType { get; }
-
-        public int DeviceIndex { get; }
-
-        /// <summary>
-        ///     Send Rumble request to the controller.
-        /// </summary>
-        /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
-        /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
-        public virtual void Rumble(byte largeMotor, byte smallMotor)
-        {
-            throw new NotImplementedException("Rumble requests not supported by this device.");
-        }
-
-        /// <summary>
-        ///     Pairs the current device to the specified host via its address.
-        /// </summary>
-        /// <param name="host">The address to pair to.</param>
-        public virtual void PairTo(PhysicalAddress host)
-        {
-            throw new NotImplementedException("Pairing requests not supported by this device.");
-        }
-
-        /// <summary>
         ///     Factors a FireShock wrapper depending on the device type.
         /// </summary>
         /// <param name="path">Path of the device to open.</param>
         /// <returns>A <see cref="FireShockDevice" /> implementation.</returns>
-        public static FireShockDevice CreateDevice(string path)
+        public static FireShockDevice CreateDevice(string path, int index)
         {
             //
             // Open device
@@ -200,7 +123,7 @@ namespace Shibari.Sub.Source.FireShock.Core
                 switch (resp.DeviceType)
                 {
                     case DualShockDeviceType.DualShock3:
-                        return new FireShock3Device(path, deviceHandle);
+                        return new FireShock3Device(path, deviceHandle, index);
                     default:
                         throw new NotImplementedException();
                 }
@@ -215,12 +138,12 @@ namespace Shibari.Sub.Source.FireShock.Core
         ///     Periodically submits output report state changes of this controller.
         /// </summary>
         /// <param name="l">The interval.</param>
-        private void OnOutputReport(long l)
+        protected override void OnOutputReport(long l)
         {
-            Marshal.Copy(HidOutputReport, 0, _outputReportBuffer, HidOutputReport.Length);
+            Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, HidOutputReport.Length);
 
             var ret = DeviceHandle.OverlappedWriteFile(
-                _outputReportBuffer,
+                OutputReportBuffer,
                 HidOutputReport.Length,
                 out _);
 
@@ -228,13 +151,9 @@ namespace Shibari.Sub.Source.FireShock.Core
                 OnDisconnected();
         }
 
-        /// <summary>
-        ///     Worker thread requesting HID input reports.
-        /// </summary>
-        /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
-        private void RequestInputReportWorker(object cancellationToken)
+        protected override void RequestInputReportWorker(object cancellationToken)
         {
-            var token = (CancellationToken)cancellationToken;
+            var token = (CancellationToken) cancellationToken;
             var buffer = new byte[512];
             var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
 
@@ -281,18 +200,18 @@ namespace Shibari.Sub.Source.FireShock.Core
             }
         }
 
-        private void OnInputReport(IInputReport report)
-        {
-            InputReportReceived?.Invoke(this, new InputReportEventArgs(report));
-        }
-
         public event FireShockDeviceDisconnectedEventHandler DeviceDisconnected;
-
-        public event FireShockInputReportReceivedEventHandler InputReportReceived;
 
         public override string ToString()
         {
             return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            DeviceHandle.Dispose();
         }
 
         #region Equals Support
@@ -323,45 +242,6 @@ namespace Shibari.Sub.Source.FireShock.Core
         public static bool operator !=(FireShockDevice left, FireShockDevice right)
         {
             return !Equals(left, right);
-        }
-
-        #endregion
-
-        #region IDisposable Support
-
-        private bool disposedValue; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _inputCancellationTokenSourcePrimary.Cancel();
-                    _inputCancellationTokenSourceSecondary.Cancel();
-                    _outputReportTask.Dispose();
-                }
-
-                Marshal.FreeHGlobal(_outputReportBuffer);
-
-                DeviceHandle.Dispose();
-
-                disposedValue = true;
-            }
-        }
-
-        ~FireShockDevice()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(false);
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         #endregion

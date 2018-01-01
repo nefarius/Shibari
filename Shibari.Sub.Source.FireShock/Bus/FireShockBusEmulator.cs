@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -60,29 +61,39 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
         private void OnLookup(long l)
         {
-            var instanceId = 0;
-            
-            while (Devcon.Find(FireShockDevice.ClassGuid, out var path, out var instance, instanceId++))
+            if (!Monitor.TryEnter(_deviceLookupTask))
+                return;
+
+            try
             {
-                if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
+                var instanceId = 0;
 
-                Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
-
-                var device = FireShockDevice.CreateDevice(path);
-
-                device.DeviceDisconnected += (sender, args) =>
+                while (Devcon.Find(FireShockDevice.ClassGuid, out var path, out var instance, instanceId++))
                 {
-                    var dev = (FireShockDevice) sender;
-                    Log.Information("Device {Device} disconnected", dev);
-                    _devices.Remove(dev);
-                    dev.Dispose();
-                };
+                    if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 
-                _devices.Add(device);
+                    Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
 
-                device.InputReportReceived += (sender, args) =>
-                    InputReportReceived?.Invoke(this,
-                        new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
+                    var device = FireShockDevice.CreateDevice(path, _devices.Count);
+
+                    device.DeviceDisconnected += (sender, args) =>
+                    {
+                        var dev = (FireShockDevice) sender;
+                        Log.Information("Device {Device} disconnected", dev);
+                        _devices.Remove(dev);
+                        dev.Dispose();
+                    };
+
+                    _devices.Add(device);
+
+                    device.InputReportReceived += (sender, args) =>
+                        InputReportReceived?.Invoke(this,
+                            new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
+                }
+            }
+            finally
+            {
+                Monitor.Exit(_deviceLookupTask);
             }
         }
 

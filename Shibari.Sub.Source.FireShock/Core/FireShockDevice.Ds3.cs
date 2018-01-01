@@ -29,14 +29,15 @@ namespace Shibari.Sub.Source.FireShock.Core
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
             });
 
-            public FireShock3Device(string path, Kernel32.SafeObjectHandle handle) : base(path, handle)
+            public FireShock3Device(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle,
+                index)
             {
                 DeviceType = DualShockDeviceType.DualShock3;
 
                 Log.Information("Device is {DeviceType} " +
                                 "with address {ClientAddress} " +
                                 "currently paired to {HostAddress}",
-                                DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
+                    DeviceType, ClientAddress.AsFriendlyName(), HostAddress.AsFriendlyName());
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
@@ -44,7 +45,7 @@ namespace Shibari.Sub.Source.FireShock.Core
             /// <inheritdoc />
             public override void Rumble(byte largeMotor, byte smallMotor)
             {
-                HidOutputReport[2] = (byte)(smallMotor > 0 ? 0x01 : 0x00);
+                HidOutputReport[2] = (byte) (smallMotor > 0 ? 0x01 : 0x00);
                 HidOutputReport[4] = largeMotor;
 
                 OnOutputReport(0);
