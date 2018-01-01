@@ -4,6 +4,7 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
+using Nuke.Core.BuildServers;
 using Nuke.Core;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Core.IO.FileSystemTasks;
@@ -14,7 +15,7 @@ class Build : NukeBuild
 {
     // This is the application entry point for the build.
     // It also defines the default target to execute.
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main() => Execute<Build>(x => x.Compile);
 
     // Auto-injection fields:
     //  - [GitVersion] must have 'GitVersion.CommandLine' referenced
@@ -24,7 +25,7 @@ class Build : NukeBuild
     [GitVersion] readonly GitVersion GitVersion;
     [GitRepository] readonly GitRepository GitRepository;
     //[Parameter] readonly string MyGetApiKey;
-    
+
     Target Clean => _ => _
             .OnlyWhen(() => false) // Disabled for safety.
             .Executes(() =>
@@ -44,6 +45,14 @@ class Build : NukeBuild
             .DependsOn(Restore)
             .Executes(() =>
             {
+                if (AppVeyor.Instance != null)
+                {
+                    MSBuild(s => DefaultMSBuildCompile
+                        .SetAssemblyVersion(AppVeyor.Instance.BuildVersion)
+                        .SetFileVersion(AppVeyor.Instance.BuildVersion));
+                    return;
+                }
+
                 MSBuild(s => DefaultMSBuildCompile);
             });
 }
