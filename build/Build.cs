@@ -47,11 +47,15 @@ class Build : NukeBuild
             {
                 if (AppVeyor.Instance != null)
                 {
+                    Logger.Info("Running on AppVeyor");
+
                     MSBuild(s => DefaultMSBuildCompile
                         .SetAssemblyVersion(AppVeyor.Instance.BuildVersion)
                         .SetFileVersion(AppVeyor.Instance.BuildVersion));
                     return;
                 }
+
+                Logger.Warn("Not running on AppVeyor");
 
                 MSBuild(s => DefaultMSBuildCompile);
             });
