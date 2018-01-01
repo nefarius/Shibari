@@ -22,8 +22,8 @@ class Build : NukeBuild
     //  - [GitRepository] parses the origin from git config
     //  - [Parameter] retrieves its value from command-line arguments or environment variables
     //
-    [GitVersion] readonly GitVersion GitVersion;
-    [GitRepository] readonly GitRepository GitRepository;
+    //[GitVersion] readonly GitVersion GitVersion;
+    //[GitRepository] readonly GitRepository GitRepository;
     //[Parameter] readonly string MyGetApiKey;
 
     Target Clean => _ => _
