@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -44,36 +45,46 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
         private void OnLookup(long l)
         {
-            var instanceId = 0;
+            if (!Monitor.TryEnter(_hostLookupTask))
+                return;
 
-            while (Devcon.Find(AirBenderHost.ClassGuid, out var path, out var instance, instanceId++))
+            try
             {
-                if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
+                var instanceId = 0;
 
-                Log.Information("Found AirBender device {Path} ({Instance})", path, instance);
-
-                var host = new AirBenderHost(path);
-
-                host.HostDeviceDisconnected += (sender, args) =>
+                while (Devcon.Find(AirBenderHost.ClassGuid, out var path, out var instance, instanceId++))
                 {
-                    var device = (AirBenderHost)sender;
-                    _hosts.Remove(device);
-                    device.Dispose();
-                };
-                host.ChildDeviceAttached += (o, eventArgs) =>
-                    ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(eventArgs.Device));
-                host.ChildDeviceRemoved += (o, eventArgs) =>
-                    ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(eventArgs.Device));
-                host.InputReportReceived += (sender, args) =>
-                    InputReportReceived?.Invoke(this, new InputReportReceivedEventArgs(args.Device, args.Report));
+                    if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
 
-                _hosts.Add(host);
+                    Log.Information("Found AirBender device {Path} ({Instance})", path, instance);
+
+                    var host = new AirBenderHost(path);
+
+                    host.HostDeviceDisconnected += (sender, args) =>
+                    {
+                        var device = (AirBenderHost) sender;
+                        _hosts.Remove(device);
+                        device.Dispose();
+                    };
+                    host.ChildDeviceAttached += (o, eventArgs) =>
+                        ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(eventArgs.Device));
+                    host.ChildDeviceRemoved += (o, eventArgs) =>
+                        ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(eventArgs.Device));
+                    host.InputReportReceived += (sender, args) =>
+                        InputReportReceived?.Invoke(this, new InputReportReceivedEventArgs(args.Device, args.Report));
+
+                    _hosts.Add(host);
+                }
+            }
+            finally
+            {
+                Monitor.Exit(_hostLookupTask);
             }
         }
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
     }
 }
