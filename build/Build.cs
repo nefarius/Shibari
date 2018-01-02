@@ -1,23 +1,14 @@
-﻿using System;
-using System.Linq;
-using Nuke.Common;
-using Nuke.Common.Git;
-using Nuke.Common.Tools.GitVersion;
+﻿using System.Linq;
+using System.Reflection;
 using Nuke.Common.Tools.MSBuild;
-using Nuke.Core.BuildServers;
 using Nuke.Core;
-using Nuke.Core.Tooling;
+using Nuke.Core.BuildServers;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.IO.PathConstruction;
-using static Nuke.Core.EnvironmentInfo;
 
 class Build : NukeBuild
 {
-    // This is the application entry point for the build.
-    // It also defines the default target to execute.
-    public static int Main() => Execute<Build>(x => x.Compile);
-
     // Auto-injection fields:
     //  - [GitVersion] must have 'GitVersion.CommandLine' referenced
     //  - [GitRepository] parses the origin from git config
@@ -28,27 +19,34 @@ class Build : NukeBuild
     //[Parameter] readonly string MyGetApiKey;
 
     Target Clean => _ => _
-            .OnlyWhen(() => false) // Disabled for safety.
-            .Executes(() =>
-            {
-                DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
-                EnsureCleanDirectory(OutputDirectory);
-            });
+        .OnlyWhen(() => false) // Disabled for safety.
+        .Executes(() =>
+        {
+            DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
+            EnsureCleanDirectory(OutputDirectory);
+        });
 
     Target Restore => _ => _
-            .DependsOn(Clean)
-            .Executes(() =>
-            {
-                MSBuild(s => DefaultMSBuildRestore);
-            });
+        .DependsOn(Clean)
+        .Executes(() => { MSBuild(s => DefaultMSBuildRestore); });
 
     Target Compile => _ => _
-            .DependsOn(Restore)
-            .Executes(() =>
-            {
-                // TODO: confirmed bug, won't work
-                MSBuild(s => DefaultMSBuildCompile
-                    .SetAssemblyVersion(AppVeyor.Instance?.BuildVersion)
-                    .SetFileVersion(AppVeyor.Instance?.BuildVersion));
-            });
+        .DependsOn(Restore)
+        .Executes(() =>
+        {
+            // NOTE: workaround until official bugfix
+            var av = (AppVeyor) typeof(AppVeyor).GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic)
+                .FirstOrDefault(c => !c.GetParameters().Any())?.Invoke(new object[0]);
+
+            MSBuild(s => DefaultMSBuildCompile
+                .SetAssemblyVersion(av?.BuildVersion)
+                .SetFileVersion(av?.BuildVersion));
+        });
+
+    // This is the application entry point for the build.
+    // It also defines the default target to execute.
+    public static int Main()
+    {
+        return Execute<Build>(x => x.Compile);
+    }
 }
