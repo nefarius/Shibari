@@ -204,8 +204,6 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public void DeviceArrived(IDualShockDevice device)
         {
-            Log.Information("Device {Device} got attached", device);
-
             var target = new Xbox360Controller(_client);
 
             _deviceMap.Add(device, target);
@@ -231,8 +229,6 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public void DeviceRemoved(IDualShockDevice device)
         {
-            Log.Information("Device {Device} got removed", device);
-
             _deviceMap[device].Dispose();
             _deviceMap.Remove(device);
         }
@@ -246,27 +242,27 @@ namespace Shibari.Sub.Sink.ViGEm.Core
                     var target = _deviceMap[device];
 
                     var ds3Report = (DualShock3InputReport)report;
-                    var xb360report = new Xbox360Report();
+                    var xb360Report = new Xbox360Report();
 
                     foreach (var axis in _XaxisMap)
                     {
-                        xb360report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], false));
+                        xb360Report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], false));
                     }
 
                     foreach (var axis in _YaxisMap)
                     {
-                        xb360report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], true));
+                        xb360Report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], true));
                     }
 
                     foreach (var axis in _triggerAxisMap)
                     {
-                        xb360report.SetAxis(axis.Value, ds3Report[axis.Key]);
+                        xb360Report.SetAxis(axis.Value, ds3Report[axis.Key]);
                     }
 
-                    xb360report.SetButtons(_btnMap.Where(m => ds3Report.EngagedButtons.Contains(m.Key))
+                    xb360Report.SetButtons(_btnMap.Where(m => ds3Report.EngagedButtons.Contains(m.Key))
                         .Select(m => m.Value).ToArray());
 
-                    target.SendReport(xb360report);
+                    target.SendReport(xb360Report);
 
                     break;
             }

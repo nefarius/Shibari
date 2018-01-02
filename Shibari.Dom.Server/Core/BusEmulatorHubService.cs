@@ -57,13 +57,19 @@ namespace Shibari.Dom.Server.Core
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
+                        {
+                            Log.Information("Device {Device} got attached via {ConnectionType}", item, item.ConnectionType);
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceArrived(item);
+                        }
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
+                        {
+                            Log.Information("Device {Device} got removed via {ConnectionType}", item, item.ConnectionType);
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceRemoved(item);
+                        }
                         break;
                 }
             };
