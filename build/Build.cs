@@ -40,7 +40,8 @@ class Build : NukeBuild
 
             MSBuild(s => DefaultMSBuildCompile
                 .SetAssemblyVersion(av?.BuildVersion)
-                .SetFileVersion(av?.BuildVersion));
+                .SetFileVersion(av?.BuildVersion)
+                .SetInformationalVersion(av?.BuildVersion));
         });
 
     // This is the application entry point for the build.
