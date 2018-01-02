@@ -74,6 +74,8 @@ namespace Shibari.Sub.Source.FireShock.Core
                         throw new FireShockSetHostBdAddrFailedException(
                             $"Failed to pair {ClientAddress} to {host}",
                             new Win32Exception(Marshal.GetLastWin32Error()));
+
+                    HostAddress = host;
                 }
                 finally
                 {
