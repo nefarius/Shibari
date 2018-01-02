@@ -39,7 +39,7 @@ class Build : NukeBuild
             .DependsOn(Clean)
             .Executes(() =>
             {
-                MSBuild(s => DefaultMSBuildRestore.SetArgumentConfigurator(x => x.Add("/p:RestoreSources='https://nuget.vigem.org/'")));
+                MSBuild(s => DefaultMSBuildRestore);
             });
 
     Target Compile => _ => _
