@@ -19,6 +19,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
         private const uint IoctlAirbenderHostShutdown = 0x8000201C;
         private const uint IoctlAirbenderGetClientArrival = 0x80006020;
         private const uint IoctlAirbenderGetClientRemoval = 0x80006024;
+        private const uint IoctlAirbenderGetHostVersion = 0x80006028;
 
         #endregion
 
@@ -92,6 +93,13 @@ namespace Shibari.Sub.Source.AirBender.Core.Host
         private struct AirbenderGetClientRemoval
         {
             public BdAddr ClientAddress;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct AirbenderGetHostVersion
+        {
+            public byte HciVersionMajor;
+            public byte LmpVersionMajor;
         }
 
         #endregion
