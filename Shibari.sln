@@ -11,13 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{C7C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sinks", "Sinks", "{9037C1DB-F396-4CFD-809C-4B9A17082ADD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Source.FireShock", "Shibari.Sub.Source.FireShock\Shibari.Sub.Source.FireShock.csproj", "{595BEDEB-B537-4F04-8517-FE3C3DEBBA03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Source.FireShock", "Sources\Shibari.Sub.Source.FireShock\Shibari.Sub.Source.FireShock.csproj", "{595BEDEB-B537-4F04-8517-FE3C3DEBBA03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Source.AirBender", "Shibari.Sub.Source.AirBender\Shibari.Sub.Source.AirBender.csproj", "{7A793292-848C-41DE-A683-EFDA0BD241DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Source.AirBender", "Sources\Shibari.Sub.Source.AirBender\Shibari.Sub.Source.AirBender.csproj", "{7A793292-848C-41DE-A683-EFDA0BD241DC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Server", "Shibari.Dom.Server\Shibari.Dom.Server.csproj", "{2F12E5A0-CF8A-416E-8E29-520FAE9D7A21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.ViGEm", "Shibari.Sub.Sink.ViGEm\Shibari.Sub.Sink.ViGEm.csproj", "{3DB114C3-280C-44A6-84ED-A0B331C80D05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.ViGEm", "Sinks\Shibari.Sub.Sink.ViGEm\Shibari.Sub.Sink.ViGEm.csproj", "{3DB114C3-280C-44A6-84ED-A0B331C80D05}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Management.PowerShell", "PowerShell\Shibari.Dom.Management.PowerShell\Shibari.Dom.Management.PowerShell.csproj", "{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}"
 EndProject

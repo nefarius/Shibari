@@ -27,7 +27,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Sources\</OutputPath>
+    <OutputPath>..\..\bin\Sources\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,7 +35,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Sources\</OutputPath>
+    <OutputPath>..\..\bin\Sources\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -52,7 +52,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shibari.Sub.Core\Shibari.Sub.Core.csproj">
+    <ProjectReference Include="..\..\Shibari.Sub.Core\Shibari.Sub.Core.csproj">
       <Project>{e14d768a-50de-4a4a-9e4e-8f080bfed14d}</Project>
       <Name>Shibari.Sub.Core</Name>
     </ProjectReference>
