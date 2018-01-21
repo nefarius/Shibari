@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -23,22 +22,6 @@ namespace Shibari.Dom.Server.Core
 {
     public class BusEmulatorHubService
     {
-        private static readonly string SourcesPath = Path.Combine(Path.GetDirectoryName
-            (Assembly.GetExecutingAssembly().Location), "Sources");
-
-        private static readonly string SinksPath = Path.Combine(Path.GetDirectoryName
-            (Assembly.GetExecutingAssembly().Location), "Sinks");
-
-        private readonly DualShockDeviceCollection _childDevices = new DualShockDeviceCollection();
-
-        private HalibutRuntime _ipcServer;
-
-        [ImportMany]
-        private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
-
-        [ImportMany]
-        private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
-
         public void Start()
         {
             if (!Directory.Exists(SourcesPath))
@@ -58,7 +41,8 @@ namespace Shibari.Dom.Server.Core
                     case NotifyCollectionChangedAction.Add:
                         foreach (IDualShockDevice item in args.NewItems)
                         {
-                            Log.Information("Device {Device} got attached via {ConnectionType}", item, item.ConnectionType);
+                            Log.Information("Device {Device} got attached via {ConnectionType}", item,
+                                item.ConnectionType);
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceArrived(item);
                         }
@@ -66,13 +50,16 @@ namespace Shibari.Dom.Server.Core
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
                         {
-                            Log.Information("Device {Device} got removed via {ConnectionType}", item, item.ConnectionType);
+                            Log.Information("Device {Device} got removed via {ConnectionType}", item,
+                                item.ConnectionType);
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceRemoved(item);
                         }
                         break;
                 }
             };
+
+            #region MEF
 
             //Creating an instance of aggregate catalog. It aggregates other catalogs
             var aggregateCatalog = new AggregateCatalog();
@@ -92,13 +79,15 @@ namespace Shibari.Dom.Server.Core
             // the Import and Export components assembles here
             container.ComposeParts(this);
 
+            #endregion
+
             // Log loaded sink plugins
             foreach (var plugin in SinkPlugins.Select(p => p.Value))
             {
                 Log.Information("Loaded sink plugin {Plugin}", plugin);
 
                 plugin.RumbleRequestReceived += (sender, args) =>
-                    _childDevices[(IDualShockDevice)sender].Rumble(args.LargeMotor, args.SmallMotor);
+                    _childDevices[(IDualShockDevice) sender].Rumble(args.LargeMotor, args.SmallMotor);
             }
 
             // Log and enable sources
@@ -118,9 +107,11 @@ namespace Shibari.Dom.Server.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Failed to start {@emulator}: {ex}", emulator, ex);
+                    Log.Error("Failed to start {@emulator}: {@ex}", emulator, ex);
                 }
             }
+
+            #region IPC
 
             var services = new DelegateServiceFactory();
             services.Register<IPairingService>(() =>
@@ -131,7 +122,7 @@ namespace Shibari.Dom.Server.Core
                     .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
                     .Select(d => new DualShockDeviceDescriptor
                     {
-                        ClientAddress = new  UniqueAddress(d.ClientAddress),
+                        ClientAddress = new UniqueAddress(d.ClientAddress),
                         ConnectionType = d.ConnectionType,
                         DeviceType = d.DeviceType,
                         HostAddress = new UniqueAddress(d.HostAddress)
@@ -146,6 +137,8 @@ namespace Shibari.Dom.Server.Core
             _ipcServer = new HalibutRuntime(services, Configuration.ServerCertificate);
             _ipcServer.Listen(Configuration.ServerEndpoint);
             _ipcServer.Trust(Configuration.ClientCertificate.Thumbprint);
+
+            #endregion
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
@@ -164,5 +157,25 @@ namespace Shibari.Dom.Server.Core
                 Log.Information("Bus emulator {Emulator} stopped successfully", emulator);
             }
         }
+
+        #region Private fields & properties
+
+        private static readonly string SourcesPath = Path.Combine(Path.GetDirectoryName
+            (Assembly.GetExecutingAssembly().Location), "Sources");
+
+        private static readonly string SinksPath = Path.Combine(Path.GetDirectoryName
+            (Assembly.GetExecutingAssembly().Location), "Sinks");
+
+        private readonly DualShockDeviceCollection _childDevices = new DualShockDeviceCollection();
+
+        private HalibutRuntime _ipcServer;
+
+        [ImportMany]
+        private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
+
+        [ImportMany]
+        private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
+
+        #endregion
     }
 }
