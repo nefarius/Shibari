@@ -1,6 +1,8 @@
 # Shibari
 Management layer for AirBender & FireShock device drivers
 
+![Disclaimer](http://nefarius.at/public/Alpha-Disclaimer.png)
+
 ## Installation requirements
  * Microsoft Windows **8.1/10** x86 or x64
  * Microsoft Visual C++ Redistributable für Visual Studio 2017 ([x64](https://go.microsoft.com/fwlink/?LinkId=746572), [x86](https://go.microsoft.com/fwlink/?LinkId=746571))
