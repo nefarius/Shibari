@@ -1,8 +1,7 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 install:
-- ps: |
-    Register-PSRepository -Name nuget.vigem.org -SourceLocation https://nuget.vigem.org/ -InstallationPolicy Trusted
+- cmd: nuget sources add -Name nuget.vigem.org -Source https://nuget.vigem.org/
 build_script:
 - ps: .\build.ps1 -configuration release
 artifacts:
