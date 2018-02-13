@@ -5,7 +5,7 @@ namespace Shibari.Sub.Core.Util
     public static class PhysicalAddressExtensions
     {
         /// <summary>
-        ///     Converts a <see cref="PhysicalAddress"/> to a human readyble hex string.
+        ///     Converts a <see cref="PhysicalAddress"/> to a human readable hex string.
         /// </summary>
         /// <param name="address">The <see cref="PhysicalAddress"/> object to transform.</param>
         /// <returns>The hex string.</returns>
