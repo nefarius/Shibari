@@ -25,3 +25,11 @@ If you can follow a cooking recipe the following section should be a piece of ca
  * Unblock all the archives
  * Extract the contents to a location of your choice 
    * Note for the mentally challenged: **don't** put it in `system32`...
+
+### Install drivers
+ * Right-click on the `FireShock.inf` file and select `Install`. If your DS3(s) is/are already connected, unplug and plug back in for the driver change to become active
+ * Same goes basically for the `AirBender.inf` but be careful if you have multiple dongles and using Bluetooth for other devices; they might lose connectivity. If you wanna selectively use a dongle for the DS3, replace the stock driver with AirBender via Windows Device Manager. If you're not comfortable with that please stop before you ruin your system. You have been warned.
+ * Install the `ViGEm Bus Driver`, [guide can be found here](https://github.com/nefarius/ViGEm/wiki/Driver-Installation)
+ 
+### Ready for some action
+You made it this far? Great! Now simply fire up `Shibari.Dom.Server.exe` and your connected DS3 should spawn a virtual Xbox 360 controller which your games can pick up. Enjoy!
