@@ -16,7 +16,6 @@ If you can follow a cooking recipe the following section should be a piece of ca
 **Important:** after you downloaded the archives, [make sure to unblock them](https://blogs.msdn.microsoft.com/delay/p/unblockingdownloadedfile/) *before* extraction!
 
  * Get the latest `Shibari.zip` [from here](https://buildbot.vigem.org/builds/Shibari/master/) (always pick the highest version number for most recent release)
- * Get the `devcon` command line utility [from here](https://downloads.vigem.org/other/microsoft/devcon.zip)
  * Get the latest `FireShock.zip` [from here](https://downloads.vigem.org/projects/FireShock/stable/)
    * This is required for USB connection
  * Get the latest `AirBender.zip` [from here](https://downloads.vigem.org/projects/AirBender/stable/)
