@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shibari.Sub.Sink.ViGEm</RootNamespace>
     <AssemblyName>Shibari.Sub.Sink.ViGEm</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFramework>net46</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -63,10 +63,10 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="1.6.2" />
-    <PackageReference Include="Fody" Version="2.3.6" />
-    <PackageReference Include="Serilog" Version="2.6.0" />
-    <PackageReference Include="Nefarius.ViGEmClient" Version="1.14.3" />  
+    <PackageReference Include="Costura.Fody" Version="3.1.0" />
+    <PackageReference Include="Fody" Version="3.1.4" />
+    <PackageReference Include="Serilog" Version="2.7.1" />
+    <PackageReference Include="Nefarius.ViGEmClient" Version="1.15.16" />  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

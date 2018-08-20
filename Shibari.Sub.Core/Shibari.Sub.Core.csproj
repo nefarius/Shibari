@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shibari.Sub.Core</RootNamespace>
     <AssemblyName>Shibari.Sub.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFramework>net46</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -64,12 +64,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="1.6.2" />
-    <PackageReference Include="Fody" Version="2.3.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="PInvoke.Kernel32" Version="0.5.111" />
-    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.111" />
-    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />  
+    <PackageReference Include="Costura.Fody" Version="3.1.0" />
+    <PackageReference Include="Fody" Version="3.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="PInvoke.Kernel32" Version="0.5.155" />
+    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.155" />
+    <PackageReference Include="System.Reactive.Linq" Version="4.1.0" />  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
