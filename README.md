@@ -1,4 +1,4 @@
 # Shibari
 Management layer for AirBender & FireShock device drivers
 
-👉 [Documentation](https://docs.vigem.org/#!shibari-installation.md)
+👉 [Documentation](https://forums.vigem.org/topic/259/shibari-installation-instructions)
