@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shibari.Sub.Source.AirBender</RootNamespace>
     <AssemblyName>Shibari.Sub.Source.AirBender</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFramework>net46</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -63,15 +63,15 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="1.6.2" />
-    <PackageReference Include="Fody" Version="2.3.6" />
-    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="Costura.Fody" Version="3.1.0" />
+    <PackageReference Include="Fody" Version="3.1.4" />
+    <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Nefarius.Devcon" Version="1.3.1" />
-    <PackageReference Include="PInvoke.Kernel32" Version="0.5.111" />
-    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.111" />
-    <PackageReference Include="System.Reactive.Core" Version="3.1.1" />
-    <PackageReference Include="System.Reactive.Interfaces" Version="3.1.1" />
-    <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />    
+    <PackageReference Include="PInvoke.Kernel32" Version="0.5.155" />
+    <PackageReference Include="PInvoke.Windows.Core" Version="0.5.155" />
+    <PackageReference Include="System.Reactive.Core" Version="4.1.0" />
+    <PackageReference Include="System.Reactive.Interfaces" Version="4.1.0" />
+    <PackageReference Include="System.Reactive.Linq" Version="4.1.0" />    
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

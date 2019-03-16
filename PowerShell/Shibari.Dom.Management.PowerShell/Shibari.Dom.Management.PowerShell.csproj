@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shibari.Dom.Management.PowerShell</RootNamespace>
     <AssemblyName>Shibari.Dom.Management.PowerShell</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFramework>net46</TargetFramework>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -48,8 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="1.6.2" />
-    <PackageReference Include="Halibut" Version="2.5.0" />
+    <PackageReference Include="Costura.Fody" Version="3.1.0" />
+    <PackageReference Include="Halibut" Version="3.0.4" />
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>

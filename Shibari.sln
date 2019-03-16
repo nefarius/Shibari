@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = ".build", "build\.build.csproj", "{0CD1E963-90B0-453F-B3EE-EF5F5E060ACD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Core", "Shibari.Sub.Core\Shibari.Sub.Core.csproj", "{E14D768A-50DE-4A4A-9E4E-8F080BFED14D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{C7C6C996-17FA-4F5F-BC54-1205F60912D2}"
@@ -23,14 +21,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Management.Powe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerShell", "PowerShell", "{DE5FF786-F510-46E6-AD4C-86004967CE99}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{F6C81F08-AD5F-49E0-935E-5BC6990570FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0CD1E963-90B0-453F-B3EE-EF5F5E060ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CD1E963-90B0-453F-B3EE-EF5F5E060ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6C81F08-AD5F-49E0-935E-5BC6990570FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6C81F08-AD5F-49E0-935E-5BC6990570FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E14D768A-50DE-4A4A-9E4E-8F080BFED14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E14D768A-50DE-4A4A-9E4E-8F080BFED14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E14D768A-50DE-4A4A-9E4E-8F080BFED14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
