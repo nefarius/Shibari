@@ -72,7 +72,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BthPS3BusEmulator.cs" />
+    <Compile Include="Bus\BthPS3BusEmulator.cs" />
+    <Compile Include="Core\SixaxisDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

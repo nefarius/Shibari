@@ -1,12 +1,9 @@
-﻿using Shibari.Sub.Core.Shared.Types.Common;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
+using Shibari.Sub.Core.Shared.Types.Common;
 
-namespace Shibari.Sub.Source.BthPS3
+namespace Shibari.Sub.Source.BthPS3.Bus
 {
     [ExportMetadata("Name", "BthPS3 Bus Emulator")]
     [Export(typeof(IBusEmulator))]
