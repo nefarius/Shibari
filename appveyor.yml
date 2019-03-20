@@ -2,7 +2,7 @@ version: 1.0.{build}
 image: Visual Studio 2017
 install:
 build_script:
-- ps: .\build.ps1 -configuration release
+- ps: .\build.ps1
 artifacts:
 - path: bin
   name: Shibari
