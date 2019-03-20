@@ -1,63 +1,50 @@
 using System;
-using System.Linq;
 using Nuke.Common;
-using Nuke.Common.BuildServers;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 
-class Build : NukeBuild
+internal class Build : NukeBuild
 {
-    public static int Main () => Execute<Build>(x => x.Compile);
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    private readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
 
-    [Solution] readonly Solution Solution;
-    [GitRepository] readonly GitRepository GitRepository;
+    [GitRepository] private readonly GitRepository GitRepository;
+    [GitVersion] private readonly GitVersion GitVersion;
 
-    AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    [Solution("Shibari.sln")] private readonly Solution Solution;
 
-    Target Clean => _ => _
-        .Executes(() =>
-        {
-            EnsureCleanDirectory(ArtifactsDirectory);
-        });
+    private Target Clean => _ => _
+        .Executes(() => { });
 
-    Target Restore => _ => _
+    private Target Restore => _ => _
         .DependsOn(Clean)
         .Executes(() =>
         {
             MSBuild(s => s
-                .SetTargetPath(SolutionFile)
+                .SetTargetPath(Solution)
                 .SetTargets("Restore"));
         });
 
-    Target Compile => _ => _
+    private Target Compile => _ => _
         .DependsOn(Restore)
         .Executes(() =>
         {
             MSBuild(s => s
-                .SetTargetPath(SolutionFile)
+                .SetTargetPath(Solution)
                 .SetTargets("Rebuild")
                 .SetConfiguration(Configuration)
+                .SetAssemblyVersion(GitVersion.GetNormalizedAssemblyVersion())
+                .SetFileVersion(GitVersion.GetNormalizedFileVersion())
+                .SetInformationalVersion(GitVersion.InformationalVersion)
                 .SetMaxCpuCount(Environment.ProcessorCount)
-                .SetNodeReuse(IsLocalBuild)
-                .SetAssemblyVersion(AppVeyor.Instance?.BuildVersion)
-                .SetFileVersion(AppVeyor.Instance?.BuildVersion)
-                .SetInformationalVersion(AppVeyor.Instance?.BuildVersion));
+                .SetNodeReuse(IsLocalBuild));
         });
 
-    private Target Pack => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            MSBuild(s => s
-                .SetTargetPath(SolutionFile)
-                .SetTargets("Restore", "Pack")
-                .SetPackageOutputPath(ArtifactsDirectory)
-                .SetConfiguration(Configuration)
-                .EnableIncludeSymbols());
-        });
+    public static int Main()
+    {
+        return Execute<Build>(x => x.Compile);
+    }
 }
