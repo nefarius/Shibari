@@ -1,4 +1,5 @@
-﻿using PInvoke;
+﻿using System;
+using PInvoke;
 using Shibari.Sub.Core.Shared.Types.Common;
 
 namespace Shibari.Sub.Source.BthPS3.Core
@@ -15,5 +16,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
             DualShockConnectionType.Bluetooth, handle, index)
         {
         }
+
+        public static Guid ClassGuid => Guid.Parse("7B0EAE3D-4414-4024-BCBD-1C21523768CE");
     }
 }
