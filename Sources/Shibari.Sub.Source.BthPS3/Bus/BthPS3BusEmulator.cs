@@ -110,6 +110,45 @@ namespace Shibari.Sub.Source.BthPS3.Bus
                         InputReportReceived?.Invoke(this,
                             new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
                 }
+
+                instanceId = 0;
+
+                //
+                // Enumerate GUID_DEVINTERFACE_BTHPS3_NAVIGATION
+                // 
+                while (Devcon.Find(
+                    BthPS3Device.GUID_DEVINTERFACE_BTHPS3_NAVIGATION,
+                    out var path,
+                    out var instance,
+                    instanceId++
+                ))
+                {
+                    if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
+
+                    Log.Information("Found Navigation device {Path} ({Instance})", path, instance);
+
+                    var device = BthPS3Device.CreateNavigationDevice(path, _devices.Count);
+
+                    //
+                    // Subscribe to device removal event
+                    // 
+                    device.DeviceDisconnected += (sender, args) =>
+                    {
+                        var dev = (BthPS3Device) sender;
+                        Log.Information("Device {Device} disconnected", dev);
+                        _devices.Remove(dev);
+                        dev.Dispose();
+                    };
+
+                    _devices.Add(device);
+
+                    //
+                    // Route incoming input reports through to master hub
+                    // 
+                    device.InputReportReceived += (sender, args) =>
+                        InputReportReceived?.Invoke(this,
+                            new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
+                }
             }
             finally
             {

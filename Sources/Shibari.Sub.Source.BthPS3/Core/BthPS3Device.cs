@@ -43,7 +43,30 @@ namespace Shibari.Sub.Source.BthPS3.Core
             //
             // Open device
             // 
-            var deviceHandle = Kernel32.CreateFile(path,
+            var deviceHandle = OpenDevice(path);
+
+            if (deviceHandle.IsInvalid)
+                throw new ArgumentException($"Couldn't open device {path}");
+
+            return new SixaxisDevice(path, deviceHandle, index);
+        }
+
+        public static BthPS3Device CreateNavigationDevice(string path, int index)
+        {
+            //
+            // Open device
+            // 
+            var deviceHandle = OpenDevice(path);
+
+            if (deviceHandle.IsInvalid)
+                throw new ArgumentException($"Couldn't open device {path}");
+
+            return new NavigationDevice(path, deviceHandle, index);
+        }
+
+        private static Kernel32.SafeObjectHandle OpenDevice(string path)
+        {
+            return Kernel32.CreateFile(path,
                 Kernel32.ACCESS_MASK.GenericRight.GENERIC_READ | Kernel32.ACCESS_MASK.GenericRight.GENERIC_WRITE,
                 Kernel32.FileShare.FILE_SHARE_READ | Kernel32.FileShare.FILE_SHARE_WRITE,
                 IntPtr.Zero, Kernel32.CreationDisposition.OPEN_EXISTING,
@@ -53,11 +76,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 | Kernel32.CreateFileFlags.FILE_FLAG_OVERLAPPED,
                 Kernel32.SafeObjectHandle.Null
             );
-
-            if (deviceHandle.IsInvalid)
-                throw new ArgumentException($"Couldn't open device {path}");
-
-            return new SixaxisDevice(path, deviceHandle, index);
         }
 
         protected override void Dispose(bool disposing)
