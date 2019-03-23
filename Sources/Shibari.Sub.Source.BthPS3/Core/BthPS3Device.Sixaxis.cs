@@ -48,6 +48,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 if (index >= 0 && index < 4)
                     HidOutputReport[11] = _ledOffsets[index];
 
+                //
+                // Send the start command to remote device
+                // 
                 var unmanagedBuffer = Marshal.AllocHGlobal(_hidEnableCommand.Length);
                 Marshal.Copy(_hidEnableCommand, 0, unmanagedBuffer, _hidEnableCommand.Length);
 
@@ -102,6 +105,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 if (!ret)
                     OnDisconnected();
 
+                //
+                // Consume responses
+                // 
                 const int unmanagedBufferLength = 10;
                 var unmanagedBuffer = Marshal.AllocHGlobal(unmanagedBufferLength);
 
@@ -113,7 +119,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         0,
                         unmanagedBuffer,
                         unmanagedBufferLength,
-                        out var bytesReturned
+                        out _
                     );
 
                     if (!ret)
