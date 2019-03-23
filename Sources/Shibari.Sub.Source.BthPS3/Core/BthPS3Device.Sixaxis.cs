@@ -39,6 +39,10 @@ namespace Shibari.Sub.Source.BthPS3.Core
             public SixaxisDevice(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle, index)
             {
                 DeviceType = DualShockDeviceType.DualShock3;
+                //
+                // Remote MAC address is encoded in path as InstanceId
+                // This is a lazy approach but saves an I/O request ;)
+                // 
                 ClientAddress = PhysicalAddress.Parse(path.Substring(path.LastIndexOf('&') + 1, 12));
 
                 if (index >= 0 && index < 4)
@@ -57,6 +61,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         0,
                         out _
                     );
+
+                    if (!ret)
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
                 finally
                 {
@@ -92,8 +99,8 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     out _
                 );
 
-                //if (!ret)
-                //    OnDisconnected();
+                if (!ret)
+                    OnDisconnected();
 
                 const int unmanagedBufferLength = 10;
                 var unmanagedBuffer = Marshal.AllocHGlobal(unmanagedBufferLength);
@@ -108,6 +115,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         unmanagedBufferLength,
                         out var bytesReturned
                     );
+
+                    if (!ret)
+                        OnDisconnected();
                 }
                 finally
                 {
@@ -135,7 +145,10 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         );
 
                         if (!ret)
-                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                        {
+                            OnDisconnected();
+                            return;
+                        }
 
                         Marshal.Copy(unmanagedBuffer, buffer, 0, buffer.Length);
 

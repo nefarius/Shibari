@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading;
 using PInvoke;
 using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Util;
 
 namespace Shibari.Sub.Source.BthPS3.Core
 {
@@ -8,12 +11,16 @@ namespace Shibari.Sub.Source.BthPS3.Core
     {
     }
 
+    public delegate void BthPS3DeviceDisconnectedEventHandler(object sender, EventArgs e);
+
     internal abstract partial class BthPS3Device : DualShockDevice, IBthPS3Device
     {
         protected const uint IOCTL_BTHPS3_HID_CONTROL_READ = 0x2A6804;
         protected const uint IOCTL_BTHPS3_HID_CONTROL_WRITE = 0x2AA808;
         protected const uint IOCTL_BTHPS3_HID_INTERRUPT_READ = 0x2A680C;
         protected const uint IOCTL_BTHPS3_HID_INTERRUPT_WRITE = 0x2AA810;
+
+        protected const uint IOCTL_BTH_DISCONNECT_DEVICE = 0x41000C;
 
         protected BthPS3Device(string path, Kernel32.SafeObjectHandle handle, int index) : base(
             DualShockConnectionType.Bluetooth, handle, index)
@@ -52,5 +59,58 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             return new SixaxisDevice(path, deviceHandle, index);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            //
+            // Stop communication workers
+            // 
+            base.Dispose(disposing);
+
+            //
+            // Request radio to disconnect remote device
+            // 
+            var bthAddr = Convert.ToUInt64(ClientAddress.ToString(), 16);
+            var bthAddrBuffer = BitConverter.GetBytes(bthAddr);
+            var unmanagedBuffer = Marshal.AllocHGlobal(bthAddrBuffer.Length);
+            Marshal.Copy(bthAddrBuffer, 0, unmanagedBuffer, bthAddrBuffer.Length);
+
+            try
+            {
+                var ret = DeviceHandle.OverlappedDeviceIoControl(
+                    IOCTL_BTH_DISCONNECT_DEVICE,
+                    unmanagedBuffer,
+                    bthAddrBuffer.Length,
+                    IntPtr.Zero,
+                    0,
+                    out _
+                );
+
+                if (!ret)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(unmanagedBuffer);
+            }
+
+            DeviceHandle.Dispose();
+        }
+
+        private void OnDisconnected()
+        {
+            if (!Monitor.TryEnter(this)) return;
+
+            try
+            {
+                DeviceDisconnected?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                Monitor.Exit(this);
+            }
+        }
+
+        public event BthPS3DeviceDisconnectedEventHandler DeviceDisconnected;
     }
 }

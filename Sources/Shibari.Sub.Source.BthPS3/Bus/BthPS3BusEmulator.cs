@@ -68,7 +68,8 @@ namespace Shibari.Sub.Source.BthPS3.Bus
             {
                 var instanceId = 0;
 
-                while (Devcon.Find(BthPS3Device.GUID_DEVINTERFACE_BTHPS3_SIXAXIS, out var path, out var instance, instanceId++))
+                while (Devcon.Find(BthPS3Device.GUID_DEVINTERFACE_BTHPS3_SIXAXIS, out var path, out var instance,
+                    instanceId++))
                 {
                     if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 
@@ -76,13 +77,13 @@ namespace Shibari.Sub.Source.BthPS3.Bus
 
                     var device = BthPS3Device.CreateSixaxisDevice(path, _devices.Count);
 
-                    //device.DeviceDisconnected += (sender, args) =>
-                    //{
-                    //    var dev = (BthPS3Device) sender;
-                    //    Log.Information("Device {Device} disconnected", dev);
-                    //    _devices.Remove(dev);
-                    //    dev.Dispose();
-                    //};
+                    device.DeviceDisconnected += (sender, args) =>
+                    {
+                        var dev = (BthPS3Device) sender;
+                        Log.Information("Device {Device} disconnected", dev);
+                        _devices.Remove(dev);
+                        dev.Dispose();
+                    };
 
                     _devices.Add(device);
 
