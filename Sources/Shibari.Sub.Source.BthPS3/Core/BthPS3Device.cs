@@ -111,6 +111,11 @@ namespace Shibari.Sub.Source.BthPS3.Core
             }
         }
 
+        public override string ToString()
+        {
+            return $"{DeviceType} ({ClientAddress.AsFriendlyName()})";
+        }
+
         public event BthPS3DeviceDisconnectedEventHandler DeviceDisconnected;
     }
 }

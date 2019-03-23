@@ -24,7 +24,7 @@ namespace Shibari.Dom.Server
                 });
                 x.RunAsLocalSystem();
 
-                x.SetDescription("Manages AirBender & FireShock Devices.");
+                x.SetDescription("Manages AirBender, FireShock & BthPS3 Devices.");
                 x.SetDisplayName("Shibari Dom Server");
                 x.SetServiceName("Shibari.Dom.Server");
             });

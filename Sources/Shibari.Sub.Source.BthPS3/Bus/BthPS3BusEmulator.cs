@@ -97,5 +97,10 @@ namespace Shibari.Sub.Source.BthPS3.Bus
                 Monitor.Exit(_deviceLookupTask);
             }
         }
+
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
     }
 }
