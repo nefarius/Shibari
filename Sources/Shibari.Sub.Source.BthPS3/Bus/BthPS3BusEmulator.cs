@@ -68,7 +68,7 @@ namespace Shibari.Sub.Source.BthPS3.Bus
             {
                 var instanceId = 0;
 
-                while (Devcon.Find(BthPS3Device.SixaxisInterfaceClassGuid, out var path, out var instance, instanceId++))
+                while (Devcon.Find(BthPS3Device.GUID_DEVINTERFACE_BTHPS3_SIXAXIS, out var path, out var instance, instanceId++))
                 {
                     if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 

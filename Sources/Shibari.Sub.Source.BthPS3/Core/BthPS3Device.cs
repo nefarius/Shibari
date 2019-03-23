@@ -26,7 +26,10 @@ namespace Shibari.Sub.Source.BthPS3.Core
         /// </summary>
         public string DevicePath { get; }
 
-        public static Guid SixaxisInterfaceClassGuid => Guid.Parse("7B0EAE3D-4414-4024-BCBD-1C21523768CE");
+        public static Guid GUID_DEVINTERFACE_BTHPS3_SIXAXIS => Guid.Parse("7B0EAE3D-4414-4024-BCBD-1C21523768CE");
+        public static Guid GUID_DEVINTERFACE_BTHPS3_NAVIGATION => Guid.Parse("3E53723A-440C-40AF-8895-EA439D75E7BE");
+        public static Guid GUID_DEVINTERFACE_BTHPS3_MOTION => Guid.Parse("BCEC605D-233C-4BEF-9A10-F2B81B5297F6");
+        public static Guid GUID_DEVINTERFACE_BTHPS3_WIRELESS => Guid.Parse("64CB1EE2-B428-4CE8-8794-F68036E57BE5");
 
         public static BthPS3Device CreateSixaxisDevice(string path, int index)
         {
