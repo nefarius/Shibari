@@ -112,7 +112,7 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {@ex}", emulator, ex);
                 }
             }
-
+            
             #region IPC
 
             var services = new DelegateServiceFactory();
@@ -151,6 +151,8 @@ namespace Shibari.Dom.Server.Core
 
         public void Stop()
         {
+            _ipcServer.Dispose();
+
             foreach (var emulator in BusEmulators.Select(e => e.Value))
             {
                 Log.Information("Stopping bus emulator {Emulator}", emulator);
