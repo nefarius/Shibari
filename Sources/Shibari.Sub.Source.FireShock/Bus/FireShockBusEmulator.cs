@@ -24,6 +24,8 @@ namespace Shibari.Sub.Source.FireShock.Bus
         public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
         public event InputReportReceivedEventHandler InputReportReceived;
 
+        public string Name { get; }
+
         public void Start()
         {
             Log.Information("FireShock Bus Emulator started");

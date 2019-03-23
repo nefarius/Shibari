@@ -23,6 +23,8 @@ namespace Shibari.Sub.Source.AirBender.Bus
         public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
         public event InputReportReceivedEventHandler InputReportReceived;
 
+        public string Name { get; }
+
         public void Start()
         {
             Log.Information("AirBender Bus Emulator started");

@@ -66,6 +66,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         public int DeviceIndex { get; }
 
+        public string DevicePath { get; protected set; }
+
         protected abstract byte[] HidOutputReport { get; }
 
         public event DualShockInputReportReceivedEventHandler InputReportReceived;
