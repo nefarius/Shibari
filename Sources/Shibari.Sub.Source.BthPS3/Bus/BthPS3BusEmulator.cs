@@ -24,6 +24,9 @@ namespace Shibari.Sub.Source.BthPS3.Bus
         public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
         public event InputReportReceivedEventHandler InputReportReceived;
 
+        /// <summary>
+        ///     Initializes this instance of <see cref="BthPS3BusEmulator"/>.
+        /// </summary>
         public void Start()
         {
             Log.Information("BthPS3 Bus Emulator started");
@@ -47,6 +50,9 @@ namespace Shibari.Sub.Source.BthPS3.Bus
             OnLookup(0);
         }
 
+        /// <summary>
+        ///     Shuts down this instance of <see cref="BthPS3BusEmulator"/>.
+        /// </summary>
         public void Stop()
         {
             _deviceLookupTask?.Dispose();
@@ -68,8 +74,15 @@ namespace Shibari.Sub.Source.BthPS3.Bus
             {
                 var instanceId = 0;
 
-                while (Devcon.Find(BthPS3Device.GUID_DEVINTERFACE_BTHPS3_SIXAXIS, out var path, out var instance,
-                    instanceId++))
+                //
+                // Enumerate GUID_DEVINTERFACE_BTHPS3_SIXAXIS
+                // 
+                while (Devcon.Find(
+                    BthPS3Device.GUID_DEVINTERFACE_BTHPS3_SIXAXIS,
+                    out var path,
+                    out var instance,
+                    instanceId++
+                ))
                 {
                     if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
 
@@ -77,6 +90,9 @@ namespace Shibari.Sub.Source.BthPS3.Bus
 
                     var device = BthPS3Device.CreateSixaxisDevice(path, _devices.Count);
 
+                    //
+                    // Subscribe to device removal event
+                    // 
                     device.DeviceDisconnected += (sender, args) =>
                     {
                         var dev = (BthPS3Device) sender;
@@ -87,6 +103,9 @@ namespace Shibari.Sub.Source.BthPS3.Bus
 
                     _devices.Add(device);
 
+                    //
+                    // Route incoming input reports through to master hub
+                    // 
                     device.InputReportReceived += (sender, args) =>
                         InputReportReceived?.Invoke(this,
                             new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
@@ -98,6 +117,10 @@ namespace Shibari.Sub.Source.BthPS3.Bus
             }
         }
 
+        /// <summary>
+        ///     Friendly name of this bus emulator.
+        /// </summary>
+        /// <returns>The friendly name of this bus emulator.</returns>
         public override string ToString()
         {
             return GetType().Name;
