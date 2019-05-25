@@ -124,9 +124,10 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                     _inputCancellationTokenSourcePrimary.Cancel();
                     _inputCancellationTokenSourceSecondary.Cancel();
                     _outputReportTask.Dispose();
-                    Monitor.Enter(_outputReportLock);
                 }
 
+                // TODO: fix this properly
+                Monitor.TryEnter(_outputReportLock, TimeSpan.FromSeconds(2));
                 Marshal.FreeHGlobal(OutputReportBuffer);
 
                 disposedValue = true;
