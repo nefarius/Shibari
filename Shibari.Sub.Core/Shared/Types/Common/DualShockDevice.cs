@@ -14,9 +14,9 @@ namespace Shibari.Sub.Core.Shared.Types.Common
     {
         private readonly CancellationTokenSource _inputCancellationTokenSourcePrimary = new CancellationTokenSource();
         private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();
+        private readonly object _outputReportLock = new object();
         private readonly IObservable<long> _outputReportSchedule = Observable.Interval(TimeSpan.FromMilliseconds(10));
         private readonly IDisposable _outputReportTask;
-        protected IntPtr OutputReportBuffer { get; }
 
         protected DualShockDevice(DualShockConnectionType connectionType, Kernel32.SafeObjectHandle handle, int index)
         {
@@ -25,7 +25,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             DeviceIndex = index;
 
             OutputReportBuffer = Marshal.AllocHGlobal(HidOutputReport.Length);
-            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReport);
+            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportInternal);
 
             //
             // Start two tasks requesting input reports in parallel.
@@ -39,18 +39,22 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourceSecondary.Token);
         }
 
+        protected IntPtr OutputReportBuffer { get; }
+
         /// <summary>
         ///     Native handle to device.
         /// </summary>
         protected Kernel32.SafeObjectHandle DeviceHandle { get; }
 
+        protected abstract byte[] HidOutputReport { get; }
+
         /// <summary>
-        ///     The <see cref="DualShockDeviceType"/> of the current device.
+        ///     The <see cref="DualShockDeviceType" /> of the current device.
         /// </summary>
         public DualShockDeviceType DeviceType { get; protected set; }
 
         /// <summary>
-        ///     The <see cref="DualShockConnectionType"/> of this device.
+        ///     The <see cref="DualShockConnectionType" /> of this device.
         /// </summary>
         public DualShockConnectionType ConnectionType { get; }
 
@@ -68,10 +72,6 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         public string DevicePath { get; protected set; }
 
-        protected abstract byte[] HidOutputReport { get; }
-
-        public event DualShockInputReportReceivedEventHandler InputReportReceived;
-
         /// <summary>
         ///     Pairs the current device to the specified host via its address.
         /// </summary>
@@ -85,11 +85,24 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
         public abstract void Rumble(byte largeMotor, byte smallMotor);
 
+        public event DualShockInputReportReceivedEventHandler InputReportReceived;
+
         /// <summary>
         ///     Worker thread requesting HID input reports.
         /// </summary>
-        /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken" /> to shutdown the worker.</param>
         protected abstract void RequestInputReportWorker(object cancellationToken);
+
+        private void OnOutputReportInternal(long l)
+        {
+            if (!Monitor.TryEnter(_outputReportLock))
+                return;
+
+            lock (_outputReportLock)
+            {
+                OnOutputReport(l);
+            }
+        }
 
         protected abstract void OnOutputReport(long l);
 
@@ -99,7 +112,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -110,6 +124,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                     _inputCancellationTokenSourcePrimary.Cancel();
                     _inputCancellationTokenSourceSecondary.Cancel();
                     _outputReportTask.Dispose();
+                    Monitor.Enter(_outputReportLock);
                 }
 
                 Marshal.FreeHGlobal(OutputReportBuffer);
@@ -117,10 +132,11 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                 disposedValue = true;
             }
         }
-        
-        ~DualShockDevice() {
-          // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-          Dispose(false);
+
+        ~DualShockDevice()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
         }
 
         // This code added to correctly implement the disposable pattern.
@@ -128,9 +144,10 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            
+
             GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }
