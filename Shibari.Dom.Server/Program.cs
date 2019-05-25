@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using System.Globalization;
+using System.Threading;
+using Serilog;
 using Shibari.Dom.Server.Core;
 using Topshelf;
 
@@ -8,6 +10,9 @@ namespace Shibari.Dom.Server
     {
         static void Main(string[] args)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Console()
