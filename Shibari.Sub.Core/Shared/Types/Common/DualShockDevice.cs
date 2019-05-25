@@ -92,6 +92,9 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
         protected abstract void RequestInputReportWorker(object cancellationToken);
 
+        /// <summary>
+        ///     Called periodically to submit output reports.
+        /// </summary>
         private void OnOutputReportInternal(long l)
         {
             _outputReportTaskFinished.Reset();
