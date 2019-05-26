@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-using PInvoke;
+﻿using PInvoke;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Util;
+using System;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Shibari.Sub.Source.BthPS3.Core
 {
@@ -79,6 +79,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
             // Stop communication workers
             // 
             base.Dispose(disposing);
+
+            if (DeviceHandle.IsClosed || DeviceHandle.IsInvalid)
+                return;
 
             //
             // Request radio to disconnect remote device
