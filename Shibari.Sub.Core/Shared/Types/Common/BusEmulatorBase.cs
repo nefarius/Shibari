@@ -42,6 +42,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         {
             _deviceLookupTask?.Dispose();
 
+            // TODO: race condition, can raise exception
             foreach (var device in ChildDevices)
                 device.Dispose();
 
