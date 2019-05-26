@@ -18,6 +18,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         private readonly IDisposable _outputReportTask;
         private readonly ManualResetEventSlim _outputReportTaskFinished = new ManualResetEventSlim(false);
         protected IntPtr OutputReportBuffer { get; }
+        protected const int OutputReportBufferSize = 0x32;
 
         protected DualShockDevice(DualShockConnectionType connectionType, Kernel32.SafeObjectHandle handle, int index)
         {
@@ -25,8 +26,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             DeviceHandle = handle;
             DeviceIndex = index;
 
-            OutputReportBuffer = Marshal.AllocHGlobal(HidOutputReport.Length);
-            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportInternal);
+            OutputReportBuffer = Marshal.AllocHGlobal(OutputReportBufferSize);
+            //_outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportSafe);
 
             //
             // Start two tasks requesting input reports in parallel.
@@ -95,7 +96,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <summary>
         ///     Called periodically to submit output reports.
         /// </summary>
-        private void OnOutputReportInternal(long l)
+        protected void OnOutputReportSafe(long l)
         {
             _outputReportTaskFinished.Reset();
 
@@ -122,8 +123,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                 {
                     _inputCancellationTokenSourcePrimary.Cancel();
                     _inputCancellationTokenSourceSecondary.Cancel();
-                    _outputReportTask.Dispose();
-                    _outputReportTaskFinished.Wait(TimeSpan.FromSeconds(2));
+                    //_outputReportTask.Dispose();
+                    //_outputReportTaskFinished.Wait(TimeSpan.FromSeconds(2));
                 }
 
                 Marshal.FreeHGlobal(OutputReportBuffer);

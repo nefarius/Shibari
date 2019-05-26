@@ -45,8 +45,20 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 // 
                 ClientAddress = PhysicalAddress.Parse(path.Substring(path.LastIndexOf('&') + 1, 12));
 
+                FillMemory(OutputReportBuffer, OutputReportBufferSize, 0);
+                Marshal.WriteByte(
+                    OutputReportBuffer, 
+                    0, 
+                    0x52 /* HID BT Set_report (0x50) | Report Type (Output 0x02)*/
+                    );
+                Marshal.WriteByte(
+                    OutputReportBuffer,
+                    1,
+                    0x01 /* Report ID */
+                    );
+
                 if (index >= 0 && index < 4)
-                    HidOutputReport[11] = _ledOffsets[index];
+                    Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[index]);
 
                 //
                 // Send the start command to remote device
@@ -72,6 +84,8 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 {
                     Marshal.FreeHGlobal(unmanagedBuffer);
                 }
+
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
@@ -83,10 +97,114 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             public override void Rumble(byte largeMotor, byte smallMotor)
             {
-                HidOutputReport[4] = (byte) (smallMotor > 0 ? 0x01 : 0x00);
-                HidOutputReport[6] = largeMotor;
+                SetRumbleOn(largeMotor, (byte)(smallMotor > 0 ? 0x01 : 0x00));
+            }
 
-                OnOutputReport(0);
+            protected enum RumbleEnum
+            {
+                RumbleHigh = 0x10,
+                RumbleLow = 0x20,
+            };
+
+            [DllImport("kernel32.dll", EntryPoint = "RtlFillMemory", SetLastError = false)]
+            static extern void FillMemory(IntPtr destination, uint length, byte fill);
+
+            [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+            private static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+
+            protected void SetRumbleOn(RumbleEnum mode)
+            {
+                var power = new byte []{ 0xff, 0x00 }; // Defaults to RumbleLow
+                if (mode == RumbleEnum.RumbleHigh)
+                {
+                    power[0] = 0x00;
+                    power[1] = 0xff;
+                }
+                
+                SetRumbleOn(power[1], power[0]);
+            }
+
+            protected void SetRumbleOn(byte largePower, byte smallPower, byte largeDuration = 0xfe, byte smallDuration = 0xfe)
+            {
+                var rumbleBuffer = Marshal.AllocHGlobal(OutputReportBufferSize);
+
+                try
+                {
+                    CopyMemory(rumbleBuffer, OutputReportBuffer, OutputReportBufferSize);
+
+                    Marshal.WriteByte(rumbleBuffer, 3, smallDuration);
+                    Marshal.WriteByte(rumbleBuffer, 4, smallPower);
+                    Marshal.WriteByte(rumbleBuffer, 5, largeDuration);
+                    Marshal.WriteByte(rumbleBuffer, 6, largePower);
+
+                    SendHidCommand(rumbleBuffer, OutputReportBufferSize);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(rumbleBuffer);
+                }
+            }
+
+            protected void SetRumbleOff()
+            {
+                Marshal.WriteByte(OutputReportBuffer, 3, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 4, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 5, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 6, 0x00); // Rumble
+
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+            }
+
+            protected void SetAllOff()
+            {
+                Marshal.WriteByte(OutputReportBuffer, 3, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 4, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 5, 0x00); // Rumble
+                Marshal.WriteByte(OutputReportBuffer, 6, 0x00); // Rumble
+
+                Marshal.WriteByte(OutputReportBuffer, 11, 0x00); // LED
+
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+            }
+
+            protected void SendHidCommand(IntPtr buffer, int bufferLength)
+            {
+                var ret = DeviceHandle.OverlappedDeviceIoControl(
+                    IOCTL_BTHPS3_HID_CONTROL_WRITE,
+                    buffer,
+                    bufferLength,
+                    IntPtr.Zero,
+                    0,
+                    out _
+                );
+
+                if (!ret)
+                    OnDisconnected();
+
+                //
+                // Consume responses
+                // 
+                const int unmanagedBufferLength = 10;
+                var unmanagedBuffer = Marshal.AllocHGlobal(unmanagedBufferLength);
+
+                try
+                {
+                    ret = DeviceHandle.OverlappedDeviceIoControl(
+                        IOCTL_BTHPS3_HID_CONTROL_READ,
+                        IntPtr.Zero,
+                        0,
+                        unmanagedBuffer,
+                        unmanagedBufferLength,
+                        out _
+                    );
+
+                    if (!ret)
+                        OnDisconnected();
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(unmanagedBuffer);
+                }
             }
 
             protected override void OnOutputReport(long l)
