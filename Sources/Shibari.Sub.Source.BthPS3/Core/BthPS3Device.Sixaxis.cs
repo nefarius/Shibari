@@ -86,6 +86,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 }
 
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+
+                // TODO: remove, test code
+                SetRumbleOn(RumbleEnum.RumbleHigh);
             }
 
             protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
