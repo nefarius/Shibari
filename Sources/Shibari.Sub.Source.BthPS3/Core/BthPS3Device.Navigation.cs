@@ -1,4 +1,5 @@
-﻿using PInvoke;
+﻿using System.Runtime.InteropServices;
+using PInvoke;
 
 namespace Shibari.Sub.Source.BthPS3.Core
 {
@@ -16,6 +17,17 @@ namespace Shibari.Sub.Source.BthPS3.Core
             public NavigationDevice(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle,
                 index)
             {
+                //Marshal.WriteByte(OutputReportBuffer, 12, 0x01);
+                //Marshal.WriteByte(OutputReportBuffer, 13, 0x00);
+                //Marshal.WriteByte(OutputReportBuffer, 14, 0x00);
+                //Marshal.WriteByte(OutputReportBuffer, 15, 0x00);
+                //
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+            }
+
+            public override void Rumble(byte largeMotor, byte smallMotor)
+            {
+                // This device has no rumble, ignore
             }
         }
     }

@@ -17,20 +17,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
         {
             private readonly byte[] _hidEnableCommand = {0x53, 0xF4, 0x42, 0x03, 0x00, 0x00};
 
-            /// <summary>
-            ///     Output report byte array for sending state changes to DualShock 3 device.
-            /// </summary>
-            private readonly Lazy<byte[]> _hidOutputReportLazy = new Lazy<byte[]>(() => new byte[]
-            {
-                0x52, 0x01, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0xFF, 0x27, 0x10, 0x00,
-                0x32, 0xFF, 0x27, 0x10, 0x00, 0x32, 0xFF, 0x27,
-                0x10, 0x00, 0x32, 0xFF, 0x27, 0x10, 0x00, 0x32,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00
-            });
-
             //
             // Values indicating which of the four LEDs to toggle
             // 
@@ -45,18 +31,14 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 // 
                 ClientAddress = PhysicalAddress.Parse(path.Substring(path.LastIndexOf('&') + 1, 12));
 
-                FillMemory(OutputReportBuffer, OutputReportBufferSize, 0);
-                Marshal.WriteByte(
-                    OutputReportBuffer, 
-                    0, 
-                    0x52 /* HID BT Set_report (0x50) | Report Type (Output 0x02)*/
-                    );
-                Marshal.WriteByte(
-                    OutputReportBuffer,
-                    1,
-                    0x01 /* Report ID */
-                    );
+                // 
+                // Initialize default output report native buffer
+                // 
+                Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, OutputReportBufferSize);
 
+                //
+                // Crude way to assign device index as LED number
+                // 
                 if (index >= 0 && index < 4)
                     Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[index]);
 
@@ -86,12 +68,18 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 }
 
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
-
-                // TODO: remove, test code
-                SetRumbleOn(RumbleEnum.RumbleHigh);
             }
 
-            protected override byte[] HidOutputReport => _hidOutputReportLazy.Value;
+            protected override byte[] HidOutputReport => new byte[]
+            {
+                0x52, 0x01, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0xFF, 0x27, 0x10, 0x00,
+                0x32, 0xFF, 0x27, 0x10, 0x00, 0x32, 0xFF, 0x27,
+                0x10, 0x00, 0x32, 0xFF, 0x27, 0x10, 0x00, 0x32,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00
+            };
 
             public override void PairTo(PhysicalAddress host)
             {
@@ -100,34 +88,26 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             public override void Rumble(byte largeMotor, byte smallMotor)
             {
-                SetRumbleOn(largeMotor, (byte)(smallMotor > 0 ? 0x01 : 0x00));
+                SetRumbleOn(largeMotor, (byte) (smallMotor > 0 ? 0x01 : 0x00));
             }
-
-            protected enum RumbleEnum
-            {
-                RumbleHigh = 0x10,
-                RumbleLow = 0x20,
-            };
-
-            [DllImport("kernel32.dll", EntryPoint = "RtlFillMemory", SetLastError = false)]
-            static extern void FillMemory(IntPtr destination, uint length, byte fill);
 
             [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
             private static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
 
             protected void SetRumbleOn(RumbleEnum mode)
             {
-                var power = new byte []{ 0xff, 0x00 }; // Defaults to RumbleLow
+                var power = new byte[] {0xff, 0x00}; // Defaults to RumbleLow
                 if (mode == RumbleEnum.RumbleHigh)
                 {
                     power[0] = 0x00;
                     power[1] = 0xff;
                 }
-                
+
                 SetRumbleOn(power[1], power[0]);
             }
 
-            protected void SetRumbleOn(byte largePower, byte smallPower, byte largeDuration = 0xfe, byte smallDuration = 0xfe)
+            protected void SetRumbleOn(byte largePower, byte smallPower, byte largeDuration = 0xfe,
+                byte smallDuration = 0xfe)
             {
                 var rumbleBuffer = Marshal.AllocHGlobal(OutputReportBufferSize);
 
@@ -183,31 +163,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
                 if (!ret)
                     OnDisconnected();
-
-                //
-                // Consume responses
-                // 
-                const int unmanagedBufferLength = 10;
-                var unmanagedBuffer = Marshal.AllocHGlobal(unmanagedBufferLength);
-
-                try
-                {
-                    ret = DeviceHandle.OverlappedDeviceIoControl(
-                        IOCTL_BTHPS3_HID_CONTROL_READ,
-                        IntPtr.Zero,
-                        0,
-                        unmanagedBuffer,
-                        unmanagedBufferLength,
-                        out _
-                    );
-
-                    if (!ret)
-                        OnDisconnected();
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedBuffer);
-                }
             }
 
             protected override void OnOutputReport(long l)
@@ -290,6 +245,12 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 {
                     Marshal.FreeHGlobal(unmanagedBuffer);
                 }
+            }
+
+            protected enum RumbleEnum
+            {
+                RumbleHigh = 0x10,
+                RumbleLow = 0x20
             }
         }
     }
