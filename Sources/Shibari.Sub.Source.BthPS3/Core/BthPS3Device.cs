@@ -5,6 +5,7 @@ using System;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Serilog;
 
 namespace Shibari.Sub.Source.BthPS3.Core
 {
@@ -58,8 +59,10 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     0,
                     unmanagedBuffer,
                     unmanagedBufferLength,
-                    out _
+                    out var consumed
                 );
+
+                Log.Debug("Consumed {Amount} byte(s)", consumed);
 
                 if (!ret)
                     OnDisconnected();

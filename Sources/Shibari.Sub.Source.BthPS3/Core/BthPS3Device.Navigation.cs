@@ -17,11 +17,12 @@ namespace Shibari.Sub.Source.BthPS3.Core
             public NavigationDevice(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle,
                 index)
             {
+                Marshal.WriteByte(OutputReportBuffer, 11, 0x01);
                 //Marshal.WriteByte(OutputReportBuffer, 12, 0x01);
                 //Marshal.WriteByte(OutputReportBuffer, 13, 0x00);
                 //Marshal.WriteByte(OutputReportBuffer, 14, 0x00);
                 //Marshal.WriteByte(OutputReportBuffer, 15, 0x00);
-                //
+                
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
             }
 

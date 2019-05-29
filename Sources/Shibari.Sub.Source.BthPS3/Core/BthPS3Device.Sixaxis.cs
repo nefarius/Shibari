@@ -34,7 +34,8 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 // 
                 // Initialize default output report native buffer
                 // 
-                Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, OutputReportBufferSize);
+                FillMemory(OutputReportBuffer, OutputReportBufferSize, 0);
+                Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, HidOutputReport.Length);
 
                 //
                 // Crude way to assign device index as LED number
@@ -72,13 +73,15 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             protected override byte[] HidOutputReport => new byte[]
             {
-                0x52, 0x01, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0xFF, 0x27, 0x10, 0x00,
-                0x32, 0xFF, 0x27, 0x10, 0x00, 0x32, 0xFF, 0x27,
-                0x10, 0x00, 0x32, 0xFF, 0x27, 0x10, 0x00, 0x32,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00
+                0x52, /* HID BT Set_report (0x50) | Report Type (Output 0x02)*/
+                0x01, /* Report ID */
+                0x01, 0xff, 0x00, 0xff, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00,
+                0xff, 0x27, 0x10, 0x00, 0x32,
+                0xff, 0x27, 0x10, 0x00, 0x32,
+                0xff, 0x27, 0x10, 0x00, 0x32,
+                0xff, 0x27, 0x10, 0x00, 0x32,
+                0x00, 0x00, 0x00, 0x00, 0x00
             };
 
             public override void PairTo(PhysicalAddress host)
@@ -90,6 +93,9 @@ namespace Shibari.Sub.Source.BthPS3.Core
             {
                 SetRumbleOn(largeMotor, (byte) (smallMotor > 0 ? 0x01 : 0x00));
             }
+
+            [DllImport("kernel32.dll", EntryPoint = "RtlFillMemory", SetLastError = false)]
+            static extern void FillMemory(IntPtr destination, uint length, byte fill);
 
             [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
             private static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
@@ -167,44 +173,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             protected override void OnOutputReport(long l)
             {
-                Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, HidOutputReport.Length);
-
-                var ret = DeviceHandle.OverlappedDeviceIoControl(
-                    IOCTL_BTHPS3_HID_CONTROL_WRITE,
-                    OutputReportBuffer,
-                    HidOutputReport.Length,
-                    IntPtr.Zero,
-                    0,
-                    out _
-                );
-
-                if (!ret)
-                    OnDisconnected();
-
-                //
-                // Consume responses
-                // 
-                const int unmanagedBufferLength = 10;
-                var unmanagedBuffer = Marshal.AllocHGlobal(unmanagedBufferLength);
-
-                try
-                {
-                    ret = DeviceHandle.OverlappedDeviceIoControl(
-                        IOCTL_BTHPS3_HID_CONTROL_READ,
-                        IntPtr.Zero,
-                        0,
-                        unmanagedBuffer,
-                        unmanagedBufferLength,
-                        out _
-                    );
-
-                    if (!ret)
-                        OnDisconnected();
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedBuffer);
-                }
+                
             }
 
             protected override void RequestInputReportWorker(object cancellationToken)

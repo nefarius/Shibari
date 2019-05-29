@@ -14,7 +14,11 @@ namespace Shibari.Dom.Server
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
             Log.Logger = new LoggerConfiguration()
+#if DEBUG
+                .MinimumLevel.Debug()
+#else
                 .MinimumLevel.Information()
+#endif
                 .WriteTo.Console()
                 .WriteTo.RollingFile("Logs\\Shibari.Dom.Server-{Date}.log")
                 .CreateLogger();
