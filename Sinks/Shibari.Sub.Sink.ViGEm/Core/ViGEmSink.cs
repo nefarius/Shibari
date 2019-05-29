@@ -6,18 +6,15 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
-using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
 using Shibari.Sub.Core.Shared.Types.DualShock3;
 
-
 namespace Shibari.Sub.Sink.ViGEm.Core
 {
 #if DS4
-
     [ExportMetadata("Name", "ViGEm Sink")]
     [Export(typeof(ISinkPlugin))]
     public class ViGEmSink : ISinkPlugin
@@ -143,58 +140,60 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 #if X360
 
     internal class ಠ_ಠAttribute : Attribute
-    { }
+    {
+    }
 
     [ExportMetadata("Name", "ViGEm Xbox 360 Sink")]
     [Export(typeof(ISinkPlugin))]
     public class ViGEmSink : ISinkPlugin
     {
-        private readonly Dictionary<DualShock3Buttons, Xbox360Buttons> _btnMap;
-        private readonly Dictionary<DualShock3Axes, Xbox360Axes> _XaxisMap;
-        private readonly Dictionary<DualShock3Axes, Xbox360Axes> _YaxisMap;
-        private readonly Dictionary<DualShock3Axes, Xbox360Axes> _triggerAxisMap;
+        private readonly Dictionary<DualShock3Buttons, Xbox360Button> _btnMap;
         private readonly ViGEmClient _client;
 
-        private readonly Dictionary<IDualShockDevice, Xbox360Controller> _deviceMap =
-            new Dictionary<IDualShockDevice, Xbox360Controller>();
+        private readonly Dictionary<IDualShockDevice, IXbox360Controller> _deviceMap =
+            new Dictionary<IDualShockDevice, IXbox360Controller>();
+
+        private readonly Dictionary<DualShock3Axes, Xbox360Slider> _triggerAxisMap;
+        private readonly Dictionary<DualShock3Axes, Xbox360Axis> _XaxisMap;
+        private readonly Dictionary<DualShock3Axes, Xbox360Axis> _YaxisMap;
 
         public ViGEmSink()
         {
-            _btnMap = new Dictionary<DualShock3Buttons, Xbox360Buttons>
+            _btnMap = new Dictionary<DualShock3Buttons, Xbox360Button>
             {
-                {DualShock3Buttons.Select, Xbox360Buttons.Back},
-                {DualShock3Buttons.LeftThumb, Xbox360Buttons.LeftThumb},
-                {DualShock3Buttons.RightThumb, Xbox360Buttons.RightThumb},
-                {DualShock3Buttons.Start, Xbox360Buttons.Start},
-                {DualShock3Buttons.LeftShoulder, Xbox360Buttons.LeftShoulder},
-                {DualShock3Buttons.RightShoulder, Xbox360Buttons.RightShoulder},
-                {DualShock3Buttons.Triangle, Xbox360Buttons.Y},
-                {DualShock3Buttons.Circle, Xbox360Buttons.B},
-                {DualShock3Buttons.Cross, Xbox360Buttons.A},
-                {DualShock3Buttons.Square, Xbox360Buttons.X},
-                {DualShock3Buttons.DPadUp, Xbox360Buttons.Up},
-                {DualShock3Buttons.DPadDown, Xbox360Buttons.Down},
-                {DualShock3Buttons.DPadLeft, Xbox360Buttons.Left},
-                {DualShock3Buttons.DPadRight, Xbox360Buttons.Right},
-                {DualShock3Buttons.Ps, Xbox360Buttons.Guide}
+                {DualShock3Buttons.Select, Xbox360Button.Back},
+                {DualShock3Buttons.LeftThumb, Xbox360Button.LeftThumb},
+                {DualShock3Buttons.RightThumb, Xbox360Button.RightThumb},
+                {DualShock3Buttons.Start, Xbox360Button.Start},
+                {DualShock3Buttons.LeftShoulder, Xbox360Button.LeftShoulder},
+                {DualShock3Buttons.RightShoulder, Xbox360Button.RightShoulder},
+                {DualShock3Buttons.Triangle, Xbox360Button.Y},
+                {DualShock3Buttons.Circle, Xbox360Button.B},
+                {DualShock3Buttons.Cross, Xbox360Button.A},
+                {DualShock3Buttons.Square, Xbox360Button.X},
+                {DualShock3Buttons.DPadUp, Xbox360Button.Up},
+                {DualShock3Buttons.DPadDown, Xbox360Button.Down},
+                {DualShock3Buttons.DPadLeft, Xbox360Button.Left},
+                {DualShock3Buttons.DPadRight, Xbox360Button.Right},
+                {DualShock3Buttons.Ps, Xbox360Button.Guide}
             };
 
-            _XaxisMap = new Dictionary<DualShock3Axes, Xbox360Axes>
+            _XaxisMap = new Dictionary<DualShock3Axes, Xbox360Axis>
             {
-                {DualShock3Axes.LeftThumbX, Xbox360Axes.LeftThumbX},
-                {DualShock3Axes.RightThumbX, Xbox360Axes.RightThumbX}
+                {DualShock3Axes.LeftThumbX, Xbox360Axis.LeftThumbX},
+                {DualShock3Axes.RightThumbX, Xbox360Axis.RightThumbX}
             };
 
-            _YaxisMap = new Dictionary<DualShock3Axes, Xbox360Axes>
+            _YaxisMap = new Dictionary<DualShock3Axes, Xbox360Axis>
             {
-                {DualShock3Axes.LeftThumbY, Xbox360Axes.LeftThumbY},
-                {DualShock3Axes.RightThumbY, Xbox360Axes.RightThumbY},
+                {DualShock3Axes.LeftThumbY, Xbox360Axis.LeftThumbY},
+                {DualShock3Axes.RightThumbY, Xbox360Axis.RightThumbY}
             };
 
-            _triggerAxisMap = new Dictionary<DualShock3Axes, Xbox360Axes>
+            _triggerAxisMap = new Dictionary<DualShock3Axes, Xbox360Slider>
             {
-                {DualShock3Axes.LeftTrigger, Xbox360Axes.LeftTrigger},
-                {DualShock3Axes.RightTrigger, Xbox360Axes.RightTrigger},
+                {DualShock3Axes.LeftTrigger, Xbox360Slider.LeftTrigger},
+                {DualShock3Axes.RightTrigger, Xbox360Slider.RightTrigger}
             };
 
             _client = new ViGEmClient();
@@ -204,7 +203,8 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public void DeviceArrived(IDualShockDevice device)
         {
-            var target = new Xbox360Controller(_client);
+            var target = _client.CreateXbox360Controller();
+            target.AutoSubmitReport = false;
 
             _deviceMap.Add(device, target);
 
@@ -229,7 +229,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public void DeviceRemoved(IDualShockDevice device)
         {
-            _deviceMap[device].Dispose();
+            _deviceMap[device].Disconnect();
             _deviceMap.Remove(device);
         }
 
@@ -240,29 +240,20 @@ namespace Shibari.Sub.Sink.ViGEm.Core
                 case DualShockDeviceType.DualShock3:
 
                     var target = _deviceMap[device];
+                    target.ResetReport();
 
-                    var ds3Report = (DualShock3InputReport)report;
-                    var xb360Report = new Xbox360Report();
+                    var ds3Report = (DualShock3InputReport) report;
 
-                    foreach (var axis in _XaxisMap)
-                    {
-                        xb360Report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], false));
-                    }
+                    foreach (var axis in _XaxisMap) target.SetAxisValue(axis.Value, Scale(ds3Report[axis.Key], false));
 
-                    foreach (var axis in _YaxisMap)
-                    {
-                        xb360Report.SetAxis(axis.Value, Scale(ds3Report[axis.Key], true));
-                    }
+                    foreach (var axis in _YaxisMap) target.SetAxisValue(axis.Value, Scale(ds3Report[axis.Key], true));
 
-                    foreach (var axis in _triggerAxisMap)
-                    {
-                        xb360Report.SetAxis(axis.Value, ds3Report[axis.Key]);
-                    }
+                    foreach (var axis in _triggerAxisMap) target.SetSliderValue(axis.Value, ds3Report[axis.Key]);
 
-                    xb360Report.SetButtons(_btnMap.Where(m => ds3Report.EngagedButtons.Contains(m.Key))
-                        .Select(m => m.Value).ToArray());
+                    foreach (var button in _btnMap.Where(m => ds3Report.EngagedButtons.Contains(m.Key))
+                        .Select(m => m.Value)) target.SetButtonState(button, true);
 
-                    target.SendReport(xb360Report);
+                    target.SubmitReport();
 
                     break;
             }
@@ -271,14 +262,13 @@ namespace Shibari.Sub.Sink.ViGEm.Core
         [ಠ_ಠ]
         private static short Scale(byte value, bool invert)
         {
-            int intValue = (value - 0x80);
+            var intValue = value - 0x80;
             if (intValue == -128) intValue = -127;
 
             var wtfValue = intValue * 258.00787401574803149606299212599f; // what the fuck?
 
-            return (short)(invert ? -wtfValue : wtfValue);
+            return (short) (invert ? -wtfValue : wtfValue);
         }
     }
 #endif
-
 }
