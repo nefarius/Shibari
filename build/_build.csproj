@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.100" />
     <PackageReference Include="Nuke.Common" Version="0.17.7" />
     <PackageReference Include="GitVersion.CommandLine" Version="4.0.0" />
   </ItemGroup>
