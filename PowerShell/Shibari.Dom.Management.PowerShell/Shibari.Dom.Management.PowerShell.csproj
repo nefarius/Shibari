@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -51,7 +51,6 @@
     <PackageReference Include="Costura.Fody" Version="3.3.3" />
     <PackageReference Include="Halibut" Version="4.2.1" />
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
-    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.100" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shibari.Sub.Core\Shibari.Sub.Core.csproj" />
