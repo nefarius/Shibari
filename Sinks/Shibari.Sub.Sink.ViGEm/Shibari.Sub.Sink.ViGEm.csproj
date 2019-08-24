@@ -63,12 +63,12 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="4.0.0" />
-    <PackageReference Include="Fody" Version="5.0.6">
+    <PackageReference Include="Costura.Fody" Version="4.1.0" />
+    <PackageReference Include="Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.100" />
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.111" />
     <PackageReference Include="Serilog" Version="2.8.0" />  
   </ItemGroup>
   <ItemGroup>
