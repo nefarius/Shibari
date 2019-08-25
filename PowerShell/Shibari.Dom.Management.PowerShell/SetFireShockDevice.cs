@@ -26,7 +26,7 @@ namespace Shibari.Dom.Management.PowerShell
                     var pairing = runtime.CreateClient<IPairingService>(Configuration.ClientEndpoint,
                         Configuration.ServerCertificate.Thumbprint);
 
-                    var host = new UniqueAddress(HostAddress);
+                    var host = new UniqueAddress(HostAddress.ToUpper());
 
                     pairing.Pair(pairing.DualShockDevices.First(d => d.Equals(Device)), host);
                 }
