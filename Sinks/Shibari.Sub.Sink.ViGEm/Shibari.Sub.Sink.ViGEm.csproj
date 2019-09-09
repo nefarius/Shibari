@@ -68,7 +68,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.133" />
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.16.135" />
     <PackageReference Include="Serilog" Version="2.8.0" />  
   </ItemGroup>
   <ItemGroup>
