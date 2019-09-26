@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading;
 using Serilog;
 using Shibari.Dom.Server.Core;
@@ -22,6 +23,11 @@ namespace Shibari.Dom.Server
                 .WriteTo.Console()
                 .WriteTo.RollingFile("Logs\\Shibari.Dom.Server-{Date}.log")
                 .CreateLogger();
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+                {
+                    Log.Fatal("Unhandled exception: {Exception}", (Exception) eventArgs.ExceptionObject);
+                };
 
             HostFactory.Run(x =>
             {
