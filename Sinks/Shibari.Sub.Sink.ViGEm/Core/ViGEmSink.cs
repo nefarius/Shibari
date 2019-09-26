@@ -1,9 +1,10 @@
-﻿#define DS4
+﻿#define X360
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
@@ -71,6 +72,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
 
+        [HandleProcessCorruptedStateExceptions]
         public void DeviceArrived(IDualShockDevice device)
         {
             Log.Information("Device {Device} got attached", device);
@@ -99,6 +101,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
             }
         }
 
+        [HandleProcessCorruptedStateExceptions]
         public void DeviceRemoved(IDualShockDevice device)
         {
             Log.Information("Device {Device} got removed", device);
@@ -107,6 +110,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
             _deviceMap.Remove(device);
         }
 
+        [HandleProcessCorruptedStateExceptions]
         public void InputReportReceived(IDualShockDevice device, IInputReport report)
         {
             switch (device.DeviceType)
@@ -221,6 +225,7 @@ namespace Shibari.Sub.Sink.ViGEm.Core
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
 
+        [HandleProcessCorruptedStateExceptions]
         public void DeviceArrived(IDualShockDevice device)
         {
             var target = _client.CreateXbox360Controller();
@@ -247,12 +252,14 @@ namespace Shibari.Sub.Sink.ViGEm.Core
             }
         }
 
+        [HandleProcessCorruptedStateExceptions]
         public void DeviceRemoved(IDualShockDevice device)
         {
             _deviceMap[device].Disconnect();
             _deviceMap.Remove(device);
         }
 
+        [HandleProcessCorruptedStateExceptions]
         public void InputReportReceived(IDualShockDevice device, IInputReport report)
         {
             switch (device.DeviceType)
