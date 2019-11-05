@@ -27,7 +27,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             DeviceIndex = index;
 
             OutputReportBuffer = Marshal.AllocHGlobal(OutputReportBufferSize);
-            //_outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportSafe);
+            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportSafe);
 
             //
             // Start two tasks requesting input reports in parallel.
@@ -123,8 +123,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                 {
                     _inputCancellationTokenSourcePrimary.Cancel();
                     _inputCancellationTokenSourceSecondary.Cancel();
-                    //_outputReportTask.Dispose();
-                    //_outputReportTaskFinished.Wait(TimeSpan.FromSeconds(2));
+                    _outputReportTask.Dispose();
+                    _outputReportTaskFinished.Wait(TimeSpan.FromSeconds(2));
                 }
 
                 Marshal.FreeHGlobal(OutputReportBuffer);
