@@ -84,32 +84,32 @@ namespace Shibari.Dom.Server.Core
             #endregion
 
             // Log loaded sink plugins
-            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+            foreach (var plugin in SinkPlugins)
             {
-                Log.Information("Loaded sink plugin {Plugin}", plugin);
+                Log.Information("Loaded sink plugin {Plugin}", plugin.Metadata["Name"]);
 
-                plugin.RumbleRequestReceived += (sender, args) =>
+                plugin.Value.RumbleRequestReceived += (sender, args) =>
                     _childDevices[(IDualShockDevice) sender].Rumble(args.LargeMotor, args.SmallMotor);
             }
 
             // Log and enable sources
-            foreach (var emulator in BusEmulators.Select(e => e.Value))
+            foreach (var emulator in BusEmulators)
             {
-                Log.Information("Loaded bus emulator {Emulator}", emulator);
+                Log.Information("Loaded bus emulator {Emulator}", emulator.Metadata["Name"]);
 
-                emulator.ChildDeviceAttached += (sender, args) => _childDevices.Add(args.Device);
-                emulator.ChildDeviceRemoved += (sender, args) => _childDevices.Remove(args.Device);
-                emulator.InputReportReceived += EmulatorOnInputReportReceived;
+                emulator.Value.ChildDeviceAttached += (sender, args) => _childDevices.Add(args.Device);
+                emulator.Value.ChildDeviceRemoved += (sender, args) => _childDevices.Remove(args.Device);
+                emulator.Value.InputReportReceived += EmulatorOnInputReportReceived;
 
                 try
                 {
-                    Log.Information("Starting bus emulator {Emulator}", emulator);
-                    emulator.Start();
-                    Log.Information("Bus emulator {Emulator} started successfully", emulator);
+                    Log.Information("Starting bus emulator {Emulator}", emulator.Metadata["Name"]);
+                    emulator.Value.Start();
+                    Log.Information("Bus emulator {Emulator} started successfully", emulator.Metadata["Name"]);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Failed to start {@emulator}: {@ex}", emulator, ex);
+                    Log.Error("Failed to start {@emulator}: {@ex}", emulator.Metadata["Name"], ex);
                 }
             }
             
@@ -153,12 +153,12 @@ namespace Shibari.Dom.Server.Core
         {
             _ipcServer.Dispose();
 
-            foreach (var emulator in BusEmulators.Select(e => e.Value))
+            foreach (var emulator in BusEmulators)
             {
-                Log.Information("Stopping bus emulator {Emulator}", emulator);
-                emulator.InputReportReceived -= EmulatorOnInputReportReceived;
-                emulator.Stop();
-                Log.Information("Bus emulator {Emulator} stopped successfully", emulator);
+                Log.Information("Stopping bus emulator {Emulator}", emulator.Metadata["Name"]);
+                emulator.Value.InputReportReceived -= EmulatorOnInputReportReceived;
+                emulator.Value.Stop();
+                Log.Information("Bus emulator {Emulator} stopped successfully", emulator.Metadata["Name"]);
             }
         }
 
