@@ -14,6 +14,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         int DeviceIndex { get; }
 
+        string DevicePath { get; }
+
         void Rumble(byte largeMotor, byte smallMotor);
 
         void PairTo(PhysicalAddress host);

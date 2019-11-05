@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Threading;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -14,92 +9,47 @@ namespace Shibari.Sub.Source.FireShock.Bus
 {
     [ExportMetadata("Name", "FireShock Bus Emulator")]
     [Export(typeof(IBusEmulator))]
-    public class FireShockBusEmulator : IBusEmulator
+    public class FireShockBusEmulator : BusEmulatorBase
     {
-        private readonly IObservable<long> _deviceLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
-        private readonly ObservableCollection<FireShockDevice> _devices = new ObservableCollection<FireShockDevice>();
-        private IDisposable _deviceLookupTask;
-
-        public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
-        public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
-        public event InputReportReceivedEventHandler InputReportReceived;
-
-        public void Start()
+        public override void Start()
         {
+            base.Start();
+
             Log.Information("FireShock Bus Emulator started");
-
-            _devices.CollectionChanged += (sender, args) =>
-            {
-                switch (args.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        foreach (IDualShockDevice item in args.NewItems)
-                            ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(item));
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        foreach (IDualShockDevice item in args.OldItems)
-                            ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(item));
-                        break;
-                }
-            };
-
-            _deviceLookupTask = _deviceLookupSchedule.Subscribe(OnLookup);
-            OnLookup(0);
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            _deviceLookupTask?.Dispose();
-
-            foreach (var device in _devices)
-                device.Dispose();
-
-            _devices.Clear();
+            base.Stop();
 
             Log.Information("FireShock Bus Emulator stopped");
         }
 
-        private void OnLookup(long l)
+        protected override void OnLookup()
         {
-            if (!Monitor.TryEnter(_deviceLookupTask))
-                return;
+            var instanceId = 0;
 
-            try
+            while (Devcon.Find(FireShockDevice.ClassGuid, out var path, out var instance, instanceId++))
             {
-                var instanceId = 0;
+                if (ChildDevices.Any(h => h.DevicePath.Equals(path))) continue;
 
-                while (Devcon.Find(FireShockDevice.ClassGuid, out var path, out var instance, instanceId++))
+                Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
+
+                var device = FireShockDevice.CreateDevice(path, ChildDevices.Count);
+
+                device.DeviceDisconnected += (sender, args) =>
                 {
-                    if (_devices.Any(h => h.DevicePath.Equals(path))) continue;
+                    var dev = (FireShockDevice) sender;
+                    Log.Information("Device {Device} disconnected", dev);
+                    ChildDevices.Remove(dev);
+                    dev.Dispose();
+                };
 
-                    Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
+                ChildDevices.Add(device);
 
-                    var device = FireShockDevice.CreateDevice(path, _devices.Count);
-
-                    device.DeviceDisconnected += (sender, args) =>
-                    {
-                        var dev = (FireShockDevice) sender;
-                        Log.Information("Device {Device} disconnected", dev);
-                        _devices.Remove(dev);
-                        dev.Dispose();
-                    };
-
-                    _devices.Add(device);
-
-                    device.InputReportReceived += (sender, args) =>
-                        InputReportReceived?.Invoke(this,
-                            new InputReportReceivedEventArgs((IDualShockDevice) sender, args.Report));
-                }
+                device.InputReportReceived += (sender, args) =>
+                    OnInputReportReceived((IDualShockDevice) sender, args.Report);
             }
-            finally
-            {
-                Monitor.Exit(_deviceLookupTask);
-            }
-        }
-
-        public override string ToString()
-        {
-            return this.GetType().Name;
         }
     }
 }

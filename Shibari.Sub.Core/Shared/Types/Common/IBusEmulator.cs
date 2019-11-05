@@ -43,6 +43,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
     public interface IBusEmulator
     {
+        string Name { get; }
+
         void Start();
 
         void Stop();

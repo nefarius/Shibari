@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿using System;
+using System.Globalization;
+using System.Threading;
+using Serilog;
 using Shibari.Dom.Server.Core;
 using Topshelf;
 
@@ -8,11 +11,23 @@ namespace Shibari.Dom.Server
     {
         static void Main(string[] args)
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
             Log.Logger = new LoggerConfiguration()
+#if DEBUG
+                .MinimumLevel.Debug()
+#else
                 .MinimumLevel.Information()
+#endif
                 .WriteTo.Console()
                 .WriteTo.RollingFile("Logs\\Shibari.Dom.Server-{Date}.log")
                 .CreateLogger();
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+                {
+                    Log.Fatal("Unhandled exception: {Exception}", (Exception) eventArgs.ExceptionObject);
+                };
 
             HostFactory.Run(x =>
             {
@@ -24,7 +39,7 @@ namespace Shibari.Dom.Server
                 });
                 x.RunAsLocalSystem();
 
-                x.SetDescription("Manages AirBender & FireShock Devices.");
+                x.SetDescription("Manages AirBender, FireShock & BthPS3 Devices.");
                 x.SetDisplayName("Shibari Dom Server");
                 x.SetServiceName("Shibari.Dom.Server");
             });

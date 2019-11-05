@@ -16,7 +16,9 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();
         private readonly IObservable<long> _outputReportSchedule = Observable.Interval(TimeSpan.FromMilliseconds(10));
         private readonly IDisposable _outputReportTask;
+        private readonly ManualResetEventSlim _outputReportTaskFinished = new ManualResetEventSlim(false);
         protected IntPtr OutputReportBuffer { get; }
+        protected const int OutputReportBufferSize = 0x32;
 
         protected DualShockDevice(DualShockConnectionType connectionType, Kernel32.SafeObjectHandle handle, int index)
         {
@@ -24,8 +26,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             DeviceHandle = handle;
             DeviceIndex = index;
 
-            OutputReportBuffer = Marshal.AllocHGlobal(HidOutputReport.Length);
-            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReport);
+            OutputReportBuffer = Marshal.AllocHGlobal(OutputReportBufferSize);
+            _outputReportTask = _outputReportSchedule.Subscribe(OnOutputReportSafe);
 
             //
             // Start two tasks requesting input reports in parallel.
@@ -66,6 +68,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         public int DeviceIndex { get; }
 
+        public string DevicePath { get; protected set; }
+
         protected abstract byte[] HidOutputReport { get; }
 
         public event DualShockInputReportReceivedEventHandler InputReportReceived;
@@ -89,6 +93,18 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <param name="cancellationToken"><see cref="CancellationToken"/> to shutdown the worker.</param>
         protected abstract void RequestInputReportWorker(object cancellationToken);
 
+        /// <summary>
+        ///     Called periodically to submit output reports.
+        /// </summary>
+        protected void OnOutputReportSafe(long l)
+        {
+            _outputReportTaskFinished.Reset();
+
+            OnOutputReport(l);
+
+            _outputReportTaskFinished.Set();
+        }
+
         protected abstract void OnOutputReport(long l);
 
         protected void OnInputReport(IInputReport report)
@@ -108,6 +124,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                     _inputCancellationTokenSourcePrimary.Cancel();
                     _inputCancellationTokenSourceSecondary.Cancel();
                     _outputReportTask.Dispose();
+                    _outputReportTaskFinished.Wait(TimeSpan.FromSeconds(2));
                 }
 
                 Marshal.FreeHGlobal(OutputReportBuffer);

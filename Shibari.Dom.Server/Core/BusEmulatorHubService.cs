@@ -46,6 +46,7 @@ namespace Shibari.Dom.Server.Core
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceArrived(item);
                         }
+
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         foreach (IDualShockDevice item in args.OldItems)
@@ -55,6 +56,7 @@ namespace Shibari.Dom.Server.Core
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceRemoved(item);
                         }
+
                         break;
                 }
             };
@@ -110,7 +112,7 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {@ex}", emulator, ex);
                 }
             }
-
+            
             #region IPC
 
             var services = new DelegateServiceFactory();
@@ -149,6 +151,8 @@ namespace Shibari.Dom.Server.Core
 
         public void Stop()
         {
+            _ipcServer.Dispose();
+
             foreach (var emulator in BusEmulators.Select(e => e.Value))
             {
                 Log.Information("Stopping bus emulator {Emulator}", emulator);
@@ -170,11 +174,9 @@ namespace Shibari.Dom.Server.Core
 
         private HalibutRuntime _ipcServer;
 
-        [ImportMany]
-        private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
+        [ImportMany] private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
 
-        [ImportMany]
-        private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
+        [ImportMany] private Lazy<ISinkPlugin, IDictionary<string, object>>[] SinkPlugins { get; set; }
 
         #endregion
     }

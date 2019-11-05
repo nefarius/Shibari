@@ -1,5 +1,5 @@
-version: 1.0.{build}
-image: Visual Studio 2017
+version: 1.4.{build}
+image: Visual Studio 2019
 install:
 build_script:
 - ps: .\build.ps1
@@ -9,3 +9,5 @@ artifacts:
 deploy:
 - provider: Environment
   name: BUILDBOT
+  on:
+    appveyor_repo_tag: true

@@ -75,11 +75,6 @@ namespace Shibari.Sub.Source.FireShock.Core
         public static Guid ClassGuid => Guid.Parse("51ab481a-8d75-4bb6-9944-200a2f994e65");
 
         /// <summary>
-        ///     Device path identifying the device on the local system.
-        /// </summary>
-        public string DevicePath { get; }
-
-        /// <summary>
         ///     Factors a FireShock wrapper depending on the device type.
         /// </summary>
         /// <param name="path">Path of the device to open.</param>
