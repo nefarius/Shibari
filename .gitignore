@@ -265,3 +265,7 @@ __pycache__/
 /Shibari.Dom.Util.Pairing/Shibari.Dom.Util.Pairing.pvk
 /_.vs/Shibari/v15
 *.dotsettings
+/Sinks/Shibari.Sub.Sink.ViGEm.DS4/packages.config.new.20191105225310
+/Sinks/Shibari.Sub.Sink.ViGEm.DS4/packages.config.new.20191105224715
+/Sinks/Shibari.Sub.Sink.ViGEm.DS4/packages.config.new.20191105224714
+/Sinks/Shibari.Sub.Sink.ViGEm.DS4/FodyWeavers.xsd
