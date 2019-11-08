@@ -22,7 +22,7 @@
     <RepositoryUrl>https://github.com/ViGEm/Shibari</RepositoryUrl>
     <Description>WIP Sink plugin to combine two Navigation controllers into one X360 virtual controller</Description>
     <PackageReleaseNotes>First Version</PackageReleaseNotes>
-    <Company />
+    <Company>Nefarius Software Solutions e.U.</Company>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

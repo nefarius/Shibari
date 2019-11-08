@@ -41,11 +41,12 @@
   <PropertyGroup>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <Authors>Benjamin Höglinger-Stelzer</Authors>
-    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
+    <Copyright>Copyright (C) Nefarius Software Solutions e.U. 2019</Copyright>
     <Description>Management layer for AirBender &amp; FireShock device drivers</Description>
-    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ViGEm/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ViGEm/Shibari</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
+    <Company>Nefarius Software Solutions e.U.</Company>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Shibari.Dom.Server-20171103.log" />

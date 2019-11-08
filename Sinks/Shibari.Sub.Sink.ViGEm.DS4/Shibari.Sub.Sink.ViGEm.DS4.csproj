@@ -16,6 +16,11 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Authors>Benjamin Höglinger-Stelzer</Authors>
+    <Company>Nefarius Software Solutions e.U.</Company>
+    <Copyright>Copyright (C) Nefarius Software Solutions e.U. 2019</Copyright>
+    <PackageProjectUrl>https://github.com/ViGEm/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ViGEm/Shibari</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
