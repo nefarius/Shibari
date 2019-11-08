@@ -15,12 +15,14 @@
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <Authors>Benjamin Höglinger-Stelzer</Authors>
-    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
+    <Authors>Jason Hart, IonBlade</Authors>
+    <Copyright>Copyright (C) Nefarius Software Solutions e.U. 2019</Copyright>
     <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
-    <Description>Sink plugin for the Virtual Gamepad Emulation Bus</Description>
+    <PackageProjectUrl>https://github.com/ViGEm/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ViGEm/Shibari</RepositoryUrl>
+    <Description>WIP Sink plugin to combine two Navigation controllers into one X360 virtual controller</Description>
+    <PackageReleaseNotes>First Version</PackageReleaseNotes>
+    <Company />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

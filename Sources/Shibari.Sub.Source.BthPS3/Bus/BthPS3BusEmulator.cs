@@ -4,6 +4,7 @@ using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Source.BthPS3.Core;
+using System.Collections.Generic;
 
 namespace Shibari.Sub.Source.BthPS3.Bus
 {
@@ -11,11 +12,14 @@ namespace Shibari.Sub.Source.BthPS3.Bus
     [Export(typeof(IBusEmulator))]
     public class BthPS3BusEmulator : BusEmulatorBase
     {
+        private List<int> reclaimedDeviceIndices;
+
         /// <summary>
         ///     Initializes this instance of <see cref="BthPS3BusEmulator" />.
         /// </summary>
         public override void Start()
         {
+            reclaimedDeviceIndices = new List<int>();
             base.Start();
 
             Log.Information("BthPS3 Bus Emulator started");
@@ -49,7 +53,18 @@ namespace Shibari.Sub.Source.BthPS3.Bus
 
                 Log.Information("Found SIXAXIS device {Path} ({Instance})", path, instance);
 
-                var device = BthPS3Device.CreateSixaxisDevice(path, ChildDevices.Count);
+                //
+                // Find the lowest controller index that is currently unused
+                //
+                var newIndex = ChildDevices.Count;
+                if (reclaimedDeviceIndices.Count > 0)
+                {
+                    reclaimedDeviceIndices.Sort();
+                    newIndex = reclaimedDeviceIndices[0];
+                    reclaimedDeviceIndices.RemoveAt(0);
+                }
+
+                var device = BthPS3Device.CreateSixaxisDevice(path, newIndex);
 
                 //
                 // Subscribe to device removal event
@@ -59,6 +74,7 @@ namespace Shibari.Sub.Source.BthPS3.Bus
                     var dev = (BthPS3Device) sender;
                     Log.Information("Device {Device} disconnected", dev);
                     ChildDevices.Remove(dev);
+                    reclaimedDeviceIndices.Add(dev.DeviceIndex);
                     dev.Dispose();
                 };
 
@@ -87,7 +103,18 @@ namespace Shibari.Sub.Source.BthPS3.Bus
 
                 Log.Information("Found Navigation device {Path} ({Instance})", path, instance);
 
-                var device = BthPS3Device.CreateNavigationDevice(path, ChildDevices.Count);
+                //
+                // Find the lowest controller index that is currently unused
+                //
+                var newIndex = ChildDevices.Count;
+                if (reclaimedDeviceIndices.Count > 0)
+                {
+                    reclaimedDeviceIndices.Sort();
+                    newIndex = reclaimedDeviceIndices[0];
+                    reclaimedDeviceIndices.RemoveAt(0);
+                }
+
+                var device = BthPS3Device.CreateNavigationDevice(path, newIndex);
 
                 //
                 // Subscribe to device removal event
@@ -97,6 +124,7 @@ namespace Shibari.Sub.Source.BthPS3.Bus
                     var dev = (BthPS3Device) sender;
                     Log.Information("Device {Device} disconnected", dev);
                     ChildDevices.Remove(dev);
+                    reclaimedDeviceIndices.Add(dev.DeviceIndex);
                     dev.Dispose();
                 };
 
