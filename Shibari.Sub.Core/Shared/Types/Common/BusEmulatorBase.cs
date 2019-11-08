@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reactive.Linq;
@@ -12,6 +13,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         protected readonly ObservableCollection<DualShockDevice> ChildDevices =
             new ObservableCollection<DualShockDevice>();
+
+        protected List<int> reclaimedDeviceIndices; //TODO: Fix more in Base if possible
 
         private IDisposable _deviceLookupTask;
 

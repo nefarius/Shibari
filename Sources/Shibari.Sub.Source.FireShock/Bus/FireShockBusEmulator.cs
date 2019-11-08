@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Nefarius.Devcon;
 using Serilog;
@@ -13,6 +14,7 @@ namespace Shibari.Sub.Source.FireShock.Bus
     {
         public override void Start()
         {
+            reclaimedDeviceIndices = new List<int>();
             base.Start();
 
             Log.Information("FireShock Bus Emulator started");
@@ -35,13 +37,25 @@ namespace Shibari.Sub.Source.FireShock.Bus
 
                 Log.Information("Found FireShock device {Path} ({Instance})", path, instance);
 
-                var device = FireShockDevice.CreateDevice(path, ChildDevices.Count);
+                //
+                // Find the lowest controller index that is currently unused
+                //
+                var newIndex = ChildDevices.Count;
+                if (reclaimedDeviceIndices.Count > 0)
+                {
+                    reclaimedDeviceIndices.Sort();
+                    newIndex = reclaimedDeviceIndices[0];
+                    reclaimedDeviceIndices.RemoveAt(0);
+                }
+
+                var device = FireShockDevice.CreateDevice(path, newIndex);
 
                 device.DeviceDisconnected += (sender, args) =>
                 {
                     var dev = (FireShockDevice) sender;
                     Log.Information("Device {Device} disconnected", dev);
                     ChildDevices.Remove(dev);
+                    reclaimedDeviceIndices.Add(dev.DeviceIndex);
                     dev.Dispose();
                 };
 

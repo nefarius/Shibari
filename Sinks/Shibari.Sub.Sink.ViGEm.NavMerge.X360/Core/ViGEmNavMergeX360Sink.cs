@@ -120,7 +120,7 @@ namespace Shibari.Sub.Sink.ViGEm.NavMerge.X360.Core
         [HandleProcessCorruptedStateExceptions]
         public void InputReportReceived(IDualShockDevice device, IInputReport report)
         {
-            _target.ResetReport();
+            _target.ResetReport(); //This may be able to be optimized, look into later...
 
             // Convert report to DS3 format and store latest report for this device
             var ds3Report = (DualShock3InputReport)report;

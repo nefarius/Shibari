@@ -12,7 +12,6 @@ namespace Shibari.Sub.Source.BthPS3.Bus
     [Export(typeof(IBusEmulator))]
     public class BthPS3BusEmulator : BusEmulatorBase
     {
-        private List<int> reclaimedDeviceIndices;
 
         /// <summary>
         ///     Initializes this instance of <see cref="BthPS3BusEmulator" />.
