@@ -46,10 +46,12 @@ namespace Shibari.Dom.Server.Core
                             Log.Information("Device {Device} got attached via {ConnectionType}", item,
                                 item.ConnectionType);
 
+                            // Crude auto-pairing mechanism in case BthPS3 is present
                             if (item.ConnectionType.Equals(DualShockConnectionType.USB)
                                 && BusEmulators.Select(be => be.Value).Any(b => b.Name == "BthPS3BusEmulator")
                                 && BluetoothAdapter.GetDefault() != null)
                             {
+                                // Get address of detected primary radio
                                 var hostAddress = new PhysicalAddress(BitConverter
                                     .GetBytes(BluetoothAdapter.GetDefault().BluetoothAddress).Take(6).Reverse()
                                     .ToArray());
@@ -57,6 +59,7 @@ namespace Shibari.Dom.Server.Core
                                 Log.Information("Auto-pairing device {Device} to {HostAddress}",
                                     item, hostAddress.AsFriendlyName());
 
+                                // Pair USB device
                                 item.PairTo(hostAddress);
                             }
 
