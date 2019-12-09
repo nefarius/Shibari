@@ -11,6 +11,8 @@ namespace Shibari.Sub.Source.BthPS3.Bus
     [Export(typeof(IBusEmulator))]
     public class BthPS3BusEmulator : BusEmulatorBase
     {
+        public override BusEmulatorConnectionType ConnectionType { get; } = BusEmulatorConnectionType.Wireless;
+
         /// <summary>
         ///     Initializes this instance of <see cref="BthPS3BusEmulator" />.
         /// </summary>

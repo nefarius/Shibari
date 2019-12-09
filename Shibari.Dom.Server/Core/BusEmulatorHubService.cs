@@ -43,6 +43,12 @@ namespace Shibari.Dom.Server.Core
                         {
                             Log.Information("Device {Device} got attached via {ConnectionType}", item,
                                 item.ConnectionType);
+
+                            //if (item.ConnectionType.Equals(DualShockConnectionType.USB))
+                            //{
+                            //    
+                            //}
+
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceArrived(item);
                         }

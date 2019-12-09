@@ -25,6 +25,8 @@ namespace Shibari.Sub.Source.AirBender.Bus
 
         public string Name { get; }
 
+        public BusEmulatorConnectionType ConnectionType { get; } = BusEmulatorConnectionType.Wireless;
+
         public void Start()
         {
             Log.Information("AirBender Bus Emulator started");

@@ -17,6 +17,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         public string Name => GetType().Name;
 
+        public abstract BusEmulatorConnectionType ConnectionType { get; }
+
         public virtual void Start()
         {
             ChildDevices.CollectionChanged += (sender, args) =>

@@ -41,9 +41,17 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
     public delegate void InputReportReceivedEventHandler(object sender, InputReportReceivedEventArgs e);
 
+    public enum BusEmulatorConnectionType
+    {
+        Wired,
+        Wireless
+    }
+
     public interface IBusEmulator
     {
         string Name { get; }
+
+        BusEmulatorConnectionType ConnectionType { get; }
 
         void Start();
 

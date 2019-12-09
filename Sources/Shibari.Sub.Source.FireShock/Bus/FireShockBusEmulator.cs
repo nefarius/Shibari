@@ -11,6 +11,8 @@ namespace Shibari.Sub.Source.FireShock.Bus
     [Export(typeof(IBusEmulator))]
     public class FireShockBusEmulator : BusEmulatorBase
     {
+        public override BusEmulatorConnectionType ConnectionType { get; } = BusEmulatorConnectionType.Wired;
+
         public override void Start()
         {
             base.Start();
