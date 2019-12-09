@@ -1,6 +1,6 @@
 using System;
 using Nuke.Common;
-using Nuke.Common.BuildServers;
+using Nuke.Common.CI.AppVeyor;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.MSBuild;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
