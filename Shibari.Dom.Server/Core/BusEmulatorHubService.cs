@@ -9,6 +9,7 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using Halibut;
 using Halibut.ServiceModel;
+using InTheHand.Devices.Bluetooth;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
 using Shibari.Sub.Core.Shared.IPC;
@@ -17,6 +18,7 @@ using Shibari.Sub.Core.Shared.IPC.Types;
 using Shibari.Sub.Core.Shared.Types.Common;
 using Shibari.Sub.Core.Shared.Types.Common.Collections;
 using Shibari.Sub.Core.Shared.Types.Common.Sinks;
+using Shibari.Sub.Core.Util;
 
 namespace Shibari.Dom.Server.Core
 {
@@ -44,10 +46,19 @@ namespace Shibari.Dom.Server.Core
                             Log.Information("Device {Device} got attached via {ConnectionType}", item,
                                 item.ConnectionType);
 
-                            //if (item.ConnectionType.Equals(DualShockConnectionType.USB))
-                            //{
-                            //    
-                            //}
+                            if (item.ConnectionType.Equals(DualShockConnectionType.USB)
+                                && BusEmulators.Select(be => be.Value).Any(b => b.Name == "BthPS3BusEmulator")
+                                && BluetoothAdapter.GetDefault() != null)
+                            {
+                                var hostAddress = new PhysicalAddress(BitConverter
+                                    .GetBytes(BluetoothAdapter.GetDefault().BluetoothAddress).Take(6).Reverse()
+                                    .ToArray());
+
+                                Log.Information("Auto-pairing device {Device} to {HostAddress}",
+                                    item, hostAddress.AsFriendlyName());
+
+                                item.PairTo(hostAddress);
+                            }
 
                             foreach (var plugin in SinkPlugins.Select(p => p.Value))
                                 plugin.DeviceArrived(item);
@@ -118,7 +129,7 @@ namespace Shibari.Dom.Server.Core
                     Log.Error("Failed to start {@emulator}: {@ex}", emulator.Metadata["Name"], ex);
                 }
             }
-            
+
             #region IPC
 
             var services = new DelegateServiceFactory();
