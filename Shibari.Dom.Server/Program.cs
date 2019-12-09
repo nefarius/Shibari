@@ -48,7 +48,7 @@ namespace Shibari.Dom.Server
             }
             catch (Exception ex)
             {
-                Log.Fatal("Error unblocking files, program may be unusable, contact support!");
+                Log.Fatal("Error unblocking files, program may be unusable, contact support! {@Exception}", ex);
                 return;
             }
 
