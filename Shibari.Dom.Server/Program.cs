@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -49,6 +50,9 @@ namespace Shibari.Dom.Server
             catch (Exception ex)
             {
                 Log.Fatal("Error unblocking files, program may be unusable, contact support! {@Exception}", ex);
+                Process.Start("https://forums.vigem.org/topic/375/manually-unblock-shibari-archive");
+                Console.WriteLine("Press any key to escape the madness! :)");
+                Console.ReadKey();
                 return;
             }
 
