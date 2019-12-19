@@ -39,33 +39,45 @@ namespace Shibari.Dom.Server
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
-                Log.Fatal("Unhandled exception: {Exception}", (Exception) eventArgs.ExceptionObject);
+                Log.Fatal("Unhandled exception: {Exception}", (Exception)eventArgs.ExceptionObject);
             };
 
             #endregion
 
             #region Self-Unblocking
 
-            try
-            {
-                var domRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
-                var files = Directory.GetFiles(domRoot, "*.dll", SearchOption.AllDirectories);
+            var domRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
+            var rootDrive = new DriveInfo(domRoot);
 
-                foreach (var fileInfo in files.Select(f => new FileInfo(f)))
+            // ADS is only present on NTFS formatted drives
+            if (rootDrive.DriveFormat.Equals("NTFS", StringComparison.InvariantCultureIgnoreCase))
+            {
+                try
                 {
-                    if (!fileInfo.AlternateDataStreamExists("Zone.Identifier")) continue;
-                    Log.Information("Removing Zone.Identifier from file {File}", fileInfo.Name);
-                    var ads = fileInfo.GetAlternateDataStream("Zone.Identifier", FileMode.Open);
-                    ads.Delete();
+
+                    var files = Directory.GetFiles(domRoot, "*.dll", SearchOption.AllDirectories);
+
+                    foreach (var fileInfo in files.Select(f => new FileInfo(f)))
+                    {
+                        if (!fileInfo.AlternateDataStreamExists("Zone.Identifier")) continue;
+                        Log.Information("Removing Zone.Identifier from file {File}", fileInfo.Name);
+                        var ads = fileInfo.GetAlternateDataStream("Zone.Identifier", FileMode.Open);
+                        ads.Delete();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Fatal("Error unblocking files, program may be unusable, contact support! {@Exception}", ex);
+                    Process.Start("https://forums.vigem.org/topic/375/manually-unblock-shibari-archive");
+                    Console.WriteLine("Press any key to escape the madness! :)");
+                    Console.ReadKey();
+                    return;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Log.Fatal("Error unblocking files, program may be unusable, contact support! {@Exception}", ex);
-                Process.Start("https://forums.vigem.org/topic/375/manually-unblock-shibari-archive");
-                Console.WriteLine("Press any key to escape the madness! :)");
-                Console.ReadKey();
-                return;
+                Log.Information("Process started from {Filesystem} formatted drive, no unblocking necessary",
+                    rootDrive.DriveFormat);
             }
 
             #endregion
