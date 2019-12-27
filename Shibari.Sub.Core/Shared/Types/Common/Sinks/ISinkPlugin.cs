@@ -19,6 +19,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common.Sinks
 
     public interface ISinkPlugin
     {
+        bool IsEnabled { get; }
+
         void DeviceArrived(IDualShockDevice device);
 
         void DeviceRemoved(IDualShockDevice device);

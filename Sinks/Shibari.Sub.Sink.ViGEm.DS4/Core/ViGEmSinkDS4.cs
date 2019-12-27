@@ -15,7 +15,7 @@ namespace Shibari.Sub.Sink.ViGEm.DS4.Core
 {
     [ExportMetadata("Name", "ViGEm DualShock 4 Sink")]
     [Export(typeof(ISinkPlugin))]
-    public class ViGEmSinkDS4 : ISinkPlugin
+    public class ViGEmSinkDS4 : SinkPluginBase, ISinkPlugin
     {
         private readonly Dictionary<DualShock3Buttons, DualShock4Button> _btnMap;
         private readonly ViGEmClient _client;
@@ -67,6 +67,8 @@ namespace Shibari.Sub.Sink.ViGEm.DS4.Core
         }
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
+
+        public bool IsEnabled => Configuration.IsEnabled;
 
         [HandleProcessCorruptedStateExceptions]
         public void DeviceArrived(IDualShockDevice device)

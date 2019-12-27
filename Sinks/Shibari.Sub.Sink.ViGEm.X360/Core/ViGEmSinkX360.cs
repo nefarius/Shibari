@@ -19,7 +19,7 @@ namespace Shibari.Sub.Sink.ViGEm.X360.Core
 
     [ExportMetadata("Name", "ViGEm Xbox 360 Sink")]
     [Export(typeof(ISinkPlugin))]
-    public class ViGEmSinkX360 : ISinkPlugin
+    public class ViGEmSinkX360 : SinkPluginBase, ISinkPlugin
     {
         private readonly Dictionary<DualShock3Buttons, Xbox360Button> _btnMap;
         private readonly ViGEmClient _client;
@@ -74,6 +74,8 @@ namespace Shibari.Sub.Sink.ViGEm.X360.Core
         }
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
+
+        public bool IsEnabled => Configuration.IsEnabled;
 
         [HandleProcessCorruptedStateExceptions]
         public void DeviceArrived(IDualShockDevice device)

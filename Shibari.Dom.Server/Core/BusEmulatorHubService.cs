@@ -63,7 +63,7 @@ namespace Shibari.Dom.Server.Core
                                 item.PairTo(hostAddress);
                             }
 
-                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            foreach (var plugin in SinkPlugins.Where(p => p.Value.IsEnabled).Select(p => p.Value))
                                 plugin.DeviceArrived(item);
                         }
 
@@ -73,7 +73,7 @@ namespace Shibari.Dom.Server.Core
                         {
                             Log.Information("Device {Device} got removed via {ConnectionType}", item,
                                 item.ConnectionType);
-                            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+                            foreach (var plugin in SinkPlugins.Where(p => p.Value.IsEnabled).Select(p => p.Value))
                                 plugin.DeviceRemoved(item);
                         }
 
@@ -104,7 +104,7 @@ namespace Shibari.Dom.Server.Core
             #endregion
 
             // Log loaded sink plugins
-            foreach (var plugin in SinkPlugins)
+            foreach (var plugin in SinkPlugins.Where(p => p.Value.IsEnabled))
             {
                 Log.Information("Loaded sink plugin {Plugin}", plugin.Metadata["Name"]);
 
