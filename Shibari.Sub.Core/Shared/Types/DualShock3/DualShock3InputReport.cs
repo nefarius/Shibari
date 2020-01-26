@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Shibari.Sub.Core.Shared.Exceptions;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -10,24 +11,28 @@ namespace Shibari.Sub.Core.Shared.Types.DualShock3
     {
         public DualShock3InputReport(byte[] buffer)
         {
+            if (buffer.Length != Buffer.Length)
+                throw new ArgumentOutOfRangeException("buffer", buffer.Length, "Input report size mismatch.");
+
+            if (buffer[0] != 0x01)
+                throw new InvalidDataException("Invalid input report identifier supplied.");
+
             System.Buffer.BlockCopy(buffer, 0, Buffer, 0, Buffer.Length);
         }
-
-        public byte[] Buffer { get; } = new byte[49];
 
         public IEnumerable<DualShock3Buttons> EngagedButtons
         {
             get
             {
                 var buttons =
-                    (uint)((Buffer[2] << 0) | (Buffer[3] << 8) | (Buffer[4] << 16) | (Buffer[5] << 24));
+                    (uint) ((Buffer[2] << 0) | (Buffer[3] << 8) | (Buffer[4] << 16) | (Buffer[5] << 24));
 
                 return Enum.GetValues(typeof(DualShock3Buttons)).Cast<DualShock3Buttons>()
-                    .Where(button => (buttons & (uint)button) == (uint)button);
+                    .Where(button => (buttons & (uint) button) == (uint) button);
             }
         }
 
-        public DualShockBatterStates BatteryState => (DualShockBatterStates)Buffer[30];
+        public DualShockBatterStates BatteryState => (DualShockBatterStates) Buffer[30];
 
         public byte this[DualShock3Axes axis]
         {
@@ -72,5 +77,7 @@ namespace Shibari.Sub.Core.Shared.Types.DualShock3
                 throw new InvalidAxisException("The specified axis does not exist");
             }
         }
+
+        public byte[] Buffer { get; } = new byte[49];
     }
 }
