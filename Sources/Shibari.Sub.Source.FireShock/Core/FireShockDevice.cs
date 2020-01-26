@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -162,13 +163,27 @@ namespace Shibari.Sub.Source.FireShock.Core
                         out var bytesReturned);
 
                     if (!ret)
+                    {
+                        var nex = new Win32Exception(Marshal.GetLastWin32Error());
+
+                        // Valid exception in case the device got surprise-removed, end worker
+                        if (nex.NativeErrorCode == Win32ErrorCode.ERROR_OPERATION_ABORTED)
+                            return;
+
                         throw new FireShockReadInputReportFailedException(
-                            "Failed to read input report.",
-                            new Win32Exception(Marshal.GetLastWin32Error()));
+                            "Failed to read input report.", nex);
+                    }
 
                     Marshal.Copy(unmanagedBuffer, buffer, 0, bytesReturned);
 
-                    OnInputReport(new DualShock3InputReport(buffer));
+                    try
+                    {
+                        OnInputReport(new DualShock3InputReport(buffer));
+                    }
+                    catch (InvalidDataException ide)
+                    {
+                        Log.Warning("Malformed input report received: {Exception}", ide);
+                    }
                 }
             }
             catch (Exception ex)

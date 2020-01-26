@@ -11,8 +11,8 @@ namespace Shibari.Sub.Core.Shared.Types.DualShock3
     {
         public DualShock3InputReport(byte[] buffer)
         {
-            if (buffer.Length != Buffer.Length)
-                throw new ArgumentOutOfRangeException("buffer", buffer.Length, "Input report size mismatch.");
+            if (buffer.Length < Buffer.Length)
+                throw new ArgumentOutOfRangeException("buffer", buffer.Length, "Input report too small.");
 
             if (buffer[0] != 0x01)
                 throw new InvalidDataException("Invalid input report identifier supplied.");
