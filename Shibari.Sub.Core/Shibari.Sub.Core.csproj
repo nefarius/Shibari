@@ -65,14 +65,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="4.1.0" />
-    <PackageReference Include="Fody" Version="6.0.5">
+    <PackageReference Include="Fody" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="PInvoke.Kernel32" Version="0.6.6" />
     <PackageReference Include="PInvoke.Windows.Core" Version="0.6.6" />
-    <PackageReference Include="System.Reactive.Linq" Version="4.3.1" />  
+    <PackageReference Include="System.Reactive.Linq" Version="4.3.2" />  
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
