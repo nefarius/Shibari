@@ -1,0 +1,36 @@
+﻿{
+  "sources": [
+    {
+      "fullName": "Shibari.Sub.Source.AirBender",
+      "configuration": {
+        "isEnabled": false
+      }
+    },
+    {
+      "fullName": "Shibari.Sub.Source.BthPS3",
+      "configuration": {
+        "isEnabled": true
+      }
+    },
+    {
+      "fullName": "Shibari.Sub.Source.FireShock",
+      "configuration": {
+        "isEnabled": true
+      }
+    }
+  ],
+  "sinks": [
+    {
+      "fullName": "Shibari.Sub.Sink.ViGEm.DS4.Core.ViGEmSinkDS4",
+      "configuration": {
+        "isEnabled": false
+      }
+    },
+    {
+      "fullName": "Shibari.Sub.Sink.ViGEm.X360.Core.ViGEmSinkX360",
+      "configuration": {
+        "isEnabled": true
+      }
+    }
+  ]
+}

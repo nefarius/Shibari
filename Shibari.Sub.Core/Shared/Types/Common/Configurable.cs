@@ -1,7 +1,6 @@
-﻿using System.Dynamic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Shibari.Sub.Core.Util;
+﻿using System.Collections;
+using System.Linq;
+using JsonConfig;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
@@ -12,13 +11,13 @@ namespace Shibari.Sub.Core.Shared.Types.Common
     {
         protected Configurable()
         {
-            Configuration = JsonApplicationConfiguration.Load<ExpandoObject>(GetType().Name, false, false);
+            Configuration = ((IEnumerable) Config.Global.Sinks).Cast<dynamic>()
+                .FirstOrDefault(s => s.FullName.Equals(GetType().FullName))?.Configuration;
         }
 
         /// <summary>
         ///     Gets dynamic configuration properties from JSON.
         /// </summary>
-        [JsonConverter(typeof(ExpandoObjectConverter))]
         public dynamic Configuration { get; }
     }
 }
