@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -77,8 +78,15 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                             new Win32Exception(Marshal.GetLastWin32Error()));
 
                     var resp = Marshal.PtrToStructure<AirBenderHost.AirbenderGetDs3InputReport>(requestBuffer);
-
-                    OnInputReport(new DualShock3InputReport(resp.ReportBuffer));
+                    
+                    try
+                    {
+                        OnInputReport(new DualShock3InputReport(resp.ReportBuffer));
+                    }
+                    catch (InvalidDataException ide)
+                    {
+                        Log.Warning("Malformed input report received: {Exception}", ide);
+                    }
                 }
             }
             catch (Exception ex)

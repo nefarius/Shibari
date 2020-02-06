@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
@@ -202,8 +203,15 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         }
 
                         Marshal.Copy(unmanagedBuffer, buffer, 0, buffer.Length);
-
-                        OnInputReport(new DualShock3InputReport(buffer.Skip(1).ToArray()));
+                        
+                        try
+                        {
+                            OnInputReport(new DualShock3InputReport(buffer.Skip(1).ToArray()));
+                        }
+                        catch (InvalidDataException ide)
+                        {
+                            Log.Warning("Malformed input report received: {Exception}", ide);
+                        }
                     }
                 }
                 catch (Exception ex)
