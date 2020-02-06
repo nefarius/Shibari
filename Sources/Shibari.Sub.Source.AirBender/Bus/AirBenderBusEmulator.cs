@@ -7,13 +7,14 @@ using System.Threading;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
+using Shibari.Sub.Core.Shared.Types.Common.Sources;
 using Shibari.Sub.Source.AirBender.Core.Host;
 
 namespace Shibari.Sub.Source.AirBender.Bus
 {
     [ExportMetadata("Name", "AirBender Bus Emulator")]
     [Export(typeof(IBusEmulator))]
-    public class AirBenderBusEmulator : IBusEmulator
+    public class AirBenderBusEmulator : SourcePluginBase, IBusEmulator
     {
         private readonly IObservable<long> _hostLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
         private readonly ObservableCollection<AirBenderHost> _hosts = new ObservableCollection<AirBenderHost>();

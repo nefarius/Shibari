@@ -68,8 +68,6 @@ namespace Shibari.Sub.Sink.ViGEm.DS4.Core
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
 
-        public bool IsEnabled => Configuration.IsEnabled;
-
         [HandleProcessCorruptedStateExceptions]
         public void DeviceArrived(IDualShockDevice device)
         {

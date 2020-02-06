@@ -113,7 +113,7 @@ namespace Shibari.Dom.Server.Core
             }
 
             // Log and enable sources
-            foreach (var emulator in BusEmulators)
+            foreach (var emulator in BusEmulators.Where(p => p.Value.IsEnabled))
             {
                 Log.Information("Loaded bus emulator {Emulator}", emulator.Metadata["Name"]);
 

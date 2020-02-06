@@ -51,6 +51,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
     {
         string Name { get; }
 
+        bool IsEnabled { get; }
+
         BusEmulatorConnectionType ConnectionType { get; }
 
         void Start();

@@ -1,19 +1,19 @@
 ﻿{
   "sources": [
     {
-      "fullName": "Shibari.Sub.Source.AirBender",
+      "fullName": "Shibari.Sub.Source.AirBender.Bus.AirBenderBusEmulator",
       "configuration": {
         "isEnabled": false
       }
     },
     {
-      "fullName": "Shibari.Sub.Source.BthPS3",
+      "fullName": "Shibari.Sub.Source.BthPS3.Bus.BthPS3BusEmulator",
       "configuration": {
         "isEnabled": true
       }
     },
     {
-      "fullName": "Shibari.Sub.Source.FireShock",
+      "fullName": "Shibari.Sub.Source.FireShock.Bus.FireShockBusEmulator",
       "configuration": {
         "isEnabled": true
       }

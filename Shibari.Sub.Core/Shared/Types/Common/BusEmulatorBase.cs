@@ -3,10 +3,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reactive.Linq;
 using System.Threading;
+using Shibari.Sub.Core.Shared.Types.Common.Sources;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
-    public abstract class BusEmulatorBase : IBusEmulator
+    public abstract class BusEmulatorBase : SourcePluginBase, IBusEmulator
     {
         private readonly IObservable<long> _deviceLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
 
