@@ -18,7 +18,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                     Configuration = ((IEnumerable) Config.Global.Sinks).Cast<dynamic>()
                         .FirstOrDefault(s => s.FullName.Equals(GetType().FullName))?.Configuration;
                     break;
-                default:
+                case BusEmulatorBase _:
                     Configuration = ((IEnumerable) Config.Global.Sources).Cast<dynamic>()
                         .FirstOrDefault(s => s.FullName.Equals(GetType().FullName))?.Configuration;
                     break;

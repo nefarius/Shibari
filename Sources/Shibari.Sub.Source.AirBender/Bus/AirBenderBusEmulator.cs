@@ -1,89 +1,62 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Threading;
 using Nefarius.Devcon;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
-using Shibari.Sub.Core.Shared.Types.Common.Sources;
 using Shibari.Sub.Source.AirBender.Core.Host;
 
 namespace Shibari.Sub.Source.AirBender.Bus
 {
     [ExportMetadata("Name", "AirBender Bus Emulator")]
     [Export(typeof(IBusEmulator))]
-    public class AirBenderBusEmulator : SourcePluginBase, IBusEmulator
+    public class AirBenderBusEmulator : BusEmulatorBase
     {
-        private readonly IObservable<long> _hostLookupSchedule = Observable.Interval(TimeSpan.FromSeconds(2));
         private readonly ObservableCollection<AirBenderHost> _hosts = new ObservableCollection<AirBenderHost>();
-        private IDisposable _hostLookupTask;
 
-        public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
-        public event ChildDeviceRemovedEventHandler ChildDeviceRemoved;
-        public event InputReportReceivedEventHandler InputReportReceived;
+        public override BusEmulatorConnectionType ConnectionType { get; } = BusEmulatorConnectionType.Wireless;
 
-        public string Name { get; }
-
-        public BusEmulatorConnectionType ConnectionType { get; } = BusEmulatorConnectionType.Wireless;
-
-        public void Start()
+        public override void Start()
         {
-            Log.Information("AirBender Bus Emulator started");
+            base.Start();
 
-            _hostLookupTask = _hostLookupSchedule.Subscribe(OnLookup);
-            OnLookup(0);
+            Log.Information("AirBender Bus Emulator started");
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            _hostLookupTask?.Dispose();
-
-            foreach (var host in _hosts)
-                host.Dispose();
+            base.Stop();
 
             _hosts.Clear();
 
             Log.Information("AirBender Bus Emulator stopped");
         }
 
-        private void OnLookup(long l)
+        protected override void OnLookup()
         {
-            if (!Monitor.TryEnter(_hostLookupTask))
-                return;
+            var instanceId = 0;
 
-            try
+            while (Devcon.Find(AirBenderHost.ClassGuid, out var path, out var instance, instanceId++))
             {
-                var instanceId = 0;
+                if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
 
-                while (Devcon.Find(AirBenderHost.ClassGuid, out var path, out var instance, instanceId++))
+                Log.Information("Found AirBender device {Path} ({Instance})", path, instance);
+
+                var host = new AirBenderHost(path);
+
+                host.HostDeviceDisconnected += (sender, args) =>
                 {
-                    if (_hosts.Any(h => h.DevicePath.Equals(path))) continue;
+                    var device = (AirBenderHost) sender;
+                    _hosts.Remove(device);
+                    device.Dispose();
+                };
 
-                    Log.Information("Found AirBender device {Path} ({Instance})", path, instance);
+                host.ChildDeviceAttached += (sender, args) => ChildDevices.Add((DualShockDevice) args.Device);
+                host.ChildDeviceRemoved += (sender, args) => ChildDevices.Remove((DualShockDevice) args.Device);
+                host.InputReportReceived += (sender, args) =>
+                    OnInputReportReceived((DualShockDevice) args.Device, args.Report);
 
-                    var host = new AirBenderHost(path);
-
-                    host.HostDeviceDisconnected += (sender, args) =>
-                    {
-                        var device = (AirBenderHost) sender;
-                        _hosts.Remove(device);
-                        device.Dispose();
-                    };
-                    host.ChildDeviceAttached += (o, eventArgs) =>
-                        ChildDeviceAttached?.Invoke(this, new ChildDeviceAttachedEventArgs(eventArgs.Device));
-                    host.ChildDeviceRemoved += (o, eventArgs) =>
-                        ChildDeviceRemoved?.Invoke(this, new ChildDeviceRemovedEventArgs(eventArgs.Device));
-                    host.InputReportReceived += (sender, args) =>
-                        InputReportReceived?.Invoke(this, new InputReportReceivedEventArgs(args.Device, args.Report));
-
-                    _hosts.Add(host);
-                }
-            }
-            finally
-            {
-                Monitor.Exit(_hostLookupTask);
+                _hosts.Add(host);
             }
         }
 
