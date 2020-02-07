@@ -44,6 +44,9 @@ namespace Shibari.Dom.Server
 
             #endregion
 
+            Log.Information("Launching Shibari, version: {Version}",
+                Assembly.GetExecutingAssembly().GetName().Version);
+
             #region Self-Unblocking
 
             var domRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
