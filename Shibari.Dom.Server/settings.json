@@ -1,48 +1,104 @@
 ﻿{
+  /*
+   * "Sources" are plugins handling INPUT devices and their traffic
+   */
   "sources": [
     {
+      /*
+       * AirBender driver plugin (https://github.com/ViGEm/AirBender)
+       */
       "fullName": "Shibari.Sub.Source.AirBender.Bus.AirBenderBusEmulator",
       "configuration": {
+        /*
+         * AirBender source is disabled by default since the driver is obsolete.
+         * To use anyway, set this value to true.
+         */
         "isEnabled": false
       }
     },
     {
+      /*
+       * BthPS3 driver plugin (https://github.com/nefarius/BthPS3)
+       */
       "fullName": "Shibari.Sub.Source.BthPS3.Bus.BthPS3BusEmulator",
       "configuration": {
         "isEnabled": true
       }
     },
     {
+      /*
+       * FireShock driver plugin (https://github.com/ViGEm/FireShock)
+       */
       "fullName": "Shibari.Sub.Source.FireShock.Bus.FireShockBusEmulator",
       "configuration": {
         "isEnabled": true
       }
     }
   ],
+  /*
+   * "Sinks" are OUTPUT plugins typically emulating common controllers.
+   * Requires ViGEmBus to be present to function (https://github.com/ViGEm/ViGEmBus)
+   */
   "sinks": [
     {
+      /*
+       * Emulates a DualShock 4 Controller
+       */
       "fullName": "Shibari.Sub.Sink.ViGEm.DS4.Core.ViGEmSinkDS4",
       "configuration": {
+        /*
+         * Disabled by default, set to true to enable
+         */
         "isEnabled": false
       }
     },
     {
+      /*
+       * Emulates an Xbox 360 Controller
+       */
       "fullName": "Shibari.Sub.Sink.ViGEm.X360.Core.ViGEmSinkX360",
       "configuration": {
+        /*
+         * Enabled by default, set to false to disable
+         */
         "isEnabled": true
       }
     }
   ],
+  /*
+   * Core service settings
+   */
   "core": {
+    /*
+     * IPC section
+     */
     "halibut": {
+      /*
+       * IPC server disabled by default
+       */
       "isEnabled": false,
+      /*
+       * Server settings
+       */
       "serverEndpoint": {
+        /*
+         * IPv6 loopback
+         */
         "listenAddress": "::1",
+        /*
+         * Port to listen on
+         */
         "listenPort": 26764
       },
+      /*
+       * Client settings
+       */
       "clientEndpoint": {
+        /*
+         * URL the server is reachable on
+         */
         "url": "https://localhost:26764/"
-      } 
+      }
     }
   }
 }
