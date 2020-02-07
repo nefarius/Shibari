@@ -61,11 +61,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             private async Task Init()
             {
-                //
-                // Send initial output report
-                // 
-                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
-
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
                 //
