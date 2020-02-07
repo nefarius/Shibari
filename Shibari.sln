@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Dom.Management.Powe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerShell", "PowerShell", "{DE5FF786-F510-46E6-AD4C-86004967CE99}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{F6C81F08-AD5F-49E0-935E-5BC6990570FC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Source.BthPS3", "Sources\Shibari.Sub.Source.BthPS3\Shibari.Sub.Source.BthPS3.csproj", "{6450BAA2-CEF4-4F63-A4BF-57DD0D6F8180}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shibari.Sub.Sink.ViGEm.DS4", "Sinks\Shibari.Sub.Sink.ViGEm.DS4\Shibari.Sub.Sink.ViGEm.DS4.csproj", "{9F735B7B-7E7F-42C7-8F1C-C89BC41C89B8}"
@@ -57,8 +55,6 @@ Global
 		{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBE483E2-F5D1-4FAF-A0A8-6379326D652B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6C81F08-AD5F-49E0-935E-5BC6990570FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6C81F08-AD5F-49E0-935E-5BC6990570FC}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{6450BAA2-CEF4-4F63-A4BF-57DD0D6F8180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6450BAA2-CEF4-4F63-A4BF-57DD0D6F8180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6450BAA2-CEF4-4F63-A4BF-57DD0D6F8180}.Release|Any CPU.ActiveCfg = Release|Any CPU
