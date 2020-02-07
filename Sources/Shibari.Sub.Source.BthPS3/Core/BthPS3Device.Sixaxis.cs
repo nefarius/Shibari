@@ -180,7 +180,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
             protected override void RequestInputReportWorker(object cancellationToken)
             {
                 var token = (CancellationToken) cancellationToken;
-                var buffer = new byte[0x32];
+                var buffer = new byte[0x0D];
                 var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
 
                 try
