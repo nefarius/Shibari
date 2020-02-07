@@ -1,8 +1,22 @@
 version: 1.5.{build}
 image: Visual Studio 2019
+configuration:
+- Release
 install:
-build_script:
-- ps: .\build.ps1
+- cmd: git submodule -q update --init
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+before_build:
+- nuget restore
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
+test: off
 artifacts:
 - path: bin
   name: Shibari
