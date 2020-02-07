@@ -65,8 +65,14 @@
       }
     }
   ],
+  /*
+   * Device-specific settings
+   */
   "dualShockDevices": [
     {
+      /*
+       * Targets a SIXAXIS/DualShock connected over BthPS3
+       */
       "fullName": "Shibari.Sub.Source.BthPS3.Core.BthPS3Device+SixaxisDevice",
       "configuration": {
         "dumpInputReport": true
