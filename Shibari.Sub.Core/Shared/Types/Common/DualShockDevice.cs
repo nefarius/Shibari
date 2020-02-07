@@ -20,7 +20,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         protected IntPtr OutputReportBuffer { get; }
         protected const int OutputReportBufferSize = 0x32;
 
-        protected DualShockDevice(DualShockConnectionType connectionType, Kernel32.SafeObjectHandle handle, int index)
+        protected DualShockDevice(DualShockConnectionType connectionType, Kernel32.SafeObjectHandle handle, int index, bool spawnSecondaryWorker = true)
         {
             ConnectionType = connectionType;
             DeviceHandle = handle;
@@ -38,7 +38,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
             // completed. Each thread uses inverted calls for maximum performance.
             // 
             Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourcePrimary.Token);
-            Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourceSecondary.Token);
+            if (spawnSecondaryWorker)
+                Task.Factory.StartNew(RequestInputReportWorker, _inputCancellationTokenSourceSecondary.Token);
         }
 
         /// <summary>

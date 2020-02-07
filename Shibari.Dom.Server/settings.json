@@ -78,7 +78,7 @@
         /*
          * Dumps input report buffer to log file if true (SLOW, for diagnostic purpose only!)
          */
-        "dumpInputReport": false
+        "dumpInputReport": true
       }
     }
   ],

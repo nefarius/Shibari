@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -16,12 +17,12 @@ namespace Shibari.Sub.Source.BthPS3.Core
     {
         private class SixaxisDevice : BthPS3Device
         {
-            private readonly byte[] _hidEnableCommand = {0x53, 0xF4, 0x42, 0x03, 0x00, 0x00};
+            private readonly byte[] _hidEnableCommand = { 0x53, 0xF4, 0x42, 0x03, 0x00, 0x00 };
 
             //
             // Values indicating which of the four LEDs to toggle
             // 
-            private readonly byte[] _ledOffsets = {0x02, 0x04, 0x08, 0x10};
+            private readonly byte[] _ledOffsets = { 0x02, 0x04, 0x08, 0x10 };
 
             public SixaxisDevice(string path, Kernel32.SafeObjectHandle handle, int index) : base(path, handle, index)
             {
@@ -92,7 +93,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             public override void Rumble(byte largeMotor, byte smallMotor)
             {
-                SetRumbleOn(largeMotor, (byte) (smallMotor > 0 ? 0x01 : 0x00));
+                SetRumbleOn(largeMotor, (byte)(smallMotor > 0 ? 0x01 : 0x00));
             }
 
             [DllImport("kernel32.dll", EntryPoint = "RtlFillMemory", SetLastError = false)]
@@ -103,7 +104,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             protected void SetRumbleOn(RumbleEnum mode)
             {
-                var power = new byte[] {0xff, 0x00}; // Defaults to RumbleLow
+                var power = new byte[] { 0xff, 0x00 }; // Defaults to RumbleLow
                 if (mode == RumbleEnum.RumbleHigh)
                 {
                     power[0] = 0x00;
@@ -174,14 +175,43 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             protected override void OnOutputReport(long l)
             {
-                
+
+            }
+
+            private static int? GetReportSize(IEnumerable<byte> buffer, out int remaining)
+            {
+                return GetReportSize(buffer.ToArray(), out remaining);
+            }
+
+            private static int? GetReportSize(byte[] buffer, out int remaining)
+            {
+                // search for packet start sequence
+                var startPattern = new byte[] { 0xA1, 0x01 };
+                remaining = 0;
+
+                // occurrence of 1st sequence
+                var firstPacketStart = buffer.IndexOf(startPattern);
+
+                // not found, error
+                if (firstPacketStart == -1)
+                    return null;
+
+                // occurrence of 2nd sequence
+                var secondPacketStart = buffer.Skip(startPattern.Length).IndexOf(startPattern) + startPattern.Length;
+                // packet length
+                var length = secondPacketStart - firstPacketStart;
+                // how many bytes left to consume to align next packet start
+                remaining = buffer.Length - (secondPacketStart + length);
+
+                return (length > 0) ? length : (int?)null;
             }
 
             protected override void RequestInputReportWorker(object cancellationToken)
             {
-                var token = (CancellationToken) cancellationToken;
-                var buffer = new byte[0x32];
+                var token = (CancellationToken)cancellationToken;
+                var buffer = new byte[/* 0x64 */ 256];
                 var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
+                int? size = null;
 
                 try
                 {
@@ -204,14 +234,61 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
                         Marshal.Copy(unmanagedBuffer, buffer, 0, buffer.Length);
 
-                        if (DumpInputReport)
-                        {
-                            Log.Information("Input Report: {Report}", buffer.ToHexString());
-                        }
-                        
                         try
                         {
-                            OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
+                            // initially correct packet size is unknown
+                            if (!size.HasValue)
+                            {
+                                int remaining, offset = 0;
+
+                                do
+                                {
+                                    // get buffer size and alignment
+                                    size = GetReportSize(buffer.Skip(offset), out remaining);
+
+                                    if (!size.HasValue)
+                                        throw new InvalidDataException("Computing packet size failed");
+
+                                    // shift one packet forward
+                                    offset += size.Value;
+
+                                    // until remaining buffer resembles incomplete packet
+                                } while (remaining > size.Value);
+
+                                remaining = size.Value - remaining;
+
+                                // consume 
+                                ret = DeviceHandle.OverlappedDeviceIoControl(
+                                    IOCTL_BTHPS3_HID_INTERRUPT_READ,
+                                    IntPtr.Zero,
+                                    0,
+                                    unmanagedBuffer,
+                                    remaining,
+                                    out var consumed
+                                );
+
+                                // catch error
+                                if (!ret || remaining != consumed)
+                                {
+                                    Log.Fatal("Consuming remaining bytes failed");
+                                    OnDisconnected();
+                                    return;
+                                }
+
+                                // re-allocate buffers with correct size
+                                Marshal.FreeHGlobal(unmanagedBuffer);
+                                buffer = new byte[size.Value];
+                                unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
+                                continue;
+                            }
+
+                            if (DumpInputReport)
+                            {
+                                Log.Information("Input Report: {Report}", buffer.ToHexString());
+                            }
+
+                            // TODO: test code, re-enable again
+                            //OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
                         }
                         catch (InvalidDataException ide)
                         {

@@ -33,7 +33,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
         private readonly object _outputReportConsumerLock = new object();
 
         protected BthPS3Device(string path, Kernel32.SafeObjectHandle handle, int index) : base(
-            DualShockConnectionType.Bluetooth, handle, index)
+            DualShockConnectionType.Bluetooth, handle, index, false /* serialize input report reading */)
         {
             DevicePath = path;
 
