@@ -19,3 +19,5 @@ Shibari makes use of the following awesome 3rd party components:
 - [Topshelf](https://github.com/Topshelf/Topshelf) - An easy service hosting framework for building Windows services using .NET
 - [AArnott/pinvoke](https://github.com/AArnott/pinvoke) - A library containing all P/Invoke code so you don't have to import it every time. Maintained and updated to support the latest Windows OS.
 - [JsonConfig](https://github.com/nefarius/JsonConfig) - Simple configuration library using JSON and C# 4.0 dynamic feature
+- [ViGEm.NET](https://github.com/ViGEm/ViGEm.NET) - .NET bindings for the ViGEmClient library.
+- [ManagedDevcon](https://github.com/nefarius/ManagedDevcon) - Managed wrapper around various SetupAPI functions.
