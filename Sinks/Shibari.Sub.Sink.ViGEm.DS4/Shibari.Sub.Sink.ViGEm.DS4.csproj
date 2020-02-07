@@ -11,11 +11,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shibari.Sub.Sink.ViGEm.DS4</RootNamespace>
     <AssemblyName>Shibari.Sub.Sink.ViGEm.DS4</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+	<Authors>Benjamin Höglinger-Stelzer</Authors>
+    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
+    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
+    <Description>Sink plugin for the Virtual Gamepad Emulation Bus</Description>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
