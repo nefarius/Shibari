@@ -178,7 +178,7 @@ namespace Shibari.Sub.Source.FireShock.Core
 
                     try
                     {
-                        OnInputReport(new DualShock3InputReport(buffer));
+                        OnInputReport(DualShock3InputReport.FromBuffer(buffer));
                     }
                     catch (InvalidDataException ide)
                     {

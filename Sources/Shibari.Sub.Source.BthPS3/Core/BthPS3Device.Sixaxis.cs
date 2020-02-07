@@ -206,7 +206,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         
                         try
                         {
-                            OnInputReport(new DualShock3InputReport(buffer.Skip(1).ToArray()));
+                            OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
                         }
                         catch (InvalidDataException ide)
                         {

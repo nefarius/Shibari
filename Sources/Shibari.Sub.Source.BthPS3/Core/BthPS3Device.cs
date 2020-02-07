@@ -62,7 +62,7 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     out var consumed
                 );
 
-                Log.Debug("Consumed {Amount} byte(s)", consumed);
+                Log.Debug("Consumed {Amount} byte(s) on HID Control Channel", consumed);
 
                 if (!ret)
                     OnDisconnected();

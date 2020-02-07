@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Shibari.Sub.Core.Shared.Exceptions;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -9,14 +8,8 @@ namespace Shibari.Sub.Core.Shared.Types.DualShock3
 {
     public class DualShock3InputReport : IInputReport
     {
-        public DualShock3InputReport(byte[] buffer)
+        private DualShock3InputReport(byte[] buffer)
         {
-            if (buffer.Length < Buffer.Length)
-                throw new ArgumentOutOfRangeException("buffer", buffer.Length, "Input report too small.");
-
-            if (buffer[0] != 0x01)
-                throw new InvalidDataException("Invalid input report identifier supplied.");
-
             System.Buffer.BlockCopy(buffer, 0, Buffer, 0, Buffer.Length);
         }
 
@@ -79,5 +72,16 @@ namespace Shibari.Sub.Core.Shared.Types.DualShock3
         }
 
         public byte[] Buffer { get; } = new byte[49];
+
+        public static DualShock3InputReport FromBuffer(byte[] buffer)
+        {
+            if (buffer.Length < 49)
+                throw new ArgumentOutOfRangeException("buffer", buffer.Length, "Input report too small.");
+
+            if (buffer[0] != 0x01)
+                return null;
+
+            return new DualShock3InputReport(buffer);
+        }
     }
 }

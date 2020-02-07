@@ -81,7 +81,7 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
                     
                     try
                     {
-                        OnInputReport(new DualShock3InputReport(resp.ReportBuffer));
+                        OnInputReport(DualShock3InputReport.FromBuffer(resp.ReportBuffer));
                     }
                     catch (InvalidDataException ide)
                     {

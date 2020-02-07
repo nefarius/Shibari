@@ -109,6 +109,9 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         protected void OnInputReport(IInputReport report)
         {
+            if (report == null)
+                return;
+
             InputReportReceived?.Invoke(this, new InputReportEventArgs(report));
         }
 
@@ -132,10 +135,11 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                 disposedValue = true;
             }
         }
-        
-        ~DualShockDevice() {
-          // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-          Dispose(false);
+
+        ~DualShockDevice()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
         }
 
         // This code added to correctly implement the disposable pattern.
@@ -143,7 +147,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            
+
             GC.SuppressFinalize(this);
         }
         #endregion
