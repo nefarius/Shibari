@@ -165,7 +165,7 @@ namespace Shibari.Dom.Server.Core
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
         {
-            foreach (var plugin in SinkPlugins.Select(p => p.Value))
+            foreach (var plugin in SinkPlugins.Where(s => s.Value.IsEnabled).Select(p => p.Value))
                 plugin.InputReportReceived(args.Device, args.Report);
         }
 
