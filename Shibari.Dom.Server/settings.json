@@ -75,7 +75,10 @@
        */
       "fullName": "Shibari.Sub.Source.BthPS3.Core.BthPS3Device+SixaxisDevice",
       "configuration": {
-        "dumpInputReport": true
+        /*
+         * Dumps input report buffer to log file if true (SLOW, for diagnostic purpose only!)
+         */
+        "dumpInputReport": false
       }
     }
   ],
