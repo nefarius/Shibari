@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -18,6 +19,43 @@ namespace Shibari.Sub.Source.BthPS3.Core
         private class SixaxisDevice : BthPS3Device
         {
             private readonly byte[] _hidEnableCommand = { 0x53, 0xF4, 0x42, 0x03, 0x00, 0x00 };
+
+            private readonly byte[][] _hidInitReports =
+            {
+                new byte[] {0x02, 0x00, 0x0F, 0x00, 0x08, 0x35, 0x03, 0x19, 0x12, 0x00, 0x00, 0x03, 0x00},
+                new byte[]
+                {
+                    0x04, 0x00, 0x10, 0x00, 0x0F, 0x00, 0x01, 0x00, 0x01, 0x00, 0x10, 0x35, 0x06, 0x09, 0x02, 0x01, 0x09,
+                    0x02,
+                    0x02, 0x00
+                },
+                new byte[]
+                    {0x06, 0x00, 0x11, 0x00, 0x0D, 0x35, 0x03, 0x19, 0x11, 0x24, 0x01, 0x90, 0x35, 0x03, 0x09, 0x02, 0x06, 0x00},
+                new byte[]
+                {
+                    0x06, 0x00, 0x12, 0x00, 0x0F, 0x35, 0x03, 0x19, 0x11, 0x24, 0x01, 0x90, 0x35, 0x03, 0x09, 0x02, 0x06,
+                    0x02,
+                    0x00, 0x7F
+                },
+                new byte[]
+                {
+                    0x06, 0x00, 0x13, 0x00, 0x0F, 0x35, 0x03, 0x19, 0x11, 0x24, 0x01, 0x90, 0x35, 0x03, 0x09, 0x02, 0x06,
+                    0x02,
+                    0x00, 0x59
+                },
+                new byte[]
+                {
+                    0x06, 0x00, 0x14, 0x00, 0x0F, 0x35, 0x03, 0x19, 0x11, 0x24, 0x01, 0x80, 0x35, 0x03, 0x09, 0x02, 0x06,
+                    0x02,
+                    0x00, 0x33
+                },
+                new byte[]
+                {
+                    0x06, 0x00, 0x15, 0x00, 0x0F, 0x35, 0x03, 0x19, 0x11, 0x24, 0x01, 0x90, 0x35, 0x03, 0x09, 0x02, 0x06,
+                    0x02,
+                    0x00, 0x0D
+                }
+            };
 
             //
             // Values indicating which of the four LEDs to toggle
@@ -46,30 +84,21 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[index]);
 
                 //
+                // Send initialization sequences
+                // 
+                foreach (var report in _hidInitReports)
+                {
+                    SendHidCommand(report);
+                }
+
+                //
                 // Send the start command to remote device
                 // 
-                var unmanagedBuffer = Marshal.AllocHGlobal(_hidEnableCommand.Length);
-                Marshal.Copy(_hidEnableCommand, 0, unmanagedBuffer, _hidEnableCommand.Length);
-
-                try
-                {
-                    var ret = handle.OverlappedDeviceIoControl(
-                        IOCTL_BTHPS3_HID_CONTROL_WRITE,
-                        unmanagedBuffer,
-                        _hidEnableCommand.Length,
-                        IntPtr.Zero,
-                        0,
-                        out _
-                    );
-
-                    if (!ret)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedBuffer);
-                }
-
+                SendHidCommand(_hidEnableCommand);
+                
+                //
+                // Send initial output report
+                // 
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
             }
 
@@ -156,6 +185,31 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 Marshal.WriteByte(OutputReportBuffer, 11, 0x00); // LED
 
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+            }
+
+            protected void SendHidCommand(byte[] buffer)
+            {
+                var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
+                Marshal.Copy(buffer, 0, unmanagedBuffer, buffer.Length);
+
+                try
+                {
+                    var ret = DeviceHandle.OverlappedDeviceIoControl(
+                        IOCTL_BTHPS3_HID_CONTROL_WRITE,
+                        unmanagedBuffer,
+                        buffer.Length,
+                        IntPtr.Zero,
+                        0,
+                        out _
+                    );
+
+                    if (!ret)
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(unmanagedBuffer);
+                }
             }
 
             protected void SendHidCommand(IntPtr buffer, int bufferLength)
