@@ -21,6 +21,7 @@
     <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
     <Description>Shared types and utility classes for Shibari components</Description>
+    <Version>1.5.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

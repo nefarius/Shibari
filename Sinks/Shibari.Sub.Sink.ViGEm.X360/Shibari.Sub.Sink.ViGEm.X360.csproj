@@ -20,6 +20,7 @@
     <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
     <Description>Sink plugin for the Virtual Gamepad Emulation Bus</Description>
+    <Version>1.5.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

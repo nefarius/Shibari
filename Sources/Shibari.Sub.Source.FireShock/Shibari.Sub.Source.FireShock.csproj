@@ -21,6 +21,7 @@
     <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
+    <Version>1.5.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
