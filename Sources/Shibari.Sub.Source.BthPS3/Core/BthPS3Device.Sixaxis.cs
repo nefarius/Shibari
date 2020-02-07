@@ -17,7 +17,15 @@ namespace Shibari.Sub.Source.BthPS3.Core
     {
         private class SixaxisDevice : BthPS3Device
         {
-            private readonly byte[] _hidEnableCommand = { 0x53, 0xF4, 0x42, 0x03, 0x00, 0x00 };
+            private readonly byte[] _hidEnableCommand =
+            {
+                0x53, // HID BT Set_report (0x50) | Report Type (Feature 0x03)
+                0xF4, // Report ID
+                0x42, // Special PS3 Controller enable commands
+                0x03,
+                0x00,
+                0x00
+            };
 
             //
             // Values indicating which of the four LEDs to toggle
@@ -36,7 +44,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 // 
                 // Initialize default output report native buffer
                 // 
-                FillMemory(OutputReportBuffer, OutputReportBufferSize, 0);
                 Marshal.Copy(HidOutputReport, 0, OutputReportBuffer, HidOutputReport.Length);
 
                 //
@@ -46,47 +53,19 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[index]);
 
                 //
+                // Send initial output report
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+
+                //
                 // Send the start command to remote device
                 // 
-                var unmanagedBuffer = Marshal.AllocHGlobal(_hidEnableCommand.Length);
-                Marshal.Copy(_hidEnableCommand, 0, unmanagedBuffer, _hidEnableCommand.Length);
-
-                try
-                {
-                    var ret = handle.OverlappedDeviceIoControl(
-                        IOCTL_BTHPS3_HID_CONTROL_WRITE,
-                        unmanagedBuffer,
-                        _hidEnableCommand.Length,
-                        IntPtr.Zero,
-                        0,
-                        out _
-                    );
-
-                    if (!ret)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedBuffer);
-                }
-
-                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+                SendHidCommand(_hidEnableCommand);
             }
 
             protected override byte[] HidOutputReport => new byte[]
             {
                 0x52, /* HID BT Set_report (0x50) | Report Type (Output 0x02)*/
                 0x01, /* Report ID */
-                0x01, 0xff, 0x00, 0xff, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00,
-                0xff, 0x27, 0x10, 0x00, 0x32,
-                0xff, 0x27, 0x10, 0x00, 0x32,
-                0xff, 0x27, 0x10, 0x00, 0x32,
-                0xff, 0x27, 0x10, 0x00, 0x32,
-                0x00, 0x00, 0x00, 0x00, 0x00
-            };
-
-            private readonly byte[] _defaultReportBuffer = {
                 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x00,
                 0xff, 0x27, 0x10, 0x00, 0x32,
@@ -107,9 +86,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
             {
                 SetRumbleOn(largeMotor, (byte)(smallMotor > 0 ? 0x01 : 0x00));
             }
-
-            [DllImport("kernel32.dll", EntryPoint = "RtlFillMemory", SetLastError = false)]
-            static extern void FillMemory(IntPtr destination, uint length, byte fill);
 
             [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
             private static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
@@ -168,6 +144,31 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 Marshal.WriteByte(OutputReportBuffer, 11, 0x00); // LED
 
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
+            }
+
+            protected void SendHidCommand(byte[] buffer)
+            {
+                var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
+                Marshal.Copy(buffer, 0, unmanagedBuffer, buffer.Length);
+
+                try
+                {
+                    var ret = DeviceHandle.OverlappedDeviceIoControl(
+                        IOCTL_BTHPS3_HID_CONTROL_WRITE,
+                        unmanagedBuffer,
+                        buffer.Length,
+                        IntPtr.Zero,
+                        0,
+                        out _
+                    );
+
+                    if (!ret)
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(unmanagedBuffer);
+                }
             }
 
             protected void SendHidCommand(IntPtr buffer, int bufferLength)
@@ -299,8 +300,10 @@ namespace Shibari.Sub.Source.BthPS3.Core
                                 Log.Information("Input Report: {Report}", buffer.ToHexString());
                             }
 
-                            // TODO: test code, re-enable again
-                            //OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
+                            if (!SuppressInputReport)
+                            {
+                                OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
+                            }
                         }
                         catch (InvalidDataException ide)
                         {

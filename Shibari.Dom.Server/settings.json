@@ -78,7 +78,11 @@
         /*
          * Dumps input report buffer to log file if true (SLOW, for diagnostic purpose only!)
          */
-        "dumpInputReport": true
+        "dumpInputReport": true,
+        /*
+         * Doesn't process the input report if true
+         */
+        "suppressInputReport": true 
       }
     }
   ],

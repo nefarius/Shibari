@@ -87,6 +87,11 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         public bool DumpInputReport => Configuration.DumpInputReport;
 
         /// <summary>
+        ///     Doesn't process input report if true.
+        /// </summary>
+        public bool SuppressInputReport => Configuration.SuppressInputReport;
+
+        /// <summary>
         ///     Send Rumble request to the controller.
         /// </summary>
         /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
