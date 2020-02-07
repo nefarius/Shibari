@@ -2,6 +2,7 @@
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using JsonConfig;
 
 namespace Shibari.Sub.Core.Shared.IPC
 {
@@ -10,9 +11,18 @@ namespace Shibari.Sub.Core.Shared.IPC
         private const string Server = "Shibari.Sub.Core.Shared.IPC.Certificates.Shibari.IPC.Server.pfx";
         private const string Client = "Shibari.Sub.Core.Shared.IPC.Certificates.Shibari.IPC.Client.pfx";
 
-        public static IPEndPoint ServerEndpoint => new IPEndPoint(IPAddress.IPv6Loopback, 26762);
+        public static IPEndPoint ServerEndpoint
+        {
+            get
+            {
+                var ip = IPAddress.Parse((string)Config.Global.Core.Halibut.ServerEndpoint.ListenAddress);
+                var port = (int)(Config.Global.Core.Halibut.ServerEndpoint.ListenPort);
 
-        public static string ClientEndpoint => "https://localhost:26762/";
+                return new IPEndPoint(ip, port);
+            }
+        }
+
+        public static string ClientEndpoint => Config.Global.Core.Halibut.ClientEndpoint.Url;
 
         public static X509Certificate2 ServerCertificate => GetEmbeddedFile(Server);
 

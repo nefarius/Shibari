@@ -10,6 +10,7 @@ using System.Reflection;
 using Halibut;
 using Halibut.ServiceModel;
 using InTheHand.Devices.Bluetooth;
+using JsonConfig;
 using Serilog;
 using Shibari.Dom.Server.Core.Services;
 using Shibari.Sub.Core.Shared.IPC;
@@ -135,30 +136,33 @@ namespace Shibari.Dom.Server.Core
 
             #region IPC
 
-            var services = new DelegateServiceFactory();
-            services.Register<IPairingService>(() =>
+            if (Config.Global.Core.Halibut.IsEnabled)
             {
-                var service = new PairingService();
+                var services = new DelegateServiceFactory();
+                services.Register<IPairingService>(() =>
+                {
+                    var service = new PairingService();
 
-                service.DeviceListRequested += (sender, args) => _childDevices
-                    .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
-                    .Select(d => new DualShockDeviceDescriptor
-                    {
-                        ClientAddress = new UniqueAddress(d.ClientAddress),
-                        ConnectionType = d.ConnectionType,
-                        DeviceType = d.DeviceType,
-                        HostAddress = new UniqueAddress(d.HostAddress)
-                    }).ToList();
+                    service.DeviceListRequested += (sender, args) => _childDevices
+                        .Where(d => d.ConnectionType.Equals(DualShockConnectionType.USB))
+                        .Select(d => new DualShockDeviceDescriptor
+                        {
+                            ClientAddress = new UniqueAddress(d.ClientAddress),
+                            ConnectionType = d.ConnectionType,
+                            DeviceType = d.DeviceType,
+                            HostAddress = new UniqueAddress(d.HostAddress)
+                        }).ToList();
 
-                service.DevicePairingRequested += (device, args) =>
-                    _childDevices[device.ClientAddress].PairTo(new PhysicalAddress(args.HostAddress.AddressBytes));
+                    service.DevicePairingRequested += (device, args) =>
+                        _childDevices[device.ClientAddress].PairTo(new PhysicalAddress(args.HostAddress.AddressBytes));
 
-                return service;
-            });
+                    return service;
+                });
 
-            _ipcServer = new HalibutRuntime(services, Configuration.ServerCertificate);
-            _ipcServer.Listen(Configuration.ServerEndpoint);
-            _ipcServer.Trust(Configuration.ClientCertificate.Thumbprint);
+                _ipcServer = new HalibutRuntime(services, Configuration.ServerCertificate);
+                _ipcServer.Listen(Configuration.ServerEndpoint);
+                _ipcServer.Trust(Configuration.ClientCertificate.Thumbprint);
+            }
 
             #endregion
         }
@@ -171,7 +175,7 @@ namespace Shibari.Dom.Server.Core
 
         public void Stop()
         {
-            _ipcServer.Dispose();
+            _ipcServer?.Dispose();
 
             foreach (var emulator in BusEmulators)
             {

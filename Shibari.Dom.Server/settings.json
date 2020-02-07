@@ -32,5 +32,17 @@
         "isEnabled": true
       }
     }
-  ]
+  ],
+  "core": {
+    "halibut": {
+      "isEnabled": false,
+      "serverEndpoint": {
+        "listenAddress": "::1",
+        "listenPort": 26764
+      },
+      "clientEndpoint": {
+        "url": "https://localhost:26764/"
+      } 
+    }
+  }
 }
