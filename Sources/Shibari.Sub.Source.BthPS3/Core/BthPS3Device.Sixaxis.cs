@@ -203,6 +203,11 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         }
 
                         Marshal.Copy(unmanagedBuffer, buffer, 0, buffer.Length);
+
+                        if (DumpInputReport)
+                        {
+                            Log.Information("Input Report: {Report}", buffer.ToHexString());
+                        }
                         
                         try
                         {

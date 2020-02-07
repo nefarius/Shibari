@@ -68,7 +68,9 @@
   "dualShockDevices": [
     {
       "fullName": "Shibari.Sub.Source.BthPS3.Core.BthPS3Device+SixaxisDevice",
-      "dumpInputReport": true
+      "configuration": {
+        "dumpInputReport": true
+      }
     }
   ],
   /*
