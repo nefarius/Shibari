@@ -19,5 +19,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         void Rumble(byte largeMotor, byte smallMotor);
 
         void PairTo(PhysicalAddress host);
+
+        bool DumpInputReport { get; }
     }
 }

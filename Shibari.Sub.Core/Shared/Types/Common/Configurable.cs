@@ -22,6 +22,12 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                     Configuration = ((IEnumerable) Config.Global.Sources).Cast<dynamic>()
                         .FirstOrDefault(s => s.FullName.Equals(GetType().FullName))?.Configuration;
                     break;
+                case DualShockDevice _:
+                    var d = GetType().FullName;
+                    break;
+                default:
+                    var t = GetType().BaseType;
+                    break;
             }
         }
 

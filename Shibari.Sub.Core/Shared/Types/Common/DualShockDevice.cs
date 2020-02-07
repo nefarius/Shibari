@@ -10,7 +10,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 {
     public delegate void DualShockInputReportReceivedEventHandler(object sender, InputReportEventArgs e);
 
-    public abstract class DualShockDevice : IDualShockDevice, IDisposable
+    public abstract class DualShockDevice : Configurable, IDualShockDevice, IDisposable
     {
         private readonly CancellationTokenSource _inputCancellationTokenSourcePrimary = new CancellationTokenSource();
         private readonly CancellationTokenSource _inputCancellationTokenSourceSecondary = new CancellationTokenSource();
@@ -79,6 +79,11 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// </summary>
         /// <param name="host">The address to pair to.</param>
         public abstract void PairTo(PhysicalAddress host);
+
+        /// <summary>
+        ///     Dumps hex string of input report to log file (slow, for diagnostics only).
+        /// </summary>
+        public bool DumpInputReport => Configuration.DumpInputReport;
 
         /// <summary>
         ///     Send Rumble request to the controller.
