@@ -18,6 +18,8 @@ namespace Shibari.Dom.Server
     {
         private static void Main(string[] args)
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -39,7 +41,7 @@ namespace Shibari.Dom.Server
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
-                Log.Fatal("Unhandled exception: {Exception}", (Exception)eventArgs.ExceptionObject);
+                Log.Fatal("Unhandled exception: {Exception}", (Exception) eventArgs.ExceptionObject);
             };
 
             #endregion
@@ -54,10 +56,8 @@ namespace Shibari.Dom.Server
 
             // ADS is only present on NTFS formatted drives
             if (rootDrive.DriveFormat.Equals("NTFS", StringComparison.InvariantCultureIgnoreCase))
-            {
                 try
                 {
-
                     var files = Directory.GetFiles(domRoot, "*.dll", SearchOption.AllDirectories);
 
                     foreach (var fileInfo in files.Select(f => new FileInfo(f)))
@@ -76,12 +76,9 @@ namespace Shibari.Dom.Server
                     Console.ReadKey();
                     return;
                 }
-            }
             else
-            {
                 Log.Information("Process started from {Filesystem} formatted drive, no unblocking necessary",
                     rootDrive.DriveFormat);
-            }
 
             #endregion
 
