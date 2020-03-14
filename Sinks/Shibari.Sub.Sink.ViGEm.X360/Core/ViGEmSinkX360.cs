@@ -70,7 +70,15 @@ namespace Shibari.Sub.Sink.ViGEm.X360.Core
                 {DualShock3Axes.RightTrigger, Xbox360Slider.RightTrigger}
             };
 
-            _client = new ViGEmClient();
+            try
+            {
+                _client = new ViGEmClient();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal("ViGEm allocation failed, are you sure ViGEmBus is installed? Error details: {Exception}",
+                    ex);
+            }
         }
 
         public event RumbleRequestReceivedEventHandler RumbleRequestReceived;
