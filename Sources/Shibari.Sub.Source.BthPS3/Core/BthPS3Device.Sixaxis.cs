@@ -205,40 +205,11 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
             }
 
-            private static int? GetReportSize(IEnumerable<byte> buffer, out int remaining)
-            {
-                return GetReportSize(buffer.ToArray(), out remaining);
-            }
-
-            private static int? GetReportSize(byte[] buffer, out int remaining)
-            {
-                // search for packet start sequence
-                var startPattern = new byte[] { 0xA1, 0x01 };
-                remaining = 0;
-
-                // occurrence of 1st sequence
-                var firstPacketStart = buffer.IndexOf(startPattern);
-
-                // not found, error
-                if (firstPacketStart == -1)
-                    return null;
-
-                // occurrence of 2nd sequence
-                var secondPacketStart = buffer.Skip(startPattern.Length).IndexOf(startPattern) + startPattern.Length;
-                // packet length
-                var length = secondPacketStart - firstPacketStart;
-                // how many bytes left to consume to align next packet start
-                remaining = buffer.Length - (secondPacketStart + length);
-
-                return (length > 0) ? length : (int?)null;
-            }
-
             protected override void RequestInputReportWorker(object cancellationToken)
             {
                 var token = (CancellationToken)cancellationToken;
-                var buffer = new byte[/* 0x64 */ 256];
+                var buffer = new byte[0x32];
                 var unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
-                int? size = null;
 
                 try
                 {
@@ -263,52 +234,6 @@ namespace Shibari.Sub.Source.BthPS3.Core
 
                         try
                         {
-                            // initially correct packet size is unknown
-                            if (!size.HasValue)
-                            {
-                                int remaining, offset = 0;
-
-                                do
-                                {
-                                    // get buffer size and alignment
-                                    size = GetReportSize(buffer.Skip(offset), out remaining);
-
-                                    if (!size.HasValue)
-                                        throw new InvalidDataException("Computing packet size failed");
-
-                                    // shift one packet forward
-                                    offset += size.Value;
-
-                                    // until remaining buffer resembles incomplete packet
-                                } while (remaining > size.Value);
-
-                                remaining = size.Value - remaining;
-
-                                // consume 
-                                ret = DeviceHandle.OverlappedDeviceIoControl(
-                                    IOCTL_BTHPS3_HID_INTERRUPT_READ,
-                                    IntPtr.Zero,
-                                    0,
-                                    unmanagedBuffer,
-                                    remaining,
-                                    out var consumed
-                                );
-
-                                // catch error
-                                if (!ret || remaining != consumed)
-                                {
-                                    Log.Fatal("Consuming remaining bytes failed");
-                                    OnDisconnected();
-                                    return;
-                                }
-
-                                // re-allocate buffers with correct size
-                                Marshal.FreeHGlobal(unmanagedBuffer);
-                                buffer = new byte[size.Value];
-                                unmanagedBuffer = Marshal.AllocHGlobal(buffer.Length);
-                                continue;
-                            }
-
                             if (DumpInputReport)
                             {
                                 Log.Information("Input Report: {Report}", buffer.ToHexString());
