@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using PInvoke;
 using Serilog;
 using Shibari.Sub.Core.Shared.Types.Common;
@@ -54,26 +52,14 @@ namespace Shibari.Sub.Source.BthPS3.Core
                     Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[index]);
 
                 //
-                // Send initialization packets
+                // Send initial output report
                 //
-                Task.Factory.StartNew(Init);
-            }
-
-            private async Task Init()
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
 
                 //
                 // Send the start command to remote device
                 // 
                 SendHidCommand(_hidEnableCommand);
-
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
-                //
-                // Send initial output report
-                // 
-                SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
             }
 
             protected override byte[] HidOutputReport => new byte[]
