@@ -203,7 +203,18 @@ namespace Shibari.Sub.Source.BthPS3.Core
                         }
 
                         Marshal.Copy(unmanagedBuffer, buffer, 0, buffer.Length);
-                        
+
+                        /*
+		                 * When connected via Bluetooth the Sixaxis occasionally sends
+		                 * a report with the second byte 0xff and the rest zeroed.
+		                 *
+		                 * This report does not reflect the actual state of the
+		                 * controller must be ignored to avoid generating false input
+		                 * events.
+		                 */
+                        if (buffer[2] == 0xff)
+                            continue;
+
                         try
                         {
                             OnInputReport(DualShock3InputReport.FromBuffer(buffer.Skip(1).ToArray()));
