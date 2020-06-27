@@ -63,6 +63,10 @@ namespace Shibari.Dom.Server.Core
                                 // Pair USB device
                                 item.PairTo(hostAddress);
                             }
+                            else
+                            {
+                                Log.Warning("Auto-pairing not supported as BthPS3 and/or Bluetooth Host Radio not found");
+                            }
 
                             foreach (var plugin in SinkPlugins.Where(p => p.Value.IsEnabled).Select(p => p.Value))
                                 plugin.DeviceArrived(item);
