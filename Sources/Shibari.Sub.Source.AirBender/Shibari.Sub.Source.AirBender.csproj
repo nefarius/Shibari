@@ -15,12 +15,13 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <Authors>Benjamin Höglinger-Stelzer</Authors>
-    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017</Copyright>
-    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017-2020</Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
     <Description>Shibari source component for AirBender devices</Description>
     <Version>1.5.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -18,11 +18,12 @@
     <Description>Shibari source component for BthPS3 devices</Description>
     <Product>Shibari.Sub.Source.BthPS3</Product>
     <Authors>Benjamin Höglinger-Stelzer</Authors>
-    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2019</Copyright>
-    <PackageLicenseUrl>https://github.com/nefarius/Shibari/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright (C) Benjamin Höglinger-Stelzer 2017-2020</Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nefarius/Shibari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nefarius/Shibari</RepositoryUrl>
     <Version>1.5.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
