@@ -61,7 +61,16 @@
         /*
          * Enabled by default, set to false to disable
          */
-        "isEnabled": true
+        "isEnabled": true,
+        /*
+         * Rumble (Force Feedback) specific settings
+         */
+        "rumble": {
+          /*
+           * Implementation currently bugged, disable here if facing issues
+           */
+          "isEnabled": true
+        }
       }
     }
   ],

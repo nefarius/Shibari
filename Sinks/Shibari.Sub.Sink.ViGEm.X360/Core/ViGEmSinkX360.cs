@@ -91,12 +91,19 @@ namespace Shibari.Sub.Sink.ViGEm.X360.Core
 
             _deviceMap.Add(device, target);
 
-            target.FeedbackReceived += (sender, args) =>
+            if (Configuration.Rumble.IsEnabled)
             {
-                var source = _deviceMap.First(m => m.Value.Equals(sender)).Key;
+                target.FeedbackReceived += (sender, args) =>
+                {
+                    var source = _deviceMap.First(m => m.Value.Equals(sender)).Key;
 
-                RumbleRequestReceived?.Invoke(source, new RumbleRequestEventArgs(args.LargeMotor, args.SmallMotor));
-            };
+                    RumbleRequestReceived?.Invoke(source, new RumbleRequestEventArgs(args.LargeMotor, args.SmallMotor));
+                };
+            }
+            else
+            {
+                Log.Warning("Rumble disabled by configuration");
+            }
 
             try
             {
