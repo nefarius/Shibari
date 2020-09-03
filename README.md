@@ -2,9 +2,11 @@
 
 Management layer for AirBender, FireShock & BthPS3 device drivers
 
-## OUTDATED
+## Documentation
 
-👉 [Documentation](https://forums.vigem.org/topic/259/shibari-installation-instructions)
+👉 [Follow this guide to set up wireless (and wired) connection](https://forums.vigem.org/topic/362/playstation-r-3-peripherals-unofficial-bluetooth-drivers-bthps3)
+
+👉 [Follow this guide to set up **wired connection only** (USB)](https://forums.vigem.org/topic/357/bthps3-post-setup-instructions)
 
 ## Credits
 
