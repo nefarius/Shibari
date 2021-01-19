@@ -4,9 +4,9 @@ Management layer for AirBender, FireShock & BthPS3 device drivers
 
 ## Documentation
 
-👉 [Follow this guide to set up wireless (and wired) connection](https://forums.vigem.org/topic/362/playstation-r-3-peripherals-unofficial-bluetooth-drivers-bthps3)
+👉 [Follow this guide to set up wireless (and wired) connection](https://vigem.org/projects/BthPS3/Installation-Guide-Shibari-Edition/)
 
-👉 [Follow this guide to set up **wired connection only** (USB)](https://forums.vigem.org/topic/357/bthps3-post-setup-instructions)
+👉 [Follow this guide to set up **wired connection only** (USB)](https://vigem.org/projects/BthPS3/Installation-Guide-Shibari-Edition/#get-all-the-files)
 
 ## Credits
 
