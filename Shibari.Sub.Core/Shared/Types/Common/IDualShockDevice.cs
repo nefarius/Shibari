@@ -1,4 +1,4 @@
-using System.Net.NetworkInformation;
+﻿using System.Net.NetworkInformation;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
@@ -11,6 +11,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         PhysicalAddress ClientAddress { get; }
 
         PhysicalAddress HostAddress { get; }
+
+        DualShockBatterStates BatteryState { get; }
 
         int DeviceIndex { get; }
 

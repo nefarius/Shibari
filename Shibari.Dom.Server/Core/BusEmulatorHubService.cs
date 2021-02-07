@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Halibut;
 using Halibut.ServiceModel;
 using InTheHand.Devices.Bluetooth;
@@ -196,6 +198,8 @@ namespace Shibari.Dom.Server.Core
             }
 
             #endregion
+
+            Task.Factory.StartNew(PollBatteryLevel, _inputCancellationTokenSource.Token);
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
@@ -207,6 +211,7 @@ namespace Shibari.Dom.Server.Core
         public void Stop()
         {
             _ipcServer?.Dispose();
+            _inputCancellationTokenSource.Cancel();
 
             foreach (var emulator in BusEmulators)
             {
@@ -224,6 +229,31 @@ namespace Shibari.Dom.Server.Core
                 dev.SetLED(CurrentIndex++);
         }
 
+        private async Task PollBatteryLevel(object cancellationToken)
+        {
+            var token = (CancellationToken)cancellationToken;
+
+            while (!token.IsCancellationRequested)
+            {
+                int index = 1;
+                foreach (var dev in _childDevices)
+                {
+                    if (dev.DeviceType.Equals(DualShockDeviceType.DualShock3))
+                    {
+                        DualShockDevice ds3_dev = (DualShockDevice)dev;
+
+                        Console.Write("\rController {0}: ", index++);
+                        BatteryStatePrinter.printToConsole(ds3_dev.BatteryState);
+                        Console.WriteLine("");
+                    }
+                }
+
+                Console.SetCursorPosition(0, Console.CursorTop - index + 1);
+
+                await Task.Delay(TimeSpan.FromSeconds(0.75), token);
+            }
+        }
+
         #region Private fields & properties
 
         private static readonly string SourcesPath = Path.Combine(Path.GetDirectoryName
@@ -235,6 +265,8 @@ namespace Shibari.Dom.Server.Core
         private readonly DualShockDeviceCollection _childDevices = new DualShockDeviceCollection();
 
         private HalibutRuntime _ipcServer;
+
+        private readonly CancellationTokenSource _inputCancellationTokenSource = new CancellationTokenSource();
 
         [ImportMany] private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
 
