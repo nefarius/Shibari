@@ -52,6 +52,24 @@ namespace Shibari.Dom.Server.Core
                                 && BusEmulators.Select(be => be.Value).Any(b => b.Name == "BthPS3BusEmulator")
                                 && BluetoothAdapter.GetDefault() != null)
                             {
+                                // Check if newly connected USB device is already connected via Bluetooth
+                                if (item.ConnectionType.Equals(DualShockConnectionType.USB))
+                                {
+                                    var emulator = BusEmulators.Select(be => be.Value).Where(b => b.Name == "BthPS3BusEmulator").First();
+
+                                    foreach (var otherItem in _childDevices)
+                                    {
+                                        if (otherItem.ConnectionType.Equals(DualShockConnectionType.Bluetooth))
+                                        {
+                                            if (otherItem.ClientAddress.Equals(item.ClientAddress)) // If found remove bluetooth device
+                                            {
+                                                emulator.RemoveDevice(otherItem);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 // Get address of detected primary radio
                                 var hostAddress = new PhysicalAddress(BitConverter
                                     .GetBytes(BluetoothAdapter.GetDefault().BluetoothAddress).Take(6).Reverse()

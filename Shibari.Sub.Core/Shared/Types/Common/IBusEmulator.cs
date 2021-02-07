@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
@@ -58,6 +58,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         void Start();
 
         void Stop();
+
+        void RemoveDevice(IDualShockDevice Device);
 
         event ChildDeviceAttachedEventHandler ChildDeviceAttached;
 

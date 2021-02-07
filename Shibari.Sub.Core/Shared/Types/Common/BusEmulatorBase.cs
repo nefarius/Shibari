@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reactive.Linq;
@@ -50,6 +50,19 @@ namespace Shibari.Sub.Core.Shared.Types.Common
                 device.Dispose();
 
             ChildDevices.Clear();
+        }
+
+        public virtual void RemoveDevice(IDualShockDevice Device)
+        {
+            foreach (var dev in ChildDevices)
+            {
+                if (dev.Equals(Device))
+                {
+                    dev.Dispose();
+                    ChildDevices.Remove(dev);
+                    break;
+                }
+            }
         }
 
         public event ChildDeviceAttachedEventHandler ChildDeviceAttached;
