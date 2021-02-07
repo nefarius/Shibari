@@ -57,11 +57,18 @@ namespace Shibari.Dom.Server.Core
                                     .GetBytes(BluetoothAdapter.GetDefault().BluetoothAddress).Take(6).Reverse()
                                     .ToArray());
 
-                                Log.Information("Auto-pairing device {Device} to {HostAddress}",
+                                if (!item.HostAddress.Equals(hostAddress))
+                                {
+                                    Log.Information("Auto-pairing device {Device} to {HostAddress}",
                                     item, hostAddress.AsFriendlyName());
 
-                                // Pair USB device
-                                item.PairTo(hostAddress);
+                                    // Pair USB device
+                                    item.PairTo(hostAddress);
+                                }
+                                else
+                                {
+                                    Log.Information("Device {Device} already paired to this radio {HostAddress}.", item, hostAddress.AsFriendlyName());
+                                }
                             }
                             else
                             {
