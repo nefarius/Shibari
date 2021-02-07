@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
@@ -84,6 +84,8 @@ namespace Shibari.Dom.Server.Core
 
                         break;
                 }
+
+                UpdateLEDS();
             };
 
             #region MEF
@@ -188,6 +190,13 @@ namespace Shibari.Dom.Server.Core
                 emulator.Value.Stop();
                 Log.Information("Bus emulator {Emulator} stopped successfully", emulator.Metadata["Name"]);
             }
+        }
+
+        private void UpdateLEDS()
+        {
+            byte CurrentIndex = 1;
+            foreach (var dev in _childDevices)
+                dev.SetLED(CurrentIndex++);
         }
 
         #region Private fields & properties

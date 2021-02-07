@@ -1,4 +1,4 @@
-﻿using System.Net.NetworkInformation;
+using System.Net.NetworkInformation;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
@@ -19,5 +19,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         void Rumble(byte largeMotor, byte smallMotor);
 
         void PairTo(PhysicalAddress host);
+
+        void SetLED(byte Value);
     }
 }

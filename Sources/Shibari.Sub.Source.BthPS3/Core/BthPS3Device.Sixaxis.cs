@@ -157,6 +157,12 @@ namespace Shibari.Sub.Source.BthPS3.Core
                 SendHidCommand(OutputReportBuffer, OutputReportBufferSize);
             }
 
+            public override void SetLED(byte Value)
+            {
+                if (Value >= 1 && Value <= 4)
+                    Marshal.WriteByte(OutputReportBuffer, 11, _ledOffsets[Value - 1]);
+            }
+
             protected void SendHidCommand(IntPtr buffer, int bufferLength)
             {
                 var ret = DeviceHandle.OverlappedDeviceIoControl(

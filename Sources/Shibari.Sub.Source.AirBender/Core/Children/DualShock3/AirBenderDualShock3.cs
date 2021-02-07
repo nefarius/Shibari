@@ -148,5 +148,10 @@ namespace Shibari.Sub.Source.AirBender.Core.Children.DualShock3
 
             OnOutputReport(0);
         }
+
+        public override void SetLED(byte Value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

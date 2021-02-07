@@ -82,6 +82,12 @@ namespace Shibari.Sub.Source.FireShock.Core
                     Marshal.FreeHGlobal(pData);
                 }
             }
+
+            public override void SetLED(byte Value)
+            {
+                if (Value >= 1 && Value <= 4)
+                    HidOutputReport[9] = _ledOffsets[Value - 1];
+            }
         }
     }
 }

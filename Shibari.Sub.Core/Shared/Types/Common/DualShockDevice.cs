@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.NetworkInformation;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
@@ -86,6 +86,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
         /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
         public abstract void Rumble(byte largeMotor, byte smallMotor);
+
+        public abstract void SetLED(byte Value);
 
         /// <summary>
         ///     Worker thread requesting HID input reports.
