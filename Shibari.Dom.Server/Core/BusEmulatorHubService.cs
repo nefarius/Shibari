@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Halibut;
 using Halibut.ServiceModel;
 using InTheHand.Devices.Bluetooth;
@@ -52,16 +54,41 @@ namespace Shibari.Dom.Server.Core
                                 && BusEmulators.Select(be => be.Value).Any(b => b.Name == "BthPS3BusEmulator")
                                 && BluetoothAdapter.GetDefault() != null)
                             {
+                                // Check if newly connected USB device is already connected via Bluetooth
+                                if (item.ConnectionType.Equals(DualShockConnectionType.USB))
+                                {
+                                    var emulator = BusEmulators.Select(be => be.Value).Where(b => b.Name == "BthPS3BusEmulator").First();
+
+                                    foreach (var otherItem in _childDevices)
+                                    {
+                                        if (otherItem.ConnectionType.Equals(DualShockConnectionType.Bluetooth))
+                                        {
+                                            if (otherItem.ClientAddress.Equals(item.ClientAddress)) // If found remove bluetooth device
+                                            {
+                                                emulator.RemoveDevice(otherItem);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 // Get address of detected primary radio
                                 var hostAddress = new PhysicalAddress(BitConverter
                                     .GetBytes(BluetoothAdapter.GetDefault().BluetoothAddress).Take(6).Reverse()
                                     .ToArray());
 
-                                Log.Information("Auto-pairing device {Device} to {HostAddress}",
+                                if (!item.HostAddress.Equals(hostAddress))
+                                {
+                                    Log.Information("Auto-pairing device {Device} to {HostAddress}",
                                     item, hostAddress.AsFriendlyName());
 
-                                // Pair USB device
-                                item.PairTo(hostAddress);
+                                    // Pair USB device
+                                    item.PairTo(hostAddress);
+                                }
+                                else
+                                {
+                                    Log.Information("Device {Device} already paired to this radio {HostAddress}.", item, hostAddress.AsFriendlyName());
+                                }
                             }
                             else
                             {
@@ -84,6 +111,8 @@ namespace Shibari.Dom.Server.Core
 
                         break;
                 }
+
+                UpdateLEDS();
             };
 
             #region MEF
@@ -169,6 +198,8 @@ namespace Shibari.Dom.Server.Core
             }
 
             #endregion
+
+            Task.Factory.StartNew(PollBatteryLevel, _inputCancellationTokenSource.Token);
         }
 
         private void EmulatorOnInputReportReceived(object o, InputReportReceivedEventArgs args)
@@ -180,6 +211,7 @@ namespace Shibari.Dom.Server.Core
         public void Stop()
         {
             _ipcServer?.Dispose();
+            _inputCancellationTokenSource.Cancel();
 
             foreach (var emulator in BusEmulators)
             {
@@ -187,6 +219,38 @@ namespace Shibari.Dom.Server.Core
                 emulator.Value.InputReportReceived -= EmulatorOnInputReportReceived;
                 emulator.Value.Stop();
                 Log.Information("Bus emulator {Emulator} stopped successfully", emulator.Metadata["Name"]);
+            }
+        }
+
+        private void UpdateLEDS()
+        {
+            byte CurrentIndex = 1;
+            foreach (var dev in _childDevices)
+                dev.SetLED(CurrentIndex++);
+        }
+
+        private async Task PollBatteryLevel(object cancellationToken)
+        {
+            var token = (CancellationToken)cancellationToken;
+
+            while (!token.IsCancellationRequested)
+            {
+                int index = 1;
+                foreach (var dev in _childDevices)
+                {
+                    if (dev.DeviceType.Equals(DualShockDeviceType.DualShock3))
+                    {
+                        DualShockDevice ds3_dev = (DualShockDevice)dev;
+
+                        Console.Write("\rController {0}: ", index++);
+                        BatteryStatePrinter.printToConsole(ds3_dev.BatteryState);
+                        Console.WriteLine("");
+                    }
+                }
+
+                Console.SetCursorPosition(0, Console.CursorTop - index + 1);
+
+                await Task.Delay(TimeSpan.FromSeconds(0.75), token);
             }
         }
 
@@ -201,6 +265,8 @@ namespace Shibari.Dom.Server.Core
         private readonly DualShockDeviceCollection _childDevices = new DualShockDeviceCollection();
 
         private HalibutRuntime _ipcServer;
+
+        private readonly CancellationTokenSource _inputCancellationTokenSource = new CancellationTokenSource();
 
         [ImportMany] private Lazy<IBusEmulator, IDictionary<string, object>>[] BusEmulators { get; set; }
 

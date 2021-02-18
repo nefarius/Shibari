@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PInvoke;
+using Shibari.Sub.Core.Shared.Types.DualShock3;
 
 namespace Shibari.Sub.Core.Shared.Types.Common
 {
@@ -66,6 +67,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// </summary>
         public PhysicalAddress HostAddress { get; protected set; }
 
+        public DualShockBatterStates BatteryState { get; protected set; }
+
         public int DeviceIndex { get; }
 
         public string DevicePath { get; protected set; }
@@ -86,6 +89,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         /// <param name="largeMotor">Large motor intensity (0 = off, 255 = max).</param>
         /// <param name="smallMotor">Small motor intensity (0 = off, >0 = on).</param>
         public abstract void Rumble(byte largeMotor, byte smallMotor);
+
+        public abstract void SetLED(byte Value);
 
         /// <summary>
         ///     Worker thread requesting HID input reports.
@@ -111,6 +116,10 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         {
             if (report == null)
                 return;
+
+            // Pull battery state from report
+            DualShock3InputReport ds3_report = (DualShock3InputReport)report;
+            BatteryState = ds3_report.BatteryState;
 
             InputReportReceived?.Invoke(this, new InputReportEventArgs(report));
         }

@@ -12,6 +12,8 @@ namespace Shibari.Sub.Core.Shared.Types.Common
 
         PhysicalAddress HostAddress { get; }
 
+        DualShockBatterStates BatteryState { get; }
+
         int DeviceIndex { get; }
 
         string DevicePath { get; }
@@ -19,5 +21,7 @@ namespace Shibari.Sub.Core.Shared.Types.Common
         void Rumble(byte largeMotor, byte smallMotor);
 
         void PairTo(PhysicalAddress host);
+
+        void SetLED(byte Value);
     }
 }
