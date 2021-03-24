@@ -8,7 +8,7 @@ Management layer for AirBender, FireShock & BthPS3 device drivers
 
 ---
 
-## Documentation
+## Documentation (OUTDATED)
 
 👉 [Follow this guide to set up wireless (and wired) connection](https://vigem.org/projects/BthPS3/Installation-Guide-Shibari-Edition/)
 
