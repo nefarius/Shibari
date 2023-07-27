@@ -4,7 +4,7 @@ Management layer for AirBender, FireShock & BthPS3 device drivers
 
 ---
 
-⚠️ **This project is no longer maintained. It has been superseded by [DsHidMini](https://github.com/ViGEm/DsHidMini).** ⚠️
+⚠️ **This project is no longer maintained. It has been superseded by [DsHidMini](https://github.com/nefarius/DsHidMini).** ⚠️
 
 ---
 
@@ -12,9 +12,9 @@ Management layer for AirBender, FireShock & BthPS3 device drivers
 
 The linked content isn't updated anymore, use at your own risk 😘
 
-👉 [Follow this guide to set up wireless (and wired) connection](https://vigem.org/projects/BthPS3/Installation-Guide-Shibari-Edition/)
+👉 [Follow this guide to set up wireless (and wired) connection](https://docs.nefarius.at/projects/BthPS3/Installation-Guide-Shibari-Edition/)
 
-👉 [Follow this guide to set up **wired connection only** (USB)](https://vigem.org/projects/BthPS3/Installation-Guide-Shibari-Edition/#get-all-the-files)
+👉 [Follow this guide to set up **wired connection only** (USB)](https://docs.nefarius.at/projects/BthPS3/Installation-Guide-Shibari-Edition/#get-all-the-files)
 
 ## Credits
 
