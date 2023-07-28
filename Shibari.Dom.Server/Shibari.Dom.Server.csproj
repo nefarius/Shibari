@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net46</TargetFramework>
@@ -89,7 +89,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Halibut" Version="4.3.27" />
+    <PackageReference Include="Halibut" Version="4.4.7" />
     <PackageReference Include="InTheHand.Devices.Bluetooth" Version="4.0.1803.22-preview" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
